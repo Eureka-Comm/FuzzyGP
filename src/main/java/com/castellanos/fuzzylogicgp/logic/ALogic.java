@@ -9,7 +9,7 @@ package com.castellanos.fuzzylogicgp.logic;
  *
  * @author hp
  */
-public interface logic {
+public interface ALogic {
     public double not(double v1);
     public double imp(double v1, double v2);
     public double eqv(double v1, double v2);

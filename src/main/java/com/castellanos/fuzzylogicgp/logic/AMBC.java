@@ -9,7 +9,7 @@ package com.castellanos.fuzzylogicgp.logic;
  *
  * @author hp
  */
-public class AMBC implements logic{
+public class AMBC implements ALogic{
 
     @Override
     public double not(double v1) {

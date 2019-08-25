@@ -10,7 +10,7 @@ package com.castellanos.fuzzylogicgp.logic;
  * 
  * @author hp
  */
-public class GMBC implements logic{
+public class GMBC implements ALogic{
 
     @Override
     public double not(double v1) {

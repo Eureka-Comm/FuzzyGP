@@ -25,7 +25,7 @@ import java.util.Stack;
  *
  * @author hp
  */
-public class Parser {
+public class ParserPredicate {
 
     private final String expression;
     private Stack<String> stack;
@@ -34,7 +34,7 @@ public class Parser {
     private final List<State> states;
     private final List<Generator> generators;
 
-    public Parser(String expression, List<State> states, List<Generator> gs) {
+    public ParserPredicate(String expression, List<State> states, List<Generator> gs) {
         this.expression = expression;
         this.states = states;
         this.generators = gs;
