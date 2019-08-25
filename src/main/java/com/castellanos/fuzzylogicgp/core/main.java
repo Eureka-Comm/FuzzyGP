@@ -5,29 +5,30 @@
  */
 package com.castellanos.fuzzylogicgp.core;
 
-import com.castellanos.fuzzylogicgp.base.And;
 import com.castellanos.fuzzylogicgp.base.Generator;
-import com.castellanos.fuzzylogicgp.base.Imp;
 import com.castellanos.fuzzylogicgp.base.NodeType;
-import com.castellanos.fuzzylogicgp.base.Not;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
-import com.castellanos.fuzzylogicgp.base.Or;
 import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.State;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
-import com.castellanos.fuzzylogicgp.parser.Parser;
+import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import tech.tablesaw.api.Table;
+import tech.tablesaw.io.Source;
+import tech.tablesaw.io.xlsx.XlsxReader;
 /**
  *
  * @author hp
  */
 public class main {
 
-    public static void main(String[] args) throws OperatorException {
+    public static void main(String[] args) throws OperatorException, IOException {
         String st = "{\n"
                 + "  \"nodes\": {\n"
                 + "    \"437eea67-84d0-40af-9a4e-7179d665930a\": {\n"
@@ -264,9 +265,13 @@ public class main {
         Generator g = new Generator("comodin", new NodeType[]{}, vars);
         List<Generator> gs = new ArrayList<>();
         gs.add(g);
-        Parser p = new Parser(st, states, gs);
+        /*ParserPredicate p = new ParserPredicate(st, states, gs);
         Predicate pp = p.parser();
         System.out.println(pp.toJson());
-        System.out.println(pp);
+        System.out.println(pp);*/
+        Table t = Table.read().file("src/main/resources/datasets/tinto.csv");
+        System.out.println(t);
+        System.out.println(t.columnNames());
+        System.out.println(t.structure());
     }
 }
