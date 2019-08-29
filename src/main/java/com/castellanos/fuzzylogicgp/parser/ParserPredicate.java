@@ -183,8 +183,11 @@ public class ParserPredicate {
                         break;
                     }
                 }
+                 if(tmp == null)
+                     throw new OperatorException("Not found: "+rootString);
                 break;
         }
+       
         predicate.addNode(currentNodeRoot, tmp);
         if (tmp instanceof OperatorNode) {
             currentNodeRoot = tmp;

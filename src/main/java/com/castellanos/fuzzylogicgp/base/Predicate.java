@@ -39,12 +39,15 @@ public class Predicate {
                 childs = searchChilds(father);
                 if (childs.size() < 2) {
                     node.setFather(father.getId());
-                    if(father.getType().equals(NodeType.IMP)){
+                    if (father.getType().equals(NodeType.IMP)) {
                         IMPNode impn = (IMPNode) father;
-                        if(impn.getLeftID()==null)
+                        if (impn.getLeftID() == null) {
                             impn.setLeftID(node.getId());
-                        if(impn.getRighID()==null)
+                            //System.out.println("*L " + impn.getId() + " " + impn.getLeftID());
+                        } else if (impn.getRighID() == null) {
                             impn.setRighID(node.getId());
+                            //System.out.println("*R " + impn.getId() + " " + impn.getRighID());
+                        }
                     }
                     nodes.put(node.getId(), node);
                 } else {
@@ -113,18 +116,39 @@ public class Predicate {
     }
 
     public String makePrintTreeStruct(Node father) {
-        List<Node> searchChilds = searchChilds(father);
+
         String st = "(";
         if (father instanceof OperatorNode) {
+
             st += father.getType();
         }
-        for (Node n : searchChilds) {
-            if (n instanceof OperatorNode) {
-                st += " " + makePrintTreeStruct(n);
-            } else if (n instanceof GeneratorNode) {
-                st += " \"" + ((GeneratorNode) n).getLabel() + "\"";
-            } else if (n instanceof StateNode) {
-                st += " \"" + ((StateNode) n).getLabel() + "\"";
+        if (father.getType().equals(NodeType.IMP)) {
+            IMPNode impn = (IMPNode) father;
+            Node ln = nodes.get(impn.getLeftID()), rn = nodes.get(impn.getRighID());
+            if (ln instanceof OperatorNode) {
+                st += " " + makePrintTreeStruct(ln);
+            } else if (ln instanceof GeneratorNode) {
+                st += " \"" + ((GeneratorNode) ln).getLabel() + "\"";
+            } else if (ln instanceof StateNode) {
+                st += " \"" + ((StateNode) ln).getLabel() + "\"";
+            }
+            if (rn instanceof OperatorNode) {
+                st += " " + makePrintTreeStruct(rn);
+            } else if (rn instanceof GeneratorNode) {
+                st += " \"" + ((GeneratorNode) rn).getLabel() + "\"";
+            } else if (rn instanceof StateNode) {
+                st += " \"" + ((StateNode) rn).getLabel() + "\"";
+            }
+        } else {
+            List<Node> searchChilds = searchChilds(father);
+            for (Node n : searchChilds) {
+                if (n instanceof OperatorNode) {
+                    st += " " + makePrintTreeStruct(n);
+                } else if (n instanceof GeneratorNode) {
+                    st += " \"" + ((GeneratorNode) n).getLabel() + "\"";
+                } else if (n instanceof StateNode) {
+                    st += " \"" + ((StateNode) n).getLabel() + "\"";
+                }
             }
         }
         return st.trim() + ")";

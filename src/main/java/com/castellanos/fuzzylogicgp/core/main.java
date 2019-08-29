@@ -225,7 +225,7 @@ public class main {
         StateNode sugar = new StateNode("sugar","sugar");
         
         
-        st = "(IMP \"comodin\" (AND \"ph\" \"quality\" (NOT \"sugar\")))";
+        st = "(IMP (AND \"ph\" \"quality\" (NOT \"sugar\"))  \"comodin\")";
         List<StateNode> states = new ArrayList<>();
         states.add(q);
         states.add(ph);
