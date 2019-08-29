@@ -5,17 +5,17 @@
  */
 package com.castellanos.fuzzylogicgp.parser;
 
-import com.castellanos.fuzzylogicgp.base.And;
-import com.castellanos.fuzzylogicgp.base.Eqv;
-import com.castellanos.fuzzylogicgp.base.Generator;
-import com.castellanos.fuzzylogicgp.base.Imp;
+import com.castellanos.fuzzylogicgp.base.ANDNode;
+import com.castellanos.fuzzylogicgp.base.EQVNode;
+import com.castellanos.fuzzylogicgp.base.GeneratorNode;
+import com.castellanos.fuzzylogicgp.base.IMPNode;
+import com.castellanos.fuzzylogicgp.base.NOTNode;
 import com.castellanos.fuzzylogicgp.base.Node;
-import com.castellanos.fuzzylogicgp.base.Not;
-import com.castellanos.fuzzylogicgp.base.Operator;
+import com.castellanos.fuzzylogicgp.base.ORNode;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
-import com.castellanos.fuzzylogicgp.base.Or;
+import com.castellanos.fuzzylogicgp.base.OperatorNode;
 import com.castellanos.fuzzylogicgp.base.Predicate;
-import com.castellanos.fuzzylogicgp.base.State;
+import com.castellanos.fuzzylogicgp.base.StateNode;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -31,10 +31,10 @@ public class ParserPredicate {
     private Stack<String> stack;
     private Node currentNodeRoot;
     private Predicate predicate;
-    private final List<State> states;
-    private final List<Generator> generators;
+    private final List<StateNode> states;
+    private final List<GeneratorNode> generators;
 
-    public ParserPredicate(String expression, List<State> states, List<Generator> gs) {
+    public ParserPredicate(String expression, List<StateNode> states, List<GeneratorNode> gs) {
         this.expression = expression;
         this.states = states;
         this.generators = gs;
@@ -64,12 +64,11 @@ public class ParserPredicate {
                 }
 
             }
-            return predicate;
+            return (predicate.isValid()) ? predicate : null;
 
-        } else {
-            System.out.println("Error");
         }
-        return null;
+        throw new UnsupportedOperationException("Missing ')'"); //To change body of generated methods, choose Tools | Templates.
+
     }
 
     private boolean isBalanced(List<String> stringList) {
@@ -142,69 +141,33 @@ public class ParserPredicate {
         Node tmp = null;
         switch (rootString) {
             case "AND":
-                tmp = new And();
+                tmp = new ANDNode();
                 if (currentNodeRoot != null) {
                     tmp.setFather(currentNodeRoot.getId());
-                    Operator op = (Operator) currentNodeRoot;
-                    op.addChild(tmp);
                 }
 
-                predicate.addAllNode(tmp);
-                currentNodeRoot = tmp;
                 break;
             case "OR":
-                tmp = new Or();
-                if (currentNodeRoot != null) {
-                    tmp.setFather(currentNodeRoot.getId());
-                    Operator op = (Operator) currentNodeRoot;
-                    op.addChild(tmp);
-                }
-                predicate.addAllNode(tmp);
-
-                currentNodeRoot = tmp;
+                tmp = new ORNode();
                 break;
             case "EQV":
-                tmp = new Eqv();
-                if (currentNodeRoot != null) {
-                    tmp.setFather(currentNodeRoot.getId());
-                    Operator op = (Operator) currentNodeRoot;
-                    op.addChild(tmp);
-                }
-                predicate.addAllNode(tmp);
-                currentNodeRoot = tmp;
+                tmp = new EQVNode();
                 break;
             case "IMP":
-                tmp = new Imp();
-                if (currentNodeRoot != null) {
-                    tmp.setFather(currentNodeRoot.getId());
-                    Operator op = (Operator) currentNodeRoot;
-                    op.addChild(tmp);
-                }
-                predicate.addAllNode(tmp);
-                currentNodeRoot = tmp;
+                tmp = new IMPNode();
                 break;
             case "NOT":
-                tmp = new Not();
-                if (currentNodeRoot != null) {
-                    tmp.setFather(currentNodeRoot.getId());
-                    Operator op = (Operator) currentNodeRoot;
-                    op.addChild(tmp);
-                }
-                predicate.addAllNode(tmp);
-                currentNodeRoot = tmp;
+                tmp = new NOTNode();
+
                 break;
             case "OPERATOR":
-                for (Generator generator : generators) {
+                for (GeneratorNode generator : generators) {
                     if (generator.getLabel().equals(rootString)) {
                         tmp = generator;
                         break;
                     }
                 }
-                if (currentNodeRoot != null) {
-                    tmp.setFather(currentNodeRoot.getId());
-                    Operator op = (Operator) currentNodeRoot;
-                    op.addChild(tmp);
-                }
+
                 break;
             default:
 
@@ -214,20 +177,17 @@ public class ParserPredicate {
                         break;
                     }
                 }
-                for (Generator generator : generators) {
+                for (GeneratorNode generator : generators) {
                     if (generator.getLabel().equals(rootString)) {
                         tmp = generator;
                         break;
                     }
                 }
-                if (currentNodeRoot != null) {
-                    tmp.setFather(currentNodeRoot.getId());
-                    Operator op = (Operator) currentNodeRoot;
-                    op.addChild(tmp);
-                }
-
-                predicate.addAllNode(tmp);
                 break;
+        }
+        predicate.addNode(currentNodeRoot, tmp);
+        if (tmp instanceof OperatorNode) {
+            currentNodeRoot = tmp;
         }
 
     }

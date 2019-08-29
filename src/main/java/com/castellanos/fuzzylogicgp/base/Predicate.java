@@ -7,8 +7,10 @@ package com.castellanos.fuzzylogicgp.base;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -23,22 +25,46 @@ public class Predicate {
         nodes = new HashMap<>();
     }
 
-    public void addAllNode(Node node) {
-        addNode(node);
-        if (node instanceof Operator) {
-            Operator o = (Operator) node;
-            o.getChilds().forEach((n) -> {
-                addAllNode(n);
-            });
-        }
-
-    }
-
-    public void addNode(Node node) {
-        if (nodes.isEmpty()) {
+    public void addNode(Node father, Node node) throws OperatorException {
+        if (father == null || nodes.isEmpty()) {
             idFather = node.getId();
+            nodes.put(node.getId(), node);
+            return;
         }
-        nodes.put(node.getId(), node);
+        List<Node> childs;
+
+        switch (father.getType()) {
+            case IMP:
+            case EQV:
+                childs = searchChilds(father);
+                if (childs.size() < 2) {
+                    node.setFather(father.getId());
+                    if(father.getType().equals(NodeType.IMP)){
+                        IMPNode impn = (IMPNode) father;
+                        if(impn.getLeftID()==null)
+                            impn.setLeftID(node.getId());
+                        if(impn.getRighID()==null)
+                            impn.setRighID(node.getId());
+                    }
+                    nodes.put(node.getId(), node);
+                } else {
+                    throw new OperatorException("\n" + father.getId() + " " + father.getType() + ": arity must be two elements.");
+                }
+                break;
+            case NOT:
+                childs = searchChilds(father);
+                if (childs.isEmpty()) {
+                    node.setFather(father.getId());
+                    nodes.put(node.getId(), node);
+                } else {
+                    throw new OperatorException(father.getId() + " " + father.getType() + ": arity must be one element.");
+                }
+                break;
+            default:
+                node.setFather(father.getId());
+                nodes.put(node.getId(), node);
+                break;
+        }
     }
 
     public Node remove(Node node) {
@@ -48,22 +74,24 @@ public class Predicate {
     public void replace(Node toReplace, Node newNode) throws OperatorException {
         remove(toReplace);
         Node nodeFather = nodes.get(toReplace.getFather());
-        if (nodeFather != null && nodeFather instanceof Operator) {
-            Operator op = (Operator) nodeFather;
+        if (nodeFather != null && nodeFather instanceof OperatorNode) {
+            OperatorNode op = (OperatorNode) nodeFather;
             newNode.setFather(toReplace.getFather());
             if (op.getType().equals(NodeType.EQV) || op.getType().equals(NodeType.IMP)) {
-                Node[] array = (Node[]) op.getChilds().toArray();
+                Node[] array = (Node[]) searchChilds(nodeFather).toArray();
+
                 if (array[0].equals(toReplace)) {
                     array[0] = newNode;
                 } else {
                     array[1] = newNode;
                 }
-                op.setChilds(Arrays.asList(array));
+
+                addNode(nodeFather, array[0]);
+                addNode(nodeFather, array[1]);
             } else {
-                op.remove(toReplace);
-                op.addChild(newNode);
+
             }
-            addNode(newNode);
+            addNode(nodeFather, newNode);
         }
     }
 
@@ -74,7 +102,32 @@ public class Predicate {
 
     @Override
     public String toString() {
-        return nodes.get(idFather).toString();
+
+        Node father = nodes.get(idFather);
+        if (father instanceof StateNode) {
+            return "\"" + ((StateNode) father).getLabel() + "\"";
+        } else if (father instanceof GeneratorNode) {
+            return "\"" + ((GeneratorNode) father).getLabel() + "\"";
+        }
+        return makePrintTreeStruct(father);
+    }
+
+    public String makePrintTreeStruct(Node father) {
+        List<Node> searchChilds = searchChilds(father);
+        String st = "(";
+        if (father instanceof OperatorNode) {
+            st += father.getType();
+        }
+        for (Node n : searchChilds) {
+            if (n instanceof OperatorNode) {
+                st += " " + makePrintTreeStruct(n);
+            } else if (n instanceof GeneratorNode) {
+                st += " \"" + ((GeneratorNode) n).getLabel() + "\"";
+            } else if (n instanceof StateNode) {
+                st += " \"" + ((StateNode) n).getLabel() + "\"";
+            }
+        }
+        return st.trim() + ")";
     }
 
     public static Predicate fromJson(String st) {
@@ -88,6 +141,45 @@ public class Predicate {
 
     public void setIdFather(String idFather) {
         this.idFather = idFather;
+    }
+
+    private List<Node> searchChilds(Node father) {
+        List<Node> childs = new ArrayList<>();
+        nodes.forEach((k, v) -> {
+            if (v.getFather() != null && v.getFather().equals(father.getId())) {
+                childs.add(v);
+            }
+        });
+        return childs;
+    }
+
+    public boolean isValid() throws OperatorException {
+        for (Node v : nodes.values()) {
+            if (v instanceof OperatorNode) {
+                List<Node> childs = searchChilds(v);
+                switch (v.getType()) {
+                    case AND:
+                    case OR:
+                        if (childs.size() < 2) {
+                            throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be more that two elements.");
+                        }
+                        break;
+                    case EQV:
+                    case IMP:
+                        if (childs.size() != 2) {
+                            throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be two elements.");
+                        }
+                        break;
+                    case NOT:
+                        if (childs.size() != 1) {
+                            throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be one element.");
+                        }
+                        break;
+
+                }
+            }
+        }
+        return true;
     }
 
 }

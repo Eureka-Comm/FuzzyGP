@@ -5,22 +5,15 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author hp
  */
-public class Or extends Operator{
+public class ORNode extends OperatorNode{
 
-    public Or() {
-        setChilds(new ArrayList<>());
+    public ORNode() {
         setType(NodeType.OR);
     }
-    public Or(List<Node> childs){
-        setChilds(childs);
-        setType(NodeType.OR);
-    }
-    
+       
 }

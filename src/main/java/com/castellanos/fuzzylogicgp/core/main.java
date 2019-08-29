@@ -5,23 +5,20 @@
  */
 package com.castellanos.fuzzylogicgp.core;
 
-import com.castellanos.fuzzylogicgp.base.Generator;
+import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.Predicate;
-import com.castellanos.fuzzylogicgp.base.State;
+import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import tech.tablesaw.api.Table;
-import tech.tablesaw.io.Source;
-import tech.tablesaw.io.xlsx.XlsxReader;
 /**
  *
  * @author hp
@@ -222,56 +219,30 @@ public class main {
                 + "  },\n"
                 + "  \"idFather\": \"cb163287-46db-4e24-8931-add89a9744bd\"\n"
                 + "}";
-        State s1 = new State("l1", "col1", new FPG());
-        State s2 = new State("l3", "col3", new Sigmoid(0.4, .7));
-        State ha = new State("high_alcohol", "alcohol", new NSigmoid(.8, .3));
-        State s = new State("sugar", "sugar", new FPG());
-        State q = new State("quality", "quality", new FPG());
-        State ph = new State("ph", "ph", new FPG());
-        List<State> states = new ArrayList<>();
-        states.add(s1);
-        states.add(s2);
-        states.add(ha);
-        states.add(s);
-        states.add(s);
+      
+        StateNode q = new StateNode("quality", "quality", new FPG());
+        StateNode ph = new StateNode("ph","ph");
+        StateNode sugar = new StateNode("sugar","sugar");
+        
+        
+        st = "(IMP \"comodin\" (AND \"ph\" \"quality\" (NOT \"sugar\")))";
+        List<StateNode> states = new ArrayList<>();
         states.add(q);
         states.add(ph);
-        st = "(IMP (AND \"l1\" \"l3\" \"high_alcohol\" \"comodin\") (NOT \"quality\" ))";
-        /*
-        Imp imp = new Imp();
-        And and = new And();
-        imp.addChild(and);
-        and.setFather(imp.getId());
-        and.addChild(s1);
-        s1.setFather(and.getId());
-        and.addChild(s2);
-        s2.setFather(and.getId());
-        and.addChild(ha);
-        ha.setFather(and.getId());
-        Not not = new Not();
-        imp.addChild(not);
-        not.setFather(imp.getId());
-        not.addChild(q);
-        q.setFather(not.getId());
-        Predicate p = new Predicate();
-        p.addAllNode(imp);
-        System.out.println(p.toJson());
-        System.out.println(p);
-         */
+        states.add(sugar);
+        
         List<String> vars = new ArrayList<>();
-        vars.add(ph.getLabel());
-        vars.add(s.getLabel());
-
-        Generator g = new Generator("comodin", new NodeType[]{}, vars);
-        List<Generator> gs = new ArrayList<>();
+        
+        GeneratorNode g = new GeneratorNode("comodin", new NodeType[]{}, vars);
+        List<GeneratorNode> gs = new ArrayList<>();
         gs.add(g);
-        /*ParserPredicate p = new ParserPredicate(st, states, gs);
+        ParserPredicate p = new ParserPredicate(st, states, gs);
         Predicate pp = p.parser();
         System.out.println(pp.toJson());
-        System.out.println(pp);*/
-        Table t = Table.read().file("src/main/resources/datasets/tinto.csv");
+        System.out.println(pp);
+        /*Table t = Table.read().file("src/main/resources/datasets/tinto.csv");
         System.out.println(t);
         System.out.println(t.columnNames());
-        System.out.println(t.structure());
+        System.out.println(t.structure());*/
     }
 }

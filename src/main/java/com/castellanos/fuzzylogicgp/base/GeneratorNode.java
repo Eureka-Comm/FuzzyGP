@@ -11,18 +11,18 @@ import java.util.List;
  *
  * @author hp
  */
-public class Generator extends Node {
+public class GeneratorNode extends Node {
 
     private String label;
     private NodeType operators[];
     private List<String> variables;
 
-    public Generator() {
+    public GeneratorNode() {
         this.setType(NodeType.OPERATOR);
         this.setEditable(true);
     }
 
-    public Generator(String label, NodeType[] operators, List<String> variables) {
+    public GeneratorNode(String label, NodeType[] operators, List<String> variables) {
         this.label = label;
         this.operators = operators;
         this.variables = variables;

@@ -5,24 +5,14 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author hp
  */
-public class And extends Operator {
+public class ANDNode extends OperatorNode {
 
-    public And() {
-        setChilds(new ArrayList<>());
+    public ANDNode() {
         setType(NodeType.AND);
-    }
-
-    public And(List<Node> childs) {
-        setChilds(childs);
-        setType(NodeType.AND);
-
-    }
+    }   
 
 }

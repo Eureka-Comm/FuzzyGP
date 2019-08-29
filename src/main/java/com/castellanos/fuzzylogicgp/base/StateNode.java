@@ -13,16 +13,31 @@ import com.google.gson.GsonBuilder;
  *
  * @author hp
  */
-public class State extends Node {
+public class StateNode extends Node {
 
     private String label;
     private String colName;
     private AMembershipFunction membershipFunction;
 
-    public State() {
+    public StateNode() {
+    }
+    public StateNode(StateNode state){
+        this.label = state.getLabel();
+        this.colName = state.getColName();
+        this.setType(NodeType.STATE);
+        if(state.getMembershipFunction()!=null)
+            this.membershipFunction  = state.getMembershipFunction();
+        this.setEditable(state.isEditable());
     }
 
-    public State(String label, String colName, AMembershipFunction membershipFunction) {
+    public StateNode(String label, String colName) {
+        this.label = label;
+        this.colName = colName;
+        this.setType(NodeType.STATE);
+        this.setEditable(false);
+    }
+
+    public StateNode(String label, String colName, AMembershipFunction membershipFunction) {
         this.label = label;
         this.colName = colName;
         this.membershipFunction = membershipFunction;
@@ -57,7 +72,11 @@ public class State extends Node {
 
     @Override
     public String toString() {
-        return String.format(":label %s :colname %s :f %s", this.label, this.colName, this.membershipFunction);
+        if (this.membershipFunction != null) {
+            return String.format(":label %s :colname %s :f %s", this.label, this.colName, this.membershipFunction);
+        } else {
+            return String.format(":label %s :colname %s", this.label, this.colName);
+        }
     }
 
     public String toJson() {
