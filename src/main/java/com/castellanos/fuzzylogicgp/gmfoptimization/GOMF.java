@@ -5,11 +5,19 @@
  */
 package com.castellanos.fuzzylogicgp.gmfoptimization;
 
+import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.Predicate;
+import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
+import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.columns.Column;
 
 /**
  * Generalized Optimizer of Membership Functions
@@ -18,99 +26,155 @@ import tech.tablesaw.api.Table;
  */
 public class GOMF {
 
-    private ALogic logic;
-    private float mut_percentage;
+    private final ALogic logic;
+    private final float mut_percentage;
     private int adj_num_pop;
-    private int adj_iter;
-    private int adj_truth_value;
-    private Table data;
-    
-    private Predicate predicatePattern;
+    private final int adj_iter;
+    private final float adj_truth_value;
 
-    public GOMF(ALogic logic, float mut_percentage, int adj_num_pop, int adj_iter, int adj_truth_value) {
+    private Table data;
+
+    private Predicate predicatePattern;
+    private List<StateNode> sns;
+
+    private static final Random rand = new Random();
+
+    public GOMF(Table data, ALogic logic, float mut_percentage, int adj_num_pop, int adj_iter, float adj_truth_value) {
+        this.data = data;
         this.logic = logic;
         this.mut_percentage = mut_percentage;
         this.adj_num_pop = adj_num_pop;
         this.adj_iter = adj_iter;
         this.adj_truth_value = adj_truth_value;
+
     }
 
     public void optimize(Predicate p) {
         this.predicatePattern = p;
+        sns = new ArrayList<>();
+        predicatePattern.getNodes().forEach((k, v) -> {
+            if (v.getType().equals(NodeType.STATE)) {
+                StateNode c = (StateNode) v;
+                if (c.getMembershipFunction() == null) {
+                    System.out.println(c+" "+c.getId());
+                    sns.add(c);
+                }
+            }
+        });
+        genetic();
     }
-    public List<Predicate> makePop(){
-        List<Predicate> pop = new ArrayList<>();
+
+    private void genetic() {
+        HashMap<String, FPG>[] currentPop;
+        HashMap<String, FPG>[] lastPop = null;
+
+        GsonBuilder gson = new GsonBuilder().setPrettyPrinting();
+        Gson print = gson.create();
+
+        double fitPop[], currentFitProm = 0;
+
+        int iteration = 1;
+
+        do {
+            currentPop = makePop();
+//           fitPop = evaluatePredicate(currentPop);
+
+            //   currentFitProm = calculateProm(fitPop);
+            System.out.println(iteration + "- current: " + print.toJson(currentPop));
+
+            System.out.println(iteration + "- last: " + print.toJson(lastPop));
+
+            iteration++;
+            lastPop = currentPop;
+
+        } while (iteration < adj_iter && currentFitProm <= adj_truth_value);
+    }
+
+    public HashMap<String, FPG>[] makePop() {
+        HashMap<String, FPG> m[];
+        if (adj_num_pop == 1) {
+            adj_num_pop = 2;
+            m = new HashMap[2];
+        } else {
+            m = new HashMap[adj_num_pop];
+        }
+        sns.forEach((_item) -> {
+            for (int i = 0; i < adj_num_pop; i++)                
+                m[i] = new HashMap<>(randomChromosome(_item));            
+        });
+        return m;
+    }
+
+    private HashMap<String, FPG> randomChromosome(StateNode _item) {
+        FPG f = new FPG();
+        double[] r = minPromMaxValues(_item.getColName());
+        f.setGamma(randomValue(r[1], r[2]));
+        Double value;
+        do {
+            value = randomValue(r[0], r[1]);
+        } while (value >= f.getGamma());
         
-        return pop;
-    }
-    public void mutation(Predicate p){
+        f.setBeta(value);
+        f.setM(rand.nextDouble());
         
+        HashMap <String,FPG> map = new HashMap<>();
+        map.put(_item.getId(), f);
+        return map;
     }
-    public Predicate crossover( Predicate parent1, Predicate parent2){
+
+    private double[] minPromMaxValues(String colname) {
+        double[] v = new double[3];
+        Column<?> column = data.column(colname);
+        v[0] = Double.parseDouble(column.getString(0));
+        v[2] = Double.parseDouble(column.getString(1));
+        double current, prom = 0;
+
+        for (int i = 0; i < column.size(); i++) {
+            current = Double.valueOf(column.getString(i));
+            if (v[0] > current) {
+                v[0] = current;
+            }
+            if (v[2] < current) {
+                v[2] = current;
+            }
+            prom += current;
+        }
+        v[1] = prom / column.size();
+        return v;
+    }
+
+    private Double randomValue(double min, double max) {
+        return rand.doubles(min, max + 1).findFirst().getAsDouble();
+    }
+
+    public void mutation(Predicate p) {
+
+    }
+
+    public Predicate crossover(Predicate parent1, Predicate parent2) {
         Predicate p = new Predicate();
-        
+
         return p;
     }
 
     public void optimize(Table data, Predicate p) {
         this.data = data;
         this.predicatePattern = p;
+        genetic();
     }
 
-    public void setData(Table data) {
-        this.data = data;
+    private double calculateProm(double[] fitPop) {
+        double sum = 0;
+        for (double ind : fitPop) {
+            sum += ind;
+        }
+        return sum / fitPop.length;
     }
 
-    public void setPredicate(Predicate predicatePattern) {
-        this.predicatePattern = predicatePattern;
-    }
-
-    public Table getData() {
-        return data;
-    }
-
-    public Predicate getPredicate() {
-        return predicatePattern;
-    }
-
-    public ALogic getLogic() {
-        return logic;
-    }
-
-    public void setLogic(ALogic logic) {
-        this.logic = logic;
-    }
-
-    public float getMut_percentage() {
-        return mut_percentage;
-    }
-
-    public void setMut_percentage(float mut_percentage) {
-        this.mut_percentage = mut_percentage;
-    }
-
-    public int getAdj_num_pop() {
-        return adj_num_pop;
-    }
-
-    public void setAdj_num_pop(int adj_num_pop) {
-        this.adj_num_pop = adj_num_pop;
-    }
-
-    public int getAdj_iter() {
-        return adj_iter;
-    }
-
-    public void setAdj_iter(int adj_iter) {
-        this.adj_iter = adj_iter;
-    }
-
-    public int getAdj_truth_value() {
-        return adj_truth_value;
-    }
-
-    public void setAdj_truth_value(int adj_truth_value) {
-        this.adj_truth_value = adj_truth_value;
+    private double[] evaluatePredicate(HashMap<String, FPG>[] currentPop) {
+        double fitPop[] = new double[currentPop.length];
+        
+        return fitPop;
     }
 
 }

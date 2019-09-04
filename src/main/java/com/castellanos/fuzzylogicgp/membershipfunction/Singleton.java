@@ -37,4 +37,9 @@ public class Singleton extends AMembershipFunction {
         return "singleton " + this.a;
     }
 
+    @Override
+    public double evaluate(double v) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

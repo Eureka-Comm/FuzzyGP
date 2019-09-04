@@ -10,9 +10,9 @@ package com.castellanos.fuzzylogicgp.logic;
  * @author hp
  */
 public interface ALogic {
-    public double not(double v1);
-    public double imp(double v1, double v2);
-    public double eqv(double v1, double v2);
-    public double and(double v1, double v2);
-    public double or(double v1, double v2);
+    public double not(Double v1);
+    public double imp(Double v1, Double v2);
+    public double eqv(Double v1, Double v2);
+    public double and(Double v1, Double v2);
+    public double or(Double v1, Double v2);
 }

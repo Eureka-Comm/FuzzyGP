@@ -47,4 +47,9 @@ public class Sigmoid extends AMembershipFunction {
         return "sigmoid " + this.center + ", " + this.beta;
     }
 
+    @Override
+    public double evaluate(double v) {
+        return (1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center)))));
+    }
+
 }

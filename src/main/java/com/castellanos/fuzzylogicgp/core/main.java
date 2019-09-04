@@ -10,6 +10,8 @@ import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
+import com.castellanos.fuzzylogicgp.gmfoptimization.GOMF;
+import com.castellanos.fuzzylogicgp.logic.AMBC;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
@@ -220,12 +222,12 @@ public class main {
                 + "  \"idFather\": \"cb163287-46db-4e24-8931-add89a9744bd\"\n"
                 + "}";
       
-        StateNode q = new StateNode("quality", "quality", new FPG());
-        StateNode ph = new StateNode("ph","ph");
-        StateNode sugar = new StateNode("sugar","sugar");
+        StateNode q = new StateNode("quality", "quality");
+        StateNode ph = new StateNode("ph","pH");
+        StateNode sugar = new StateNode("sugar","residual_sugar");
         
         
-        st = "(IMP (AND \"ph\" \"quality\" (NOT \"sugar\"))  \"comodin\")";
+        st = "(AND \"ph\" \"quality\" )";
         List<StateNode> states = new ArrayList<>();
         states.add(q);
         states.add(ph);
@@ -240,9 +242,11 @@ public class main {
         Predicate pp = p.parser();
         System.out.println(pp.toJson());
         System.out.println(pp);
-        /*Table t = Table.read().file("src/main/resources/datasets/tinto.csv");
-        System.out.println(t);
-        System.out.println(t.columnNames());
-        System.out.println(t.structure());*/
+        Table t = Table.read().file("src/main/resources/datasets/tinto.csv");
+        
+        //(Table data, ALogic logic, float mut_percentage, int adj_num_pop, int adj_iter, float adj_truth_value) 
+
+        GOMF gomf = new GOMF(t, new AMBC(), 0.5f , 1, 2, 0.8f);
+        gomf.optimize(pp);
     }
 }

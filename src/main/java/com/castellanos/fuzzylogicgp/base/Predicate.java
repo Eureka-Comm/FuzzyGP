@@ -20,6 +20,7 @@ public class Predicate {
 
     private HashMap<String, Node> nodes;
     private String idFather;
+    private double fitness;
 
     public Predicate() {
         nodes = new HashMap<>();
@@ -167,7 +168,7 @@ public class Predicate {
         this.idFather = idFather;
     }
 
-    private List<Node> searchChilds(Node father) {
+    public List<Node> searchChilds(Node father) {
         List<Node> childs = new ArrayList<>();
         nodes.forEach((k, v) -> {
             if (v.getFather() != null && v.getFather().equals(father.getId())) {
@@ -205,5 +206,22 @@ public class Predicate {
         }
         return true;
     }
+
+    public double getFitness() {
+        return fitness;
+    }
+
+    public void setFitness(double fitness) {
+        this.fitness = fitness;
+    }
+
+    public HashMap<String, Node> getNodes() {
+        return nodes;
+    }
+
+    public String getIdFather() {
+        return idFather;
+    }
+    
 
 }

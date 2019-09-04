@@ -22,5 +22,6 @@ public abstract class AMembershipFunction {
     public void setType(MembershipFunctionType type) {
         this.type = type;
     }
-
+        
+    public abstract double evaluate(double v);
 }

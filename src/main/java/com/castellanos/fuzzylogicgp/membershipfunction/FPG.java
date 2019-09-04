@@ -59,8 +59,13 @@ public class FPG extends AMembershipFunction {
     public String toString() {
         if(this.beta == null)
             return "fpg";
-        return "fpg " + this.gamma + ", " + this.beta + ", " + this.m;
+        return ":fpg " +  this.beta+ ", " +this.gamma + ", " + this.m;
 
+    }
+
+    @Override
+    public double evaluate(double v) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
