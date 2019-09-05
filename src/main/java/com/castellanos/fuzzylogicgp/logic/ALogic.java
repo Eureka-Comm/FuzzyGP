@@ -5,6 +5,8 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
+import java.util.List;
+
 /**
  *
  * @author hp
@@ -15,4 +17,6 @@ public interface ALogic {
     public double eqv(Double v1, Double v2);
     public double and(Double v1, Double v2);
     public double or(Double v1, Double v2);
+    public double forAll(List<Double> values);
+    public double exist(List<Double> values);
 }

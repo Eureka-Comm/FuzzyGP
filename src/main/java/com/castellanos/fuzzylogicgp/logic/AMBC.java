@@ -5,6 +5,8 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
+import java.util.List;
+
 /**
  *
  * @author hp
@@ -33,6 +35,16 @@ public class AMBC implements ALogic{
 
     @Override
     public double or(Double v1, Double v2) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double forAll(List<Double> values) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public double exist(List<Double> values) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

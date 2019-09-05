@@ -59,7 +59,7 @@ public class ParserPredicate {
                         }
                         break;
                     default:
-                        createNodeFromExpre(rootString);
+                        createNodeFromExpre(rootString);                       
                         break;
                 }
 
@@ -173,7 +173,7 @@ public class ParserPredicate {
 
                 for (int i = 0; i < states.size(); i++) {
                     if (states.get(i).getLabel().equals(rootString)) {
-                        tmp = states.get(i);
+                        tmp = new StateNode(states.get(i));
                         break;
                     }
                 }

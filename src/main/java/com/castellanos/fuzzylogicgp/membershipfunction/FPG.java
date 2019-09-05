@@ -5,6 +5,8 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import static java.lang.Math.pow;
+
 /**
  *
  * @author hp
@@ -49,7 +51,6 @@ public class FPG extends AMembershipFunction {
         this.m = m;
     }
 
-
     @Override
     public boolean isValid() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -57,15 +58,18 @@ public class FPG extends AMembershipFunction {
 
     @Override
     public String toString() {
-        if(this.beta == null)
-            return "fpg";
-        return ":fpg " +  this.beta+ ", " +this.gamma + ", " + this.m;
-
+        return ":fpg " + this.beta + ", " + this.gamma + ", " + this.m;
     }
 
     @Override
     public double evaluate(double v) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        double sigm, sigmm, M;
+
+        sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m);
+        sigmm = pow(1.0 - new Sigmoid(gamma, beta).evaluate(v), 1.0 - m);
+        M = pow(m, m) * pow((1 - m), (1 - m));
+
+        return ((sigm * sigmm) / M);
     }
 
 }
