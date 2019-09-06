@@ -17,8 +17,18 @@ public class FPG extends AMembershipFunction {
     private Double beta;
     private Double m;
 
-    public FPG() {
+    public FPG(Double gamma, Double beta, Double m) {
+        this.gamma = gamma;
+        this.beta = beta;
+        this.m = m;
         this.setType(MembershipFunctionType.FPG);
+
+    }
+
+    public FPG() {
+
+        this.setType(MembershipFunctionType.FPG);
+
     }
 
     public Double getGamma() {
@@ -42,12 +52,6 @@ public class FPG extends AMembershipFunction {
     }
 
     public void setM(Double m) {
-        this.m = m;
-    }
-
-    public FPG(Double gamma, Double beta, Double m) {
-        this.gamma = gamma;
-        this.beta = beta;
         this.m = m;
     }
 

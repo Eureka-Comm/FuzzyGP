@@ -43,6 +43,7 @@ public class ParserPredicate {
 
     public Predicate parser() throws OperatorException {
         List<String> split = expressionSplit(expression);
+        System.out.println(split);
         predicate = new Predicate();
         if (isBalanced(split)) {
             Iterator<String> stringIterator = split.iterator();

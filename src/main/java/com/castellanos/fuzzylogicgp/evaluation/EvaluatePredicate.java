@@ -39,7 +39,7 @@ public class EvaluatePredicate {
     private ALogic logic;
     private Table data;
     private Table fuzzyData;
-    private DoubleColumn resultColumn;   
+    private DoubleColumn resultColumn;
     private String outPath;
 
     public EvaluatePredicate(Predicate p, ALogic logic, String path, String outPath) {
@@ -53,21 +53,29 @@ public class EvaluatePredicate {
         }
     }
 
-    public void evaluate() throws IOException {
+    public void evaluate() {
 
         dataFuzzy();
         System.out.println(fuzzyData);
         fitCompute();
-        StringColumn fa = StringColumn.create("For All:");
-        fa.append("" + logic.forAll(resultColumn.asList()));
+        StringColumn fa = StringColumn.create("For All");
+        p.setFitness(logic.forAll(resultColumn.asList()));
+        fa.append("" + p.getFitness());
 
-        StringColumn ec = StringColumn.create("Exist:");
+        StringColumn ec = StringColumn.create("Exist");
         ec.append("" + logic.exist(resultColumn.asList()));
         for (int i = 1; i < fuzzyData.rowCount(); i++) {
             fa.append("");
             ec.append("");
         }
         fuzzyData.addColumns(fa, ec, resultColumn);
+    }
+
+    public void exportToCsv() throws IOException {
+        fuzzyData.write().csv(outPath);
+    }
+
+    public void exportToCsv(String outPath) throws IOException {
         fuzzyData.write().csv(outPath);
     }
 
@@ -166,12 +174,11 @@ public class EvaluatePredicate {
 
     public static void main(String[] args) throws OperatorException, IOException {
         /**
-         * ({:label "high alcohol", :colname "alcohol", 
-         *      :f [FPG 13.031119211245704 8.448634409508557 0.04157572302449675]} 
-         * {:label "low pH", :colname "pH", 
-         *      :f [FPG 3.364540381576137 2.7821370741597637 0.7690650618067221]} 
-         * {:label "high quality", :colname "quality", 
-         *      :f [FPG 7.392000865791699 3.4638564100976446 0.17032006123246923]})
+         * ({:label "high alcohol", :colname "alcohol", :f [FPG
+         * 13.031119211245704 8.448634409508557 0.04157572302449675]} {:label
+         * "low pH", :colname "pH", :f [FPG 3.364540381576137 2.7821370741597637
+         * 0.7690650618067221]} {:label "high quality", :colname "quality", :f
+         * [FPG 7.392000865791699 3.4638564100976446 0.17032006123246923]})
          */
         FPG sfa = new FPG(13.031119211245704, 8.448634409508557, 0.04157572302449675);
         StateNode fa = new StateNode("high alcohol", "alcohol", sfa);
@@ -190,7 +197,7 @@ public class EvaluatePredicate {
         String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
         expression = "(AND (OR \"citric_acid\" \"volatile_acidity\" \"fixed_acidity\") (IMP \"fixed_acidity\" \"volatile_acidity\"))";
         expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
-        expression = "(OR \"low pH\" \"high quality\" \"high alcohol\")";
+       // expression = "(OR \"low pH\" \"high quality\" \"high alcohol\")";
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 
@@ -199,8 +206,9 @@ public class EvaluatePredicate {
 //
 //0.7163711308562271
 //0.28362886914377294
-        EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv","evaluation-result-fpg.csv");
+        EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv", "evaluation-result-fpg.csv");
         ep.evaluate();
+        ep.exportToCsv();
 
     }
 

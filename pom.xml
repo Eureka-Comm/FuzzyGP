@@ -57,7 +57,12 @@
             <artifactId>tablesaw-json</artifactId>
             <version>0.34.2</version>
         </dependency>
-  
+        <!-- java edn -->
+        <dependency>
+            <groupId>us.bpsm</groupId>
+            <artifactId>edn-java</artifactId>
+            <version>0.5.0</version>
+        </dependency>
        
     </dependencies>
     <reporting>                                                                              
