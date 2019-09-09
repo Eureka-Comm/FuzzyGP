@@ -43,7 +43,6 @@ public class ParserPredicate {
 
     public Predicate parser() throws OperatorException {
         List<String> split = expressionSplit(expression);
-        System.out.println(split);
         predicate = new Predicate();
         if (isBalanced(split)) {
             Iterator<String> stringIterator = split.iterator();
@@ -55,12 +54,12 @@ public class ParserPredicate {
                     case "(":
                         break;
                     case ")":
-                        if (currentNodeRoot.getFather() != null) {
+                        if (currentNodeRoot != null && currentNodeRoot.getFather() != null) {
                             currentNodeRoot = predicate.getNode(currentNodeRoot.getFather());
                         }
                         break;
                     default:
-                        createNodeFromExpre(rootString);                       
+                        createNodeFromExpre(rootString);
                         break;
                 }
 
@@ -142,11 +141,7 @@ public class ParserPredicate {
         Node tmp = null;
         switch (rootString) {
             case "AND":
-                tmp = new ANDNode();
-                if (currentNodeRoot != null) {
-                    tmp.setFather(currentNodeRoot.getId());
-                }
-
+                tmp = new ANDNode();              
                 break;
             case "OR":
                 tmp = new ORNode();
@@ -184,11 +179,12 @@ public class ParserPredicate {
                         break;
                     }
                 }
-                 if(tmp == null)
-                     throw new OperatorException("Not found: "+rootString);
+                if (tmp == null) {
+                    throw new OperatorException("Not found: " + rootString);
+                }
                 break;
         }
-       
+
         predicate.addNode(currentNodeRoot, tmp);
         if (tmp instanceof OperatorNode) {
             currentNodeRoot = tmp;
