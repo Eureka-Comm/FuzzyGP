@@ -78,6 +78,9 @@ public class EvaluatePredicate {
     public void exportToCsv(String outPath) throws IOException {
         fuzzyData.write().csv(outPath);
     }
+    public void resultPrint(){
+        System.out.println(fuzzyData.toString());
+    }
 
     private void fitCompute() {
         double fit = 0.0;
@@ -111,7 +114,7 @@ public class EvaluatePredicate {
                 }
                 return logic.or(aux, fitValue(child.get(0), index));
             case NOT:
-                return fitValue(p.searchChilds(node).get(0), index);
+                return logic.not(fitValue(p.searchChilds(node).get(0), index));
             case IMP:
                 IMPNode imp = (IMPNode) node;
                 return logic.imp(fitValue(p.getNode(imp.getLeftID()), index), fitValue(p.getNode(imp.getRighID()), index));
@@ -198,6 +201,7 @@ public class EvaluatePredicate {
         expression = "(AND (OR \"citric_acid\" \"volatile_acidity\" \"fixed_acidity\") (IMP \"fixed_acidity\" \"volatile_acidity\"))";
         expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
        // expression = "(OR \"low pH\" \"high quality\" \"high alcohol\")";
+        expression = "(NOT \"high quality\")";
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 
@@ -208,7 +212,8 @@ public class EvaluatePredicate {
 //0.28362886914377294
         EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv", "evaluation-result-fpg.csv");
         ep.evaluate();
-        ep.exportToCsv();
+        ep.resultPrint();
+        //ep.exportToCsv();
 
     }
 
