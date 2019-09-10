@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -48,6 +49,4 @@ public class AMBC implements ALogic{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-  
-    
 }

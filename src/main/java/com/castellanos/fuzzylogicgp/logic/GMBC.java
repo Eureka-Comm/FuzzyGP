@@ -45,7 +45,7 @@ public class GMBC implements ALogic {
 
     @Override
     public double or(Double v1, Double v2) {
-        return (1.0 - Math.pow(v1*v2, (double) (1.0 / 2.0)));
+        return (1.0 - Math.pow(v1*v2,  0.5));
     }
 
     @Override

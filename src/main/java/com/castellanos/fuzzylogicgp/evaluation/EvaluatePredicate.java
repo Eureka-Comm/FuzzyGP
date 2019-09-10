@@ -42,6 +42,22 @@ public class EvaluatePredicate {
     private DoubleColumn resultColumn;
     private String outPath;
 
+    public EvaluatePredicate(Predicate p, ALogic logic, Table data) {
+        this.p = p;
+        this.logic = logic;
+        this.data = data;
+    }
+
+    public EvaluatePredicate(Predicate p, ALogic logic, String path) {
+        this.p = p;
+        this.logic = logic;
+        try {
+            this.data = Table.read().csv(path);
+        } catch (IOException ex) {
+            Logger.getLogger(EvaluatePredicate.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public EvaluatePredicate(Predicate p, ALogic logic, String path, String outPath) {
         this.p = p;
         this.logic = logic;
@@ -53,13 +69,14 @@ public class EvaluatePredicate {
         }
     }
 
-    public void evaluate() {
+    public double evaluate() {
 
         dataFuzzy();
         fitCompute();
         if (p.getIdFather() != null && !p.getNode(p.getIdFather()).getType().equals(NodeType.STATE)) {
             StringColumn fa = StringColumn.create("For All");
-            p.setFitness(logic.forAll(resultColumn.asList()));
+            double forAllValue = logic.forAll(resultColumn.asList());
+            p.setFitness(forAllValue);
             fa.append("" + p.getFitness());
 
             StringColumn ec = StringColumn.create("Exist");
@@ -69,7 +86,9 @@ public class EvaluatePredicate {
                 ec.append("");
             }
             fuzzyData.addColumns(fa, ec, resultColumn);
+            return forAllValue;
         }
+        return Double.NaN;
     }
 
     public void exportToCsv() throws IOException {
@@ -178,7 +197,7 @@ public class EvaluatePredicate {
     }
 
     public static void main(String[] args) throws OperatorException, IOException {
- 
+
         FPG sfa = new FPG(13.031119211245704, 8.448634409508557, 0.04157572302449675);
         StateNode fa = new StateNode("high alcohol", "alcohol", sfa);
         FPG nsva = new FPG(3.364540381576137, 2.7821370741597637, 0.7690650618067221);
@@ -195,14 +214,15 @@ public class EvaluatePredicate {
 
         String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
         expression = "(AND (OR \"citric_acid\" \"volatile_acidity\" \"fixed_acidity\") (IMP \"fixed_acidity\" \"volatile_acidity\"))";
-        expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
+        //expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
+        expression = "( \"low pH\" \"high quality\" \"high alcohol\")";
         // expression = "(OR \"low pH\" \"high quality\" \"high alcohol\")";
-        expression = "(OR \"low pH\" \"high quality\" \"high alcohol\")";
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
-      
+
         EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv", "evaluation-result-fpg.csv");
-        ep.evaluate();
+        double evaluate = ep.evaluate();
+        System.out.println(evaluate);
         ep.resultPrint();
         //ep.exportToCsv();
 
