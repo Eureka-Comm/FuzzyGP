@@ -42,6 +42,11 @@ public class EvaluatePredicate {
     private DoubleColumn resultColumn;
     private String outPath;
 
+    public EvaluatePredicate(ALogic logic, Table data) {
+        this.logic = logic;
+        this.data = data;
+    }
+
     public EvaluatePredicate(Predicate p, ALogic logic, Table data) {
         this.p = p;
         this.logic = logic;
@@ -197,6 +202,10 @@ public class EvaluatePredicate {
         //System.out.println(fuzzyData);
     }
 
+    public void setPredicate(Predicate p) {
+        this.p = p;
+    }
+    
     public static void main(String[] args) throws OperatorException, IOException {
 
         FPG sfa = new FPG(13.031119211245704, 8.448634409508557, 0.04157572302449675);
