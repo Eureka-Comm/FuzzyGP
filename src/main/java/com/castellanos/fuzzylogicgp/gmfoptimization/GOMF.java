@@ -46,7 +46,7 @@ public class GOMF {
     private List<StateNode> sns;
 
     private static final Random rand = new Random();
-    
+    private final Gson print = new GsonBuilder().setPrettyPrinting().create();
 
     public GOMF(Table data, ALogic logic, double mut_percentage, int adj_num_pop, int adj_iter, double adj_truth_value) {
         this.data = data;
@@ -61,15 +61,16 @@ public class GOMF {
     public void optimize(Predicate p) {
         this.predicatePattern = p;
         sns = new ArrayList<>();
+        System.out.println("Checking linguistic states...");
         predicatePattern.getNodes().forEach((k, v) -> {
             if (v.getType().equals(NodeType.STATE)) {
                 StateNode c = (StateNode) v;
                 if (c.getMembershipFunction() == null) {
-                   // System.out.println(c + " " + c.getId());
                     sns.add(c);
                 }
             }
         });
+        System.out.println("Functions to optimize: " + sns.size());
         genetic();
     }
 
@@ -77,26 +78,22 @@ public class GOMF {
         List<HashMap<String, FPG>[]> currentPop;
         List<HashMap<String, FPG>[]> lastPop = null;
 
-        GsonBuilder gson = new GsonBuilder().setPrettyPrinting();
-        Gson print = gson.create();
-
-        double fitPop[], currentFitProm = 0;
+        double fitPop[];
+        int indexMaxValue;
 
         int iteration = 0;
-
+        
         do {
             currentPop = makePop();
             fitPop = evaluatePredicate(currentPop);
-
-            currentFitProm = calculateProm(fitPop);
-            System.out.println(iteration + "- current: " + print.toJson(fitPop));
-
-            //System.out.println(iteration + "- last: " + print.toJson(lastPop));
+            indexMaxValue = maxFitValue(fitPop);
 
             iteration++;
             lastPop = currentPop;
+            chromosomePrint(iteration, fitPop, currentPop);
 
-        } while (iteration < adj_iter && currentFitProm <= adj_truth_value);
+        } while (iteration < adj_iter && fitPop[indexMaxValue] <= adj_truth_value);
+        System.out.println("Best solution: "+fitPop[indexMaxValue]+" := "+Arrays.toString(currentPop.get(indexMaxValue)));
     }
 
     public List<HashMap<String, FPG>[]> makePop() {
@@ -106,8 +103,8 @@ public class GOMF {
 
             m = new HashMap[sns.size()];
 
-            for (int j = 0; j< sns.size();j++) {
-                m[j] = new HashMap<>(randomChromosome(sns.get(j)));                
+            for (int j = 0; j < sns.size(); j++) {
+                m[j] = new HashMap<>(randomChromosome(sns.get(j)));
             }
             pop.add(m);
         }
@@ -185,27 +182,27 @@ public class GOMF {
         EvaluatePredicate eval;
         for (int i = 0; i < currentPop.size(); i++) {
             HashMap<String, FPG>[] mf = currentPop.get(i);
-            
+
             for (HashMap<String, FPG> hashMap : mf) {
-                 hashMap.forEach((k,v)->{
-                     Node node = predicatePattern.getNode(k);
-                     if(node instanceof StateNode){
-                         StateNode st = (StateNode) node;
-                         st.setMembershipFunction(v);
-                     }
-                 });
-                
+                hashMap.forEach((k, v) -> {
+                    Node node = predicatePattern.getNode(k);
+                    if (node instanceof StateNode) {
+                        StateNode st = (StateNode) node;
+                        st.setMembershipFunction(v);
+                    }
+                });
+
             }
             eval = new EvaluatePredicate(predicatePattern, logic, data);
             fitPop[i] = eval.evaluate();
-            
+
         }
         return fitPop;
     }
 
     public static void main(String[] args) throws IOException, OperatorException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
-        GOMF gomf = new GOMF(d, new GMBC(), 0.05, 10, 3, 0.5);
+        GOMF gomf = new GOMF(d, new GMBC(), 0.05, 10, 10, 0.9);
         StateNode fa = new StateNode("high alcohol", "alcohol");
         StateNode va = new StateNode("low pH", "pH");
         StateNode ca = new StateNode("high quality", "quality");
@@ -221,6 +218,30 @@ public class GOMF {
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
         gomf.optimize(pp.parser());
+    }
+
+    private void chromosomePrint(int iteration, double[] fitPop, List<HashMap<String, FPG>[]> currentPop) {
+        System.out.println("*****-*****-*****-*****-*****-*****-*****");
+        for (int i = 0; i < currentPop.size(); i++) {
+            HashMap<String, FPG>[] m = currentPop.get(i);
+            String st = "";
+            for (HashMap<String, FPG> fmap : m) {
+                st += " " + fmap.values().toString();
+            }
+            System.out.println(iteration + "- Fit: " + fitPop[i] + " - " + st);
+        }
+    }
+
+    private int maxFitValue(double[] fitPop) {
+        int index = -1;
+        double value = 0;
+        for (int i = 0; i < fitPop.length; i++) {
+            if (fitPop[i] > value) {
+                value = fitPop[i];
+                index = i;
+            }
+        }
+        return index;
     }
 
 }

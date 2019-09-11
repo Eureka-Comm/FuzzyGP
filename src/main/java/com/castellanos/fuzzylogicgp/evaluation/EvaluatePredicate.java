@@ -216,7 +216,7 @@ public class EvaluatePredicate {
         expression = "(AND (OR \"citric_acid\" \"volatile_acidity\" \"fixed_acidity\") (IMP \"fixed_acidity\" \"volatile_acidity\"))";
         //expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
         expression = "( \"low pH\" \"high quality\" \"high alcohol\")";
-        // expression = "(OR \"low pH\" \"high quality\" \"high alcohol\")";
+        expression = "(OR \"low pH\" \"high quality\"  \"high alcohol\")";
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 
