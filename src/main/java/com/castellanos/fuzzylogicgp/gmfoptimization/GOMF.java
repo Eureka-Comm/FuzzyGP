@@ -82,7 +82,7 @@ public class GOMF {
         int indexMaxValue;
 
         int iteration = 0;
-        
+
         do {
             currentPop = makePop();
             fitPop = evaluatePredicate(currentPop);
@@ -93,7 +93,7 @@ public class GOMF {
             chromosomePrint(iteration, fitPop, currentPop);
 
         } while (iteration < adj_iter && fitPop[indexMaxValue] <= adj_truth_value);
-        System.out.println("Best solution: "+fitPop[indexMaxValue]+" := "+Arrays.toString(currentPop.get(indexMaxValue)));
+        System.out.println("Best solution: " + fitPop[indexMaxValue] + " := " + Arrays.toString(currentPop.get(indexMaxValue)));
     }
 
     public List<HashMap<String, FPG>[]> makePop() {
@@ -203,18 +203,20 @@ public class GOMF {
     public static void main(String[] args) throws IOException, OperatorException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
         GOMF gomf = new GOMF(d, new GMBC(), 0.05, 10, 10, 0.9);
-        StateNode fa = new StateNode("high alcohol", "alcohol");
-        StateNode va = new StateNode("low pH", "pH");
-        StateNode ca = new StateNode("high quality", "quality");
+        StateNode sa = new StateNode("alcohol", "alcohol");
+        StateNode sph = new StateNode("pH", "pH");
+        StateNode sq = new StateNode("quality", "quality");
+        StateNode sfa = new StateNode("fixed_acidity", "fixed_acidity");
         List<StateNode> states = new ArrayList<>();
-        states.add(fa);
-        states.add(va);
-        states.add(ca);
+        states.add(sa);
+        states.add(sph);
+        states.add(sq);
+        states.add(sfa);
 
         GeneratorNode g = new GeneratorNode("*", new NodeType[]{}, new ArrayList<>());
         List<GeneratorNode> gs = new ArrayList<>();
 
-        String expression = "(AND \"high quality\" \"low pH\")";
+        String expression = "(IMP \"quality\" \"pH\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
         gomf.optimize(pp.parser());
@@ -228,7 +230,7 @@ public class GOMF {
             for (HashMap<String, FPG> fmap : m) {
                 st += " " + fmap.values().toString();
             }
-            System.out.println(iteration + "- Fit: " + fitPop[i] + " - " + st);
+            System.out.println(iteration + "[" + i + "]- Fit: " + fitPop[i] + " - " + st);
         }
     }
 

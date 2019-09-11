@@ -130,10 +130,11 @@ public class EvaluatePredicate {
                 return logic.and(aux, fitValue(child.get(0), index));
             case OR:
                 child = p.searchChilds(node);
-                for (int i = 1; i < child.size(); i++) {
+                for (int i = 0; i < child.size(); i++) {
                     aux *= (1 - fitValue(child.get(i), index));
                 }
-                return logic.or(aux, fitValue(child.get(0), index));
+                //return logic.or(aux, fitValue(child.get(0), index));
+                return logic.or(aux, (double) child.size());
             case NOT:
                 return logic.not(fitValue(p.searchChilds(node).get(0), index));
             case IMP:
