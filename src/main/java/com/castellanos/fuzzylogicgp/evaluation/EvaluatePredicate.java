@@ -208,25 +208,19 @@ public class EvaluatePredicate {
     
     public static void main(String[] args) throws OperatorException, IOException {
 
-        FPG sfa = new FPG(13.031119211245704, 8.448634409508557, 0.04157572302449675);
-        StateNode fa = new StateNode("high alcohol", "alcohol", sfa);
-        FPG nsva = new FPG(3.364540381576137, 2.7821370741597637, 0.7690650618067221);
-        StateNode va = new StateNode("low pH", "pH", nsva);
-        FPG fpg = new FPG(7.392000865791699, 3.4638564100976446, 0.17032006123246923);
-        StateNode ca = new StateNode("high quality", "quality", fpg);
+        FPG sfa = new FPG(8.871341482739094, 9.278436724204182, 0.869928567894738);
+        StateNode fa = new StateNode("alcohol", "alcohol", sfa);
+        FPG fpg = new FPG(8.397979677515035, 9.058942989088756, 0.8975500747910088);
+        StateNode ca = new StateNode("quality", "quality", fpg);
         List<StateNode> states = new ArrayList<>();
         states.add(fa);
-        states.add(va);
         states.add(ca);
 
         GeneratorNode g = new GeneratorNode("*", new NodeType[]{}, new ArrayList<>());
         List<GeneratorNode> gs = new ArrayList<>();
 
         String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
-        expression = "(AND (OR \"citric_acid\" \"volatile_acidity\" \"fixed_acidity\") (IMP \"fixed_acidity\" \"volatile_acidity\"))";
-        //expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
-        expression = "( \"low pH\" \"high quality\" \"high alcohol\")";
-        expression = "(OR \"low pH\" \"high quality\"  \"high alcohol\")";
+          expression = "(NOT \"quality\" )";
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 

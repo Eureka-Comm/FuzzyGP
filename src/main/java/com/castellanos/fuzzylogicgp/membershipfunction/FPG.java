@@ -62,7 +62,7 @@ public class FPG extends AMembershipFunction {
 
     @Override
     public String toString() {
-        return ":fpg " + this.beta + ", " + this.gamma + ", " + this.m;
+        return "FPG " + this.beta + " " + this.gamma + " " + this.m;
     }
 
     @Override

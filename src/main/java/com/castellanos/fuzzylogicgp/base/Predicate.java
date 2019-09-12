@@ -21,7 +21,10 @@ public class Predicate {
     private HashMap<String, Node> nodes;
     private String idFather;
     private double fitness;
-
+    public Predicate(Predicate p){
+        this.nodes = (HashMap<String, Node>) p.getNodes().clone();
+        this.idFather = p.getIdFather();
+    }
     public Predicate() {
         nodes = new HashMap<>();
     }
