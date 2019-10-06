@@ -18,6 +18,9 @@ import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +34,8 @@ import tech.tablesaw.columns.Column;
 
 /**
  *
- * @author hp
+ * @author Castellanos Alvarez, Alejadro
+ * @version 1.0.0
  */
 public class EvaluatePredicate {
 
@@ -99,6 +103,10 @@ public class EvaluatePredicate {
     public void exportToCsv() throws IOException {
         fuzzyData.write().csv(outPath);
     }
+    public String exportToJSON() {
+        Gson print = new GsonBuilder().setPrettyPrinting().create();
+        return print.toJson(fuzzyData);
+    }
 
     public void exportToCsv(String outPath) throws IOException {
         fuzzyData.write().csv(outPath);
@@ -109,9 +117,7 @@ public class EvaluatePredicate {
     }
 
     private void fitCompute() {
-        double fit = 0.0;
         double result;
-        double aux;
         resultColumn = DoubleColumn.create("result");
         for (int i = 0; i < fuzzyData.rowCount(); i++) {
             try {
@@ -208,9 +214,9 @@ public class EvaluatePredicate {
     
     public static void main(String[] args) throws OperatorException, IOException {
 
-        FPG sfa = new FPG(8.871341482739094, 9.278436724204182, 0.869928567894738);
+        FPG sfa = new FPG(8.949669806454475, 8.955120141332749, 0.795771582100403);
         StateNode fa = new StateNode("alcohol", "alcohol", sfa);
-        FPG fpg = new FPG(8.397979677515035, 9.058942989088756, 0.8975500747910088);
+        FPG fpg = new FPG(3.0282200014276746, 3.244271051264134, 0.6262026929403248);
         StateNode ca = new StateNode("quality", "quality", fpg);
         List<StateNode> states = new ArrayList<>();
         states.add(fa);
@@ -221,6 +227,7 @@ public class EvaluatePredicate {
 
         String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
           expression = "(NOT \"quality\" )";
+          expression = "(IMP \"alcohol\" \"quality\")";
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 
@@ -229,7 +236,7 @@ public class EvaluatePredicate {
         System.out.println(evaluate);
         ep.resultPrint();
         //ep.exportToCsv();
-
+        //System.out.println(ep.exportToJSON());
     }
 
 }

@@ -11,6 +11,11 @@ package com.castellanos.fuzzylogicgp.base;
  */
 public class OperatorException extends Exception{
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3786047827693478402L;
+
     public OperatorException() {
         super();
     }

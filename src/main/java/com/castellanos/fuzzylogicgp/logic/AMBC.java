@@ -5,7 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**

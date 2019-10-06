@@ -22,10 +22,8 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -39,7 +37,9 @@ import tech.tablesaw.columns.Column;
 /**
  * Generalized Optimizer of Membership Functions
  *
- * @author hp
+ * @author Castellanos Alvarez, Alejandro.
+ * @since October 06, 2019.
+ * @version 0.5.0
  */
 public class GOMF {
 
@@ -61,7 +61,8 @@ public class GOMF {
     private final Gson print = new GsonBuilder().setPrettyPrinting().create();
     private final ChromosomeComparator chromosomeComparator = new ChromosomeComparator();
 
-    public GOMF(Table data, ALogic logic, double mut_percentage, int adj_num_pop, int adj_iter, double adj_truth_value) {
+    public GOMF(Table data, ALogic logic, double mut_percentage, int adj_num_pop, int adj_iter,
+            double adj_truth_value) {
         this.data = data;
         this.logic = logic;
         this.mut_percentage = mut_percentage;
@@ -103,16 +104,22 @@ public class GOMF {
 
             iteration++;
             ChromosomePojo[] childList = chromosomeCrossover(currentPop);
-            //Replace best
-            evaluatePredicate(childList);
-            for (int i = 0; i < childList.length; i++) {
-                ChromosomePojo get = childList[i];
-                ChromosomePojo parent = currentPop[i];
-                if (get.fitness > parent.fitness) {
-                    System.out.println("Replace " + i + " > " + get.fitness + " - " + parent.fitness);
-                    currentPop[i] = get;
-                }
+            // Replace best
+            System.out.println("child crossover: " + childList.length);
+            if (childList != null) {
+                evaluatePredicate(childList);
+                for (int i = 0; i < childList.length; i++) {
+                    ChromosomePojo get = childList[i];
+                    for (int j = 0; j < currentPop.length; j++) {
+                        ChromosomePojo parent = currentPop[j];
+                        if (get.fitness > parent.fitness) {
+                            System.out.println("Replace " + j + " > " + get.fitness + " - " + parent.fitness);
+                            currentPop[j] = get;
+                            break;
+                        }
+                    }
 
+                }
             }
             chromosomeMutation(currentPop);
             evaluatePredicate(currentPop);
@@ -216,12 +223,12 @@ public class GOMF {
 
             mf.fitness = evaluate(predicate);
         }
-        //return fitPop;
+        // return fitPop;
     }
 
     public static void main(String[] args) throws IOException, OperatorException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
-        GOMF gomf = new GOMF(d, new GMBC(), 0.05, 10, 10, 1);
+        GOMF gomf = new GOMF(d, new GMBC(), 0.05, 10, 1, 0.9);
         StateNode sa = new StateNode("alcohol", "alcohol");
         StateNode sph = new StateNode("pH", "pH");
         StateNode sq = new StateNode("quality", "quality");
@@ -232,9 +239,9 @@ public class GOMF {
         states.add(sq);
         states.add(sfa);
 
-        GeneratorNode g = new GeneratorNode("*", new NodeType[]{}, new ArrayList<>());
+        GeneratorNode g = new GeneratorNode("*", new NodeType[] {}, new ArrayList<>());
         List<GeneratorNode> gs = new ArrayList<>();
-
+        gs.add(g);
         String expression = "(IMP \"alcohol\" \"quality\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
@@ -288,9 +295,7 @@ public class GOMF {
     }
 
     private void fitCompute(Predicate p) {
-        double fit = 0.0;
         double result;
-        double aux;
         if (resultColumn == null) {
             resultColumn = DoubleColumn.create("result");
         } else {
@@ -310,32 +315,33 @@ public class GOMF {
         double aux = 1;
         List<Node> child;
         switch (node.getType()) {
-            case AND:
-                child = p.searchChilds(node);
-                for (int i = 1; i < child.size(); i++) {
-                    aux *= fitValue(p, child.get(i), index);
-                }
-                return logic.and(aux, fitValue(p, child.get(0), index));
-            case OR:
-                child = p.searchChilds(node);
-                for (int i = 0; i < child.size(); i++) {
-                    aux *= (1 - fitValue(p, child.get(i), index));
-                }
-                //return logic.or(aux, fitValue(child.get(0), index));
-                return logic.or(aux, (double) child.size());
-            case NOT:
-                return logic.not(fitValue(p, p.searchChilds(node).get(0), index));
-            case IMP:
-                IMPNode imp = (IMPNode) node;
-                return logic.imp(fitValue(p, p.getNode(imp.getLeftID()), index), fitValue(p, p.getNode(imp.getRighID()), index));
-            case EQV:
-                child = p.searchChilds(node);
-                return logic.eqv(fitValue(p, child.get(0), index), fitValue(p, child.get(1), index));
-            case STATE:
-                StateNode st = (StateNode) node;
-                return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
-            default:
-                throw new UnsupportedOperationException("Dont supported: " + node.getType() + " : " + node.getId()); //To change body of generated methods, choose Tools | Templates.
+        case AND:
+            child = p.searchChilds(node);
+            for (int i = 1; i < child.size(); i++) {
+                aux *= fitValue(p, child.get(i), index);
+            }
+            return logic.and(aux, fitValue(p, child.get(0), index));
+        case OR:
+            child = p.searchChilds(node);
+            for (int i = 0; i < child.size(); i++) {
+                aux *= (1 - fitValue(p, child.get(i), index));
+            }
+            // return logic.or(aux, fitValue(child.get(0), index));
+            return logic.or(aux, (double) child.size());
+        case NOT:
+            return logic.not(fitValue(p, p.searchChilds(node).get(0), index));
+        case IMP:
+            IMPNode imp = (IMPNode) node;
+            return logic.imp(fitValue(p, p.getNode(imp.getLeftID()), index),
+                    fitValue(p, p.getNode(imp.getRighID()), index));
+        case EQV:
+            child = p.searchChilds(node);
+            return logic.eqv(fitValue(p, child.get(0), index), fitValue(p, child.get(1), index));
+        case STATE:
+            StateNode st = (StateNode) node;
+            return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
+        default:
+            throw new UnsupportedOperationException("Dont supported: " + node.getType() + " : " + node.getId());                                                                                                    // Templates.
         }
 
     }
@@ -386,7 +392,7 @@ public class GOMF {
                 }
             }
         });
-        //System.out.println(fuzzyData);
+        // System.out.println(fuzzyData);
     }
 
     private void chromosomeMutation(ChromosomePojo[] pop) {
@@ -402,21 +408,21 @@ public class GOMF {
                 Double value;
 
                 switch (index) {
-                    case 0:
-                        do {
-                            value = randomValue(element.getBeta(), r[2]);
-                        } while (value <= element.getBeta());
-                        element.setGamma(value);
-                        break;
-                    case 1:
-                        do {
-                            value = randomValue(0, element.getGamma());
-                        } while (value >= element.getGamma());
-                        element.setBeta(value);
-                        break;
-                    case 2:
-                        element.setM(rand.nextDouble());
-                        break;
+                case 0:
+                    do {
+                        value = randomValue(element.getBeta(), r[2]);
+                    } while (value <= element.getBeta());
+                    element.setGamma(value);
+                    break;
+                case 1:
+                    do {
+                        value = randomValue(r[0], element.getGamma());
+                    } while (value >= element.getGamma());
+                    element.setBeta(value);
+                    break;
+                case 2:
+                    element.setM(rand.nextDouble());
+                    break;
                 }
             }
         }
@@ -424,67 +430,97 @@ public class GOMF {
 
     private ChromosomePojo[] chromosomeCrossover(ChromosomePojo[] pop) {
         int parentSize = (adj_num_pop < 10) ? (adj_num_pop < 2) ? adj_num_pop : 2 : adj_num_pop / 5;
-        System.out.println("Crossover with best parents: " + parentSize);
         ChromosomePojo[] bestParents = new ChromosomePojo[parentSize];
+        ChromosomePojo[] parents = new ChromosomePojo[adj_num_pop - parentSize];
         ChromosomePojo[] child = new ChromosomePojo[(parentSize % 2 == 0) ? parentSize / 2 : (parentSize + 1) / 2];
+        ChromosomePojo[] otherChild = new ChromosomePojo[(parents.length % 2 == 0) ? parents.length / 2
+                : (parents.length + 1) / 2];
+        System.out.println("Crossover with best parents: " + parentSize + ", other parents : " + parents.length);
+
         for (int i = 0; i < bestParents.length; i++) {
             bestParents[i] = pop[pop.length - i - 1];
-
         }
+
         for (int i = 0; i < child.length; i++) {
             child[i] = new ChromosomePojo();
         }
-        int childIndex = 0;
+        for (int i = 0; i < parents.length; i++) {
+            parents[i] = pop[i];
+        }
+        for (int i = 0; i < otherChild.length; i++) {
+            otherChild[i] = new ChromosomePojo();
+        }
+
         if (bestParents.length != 1) {
-            for (int i = 0; i < bestParents.length; i++) {
-                ChromosomePojo p1 = bestParents[i];
-                ChromosomePojo p2;
-                if (i + 1 < bestParents.length) {
-                    p2 = bestParents[i++];
-                } else {
-                    p2 = bestParents[0];
-                }
-                child[childIndex].elements = new FunctionWrap[p1.elements.length];
-                for (int j = 0; j < p1.elements.length; j++) {
-                    FunctionWrap p1Map = p1.elements[j];
-                    FunctionWrap p2Map = p2.elements[j];
-                    child[childIndex].elements[j] = new FunctionWrap();
-
-                    String next = p1Map.getOwner();
-                    FPG fp1 = p1Map.getFpg();
-                    FPG fp2 = p2Map.getFpg();
-                    FPG childFpg = null;
-                    int select = (int) Math.floor(randomValue(0, 2));
-                    switch (select) {
-                        case 0:
-                            if (fp2.getGamma() > fp1.getBeta()) {
-                                childFpg = new FPG(fp2.getGamma(), fp1.getBeta(), fp1.getM());
-                            } else {
-                                childFpg = new FPG(fp1.getBeta(), fp2.getGamma(), fp1.getM());
-                            }
-                            break;
-                        case 1:
-                            if (fp2.getBeta() < fp1.getGamma()) {
-                                childFpg = new FPG(fp1.getGamma(), fp2.getBeta(), fp1.getM());
-                            } else {
-                                childFpg = new FPG(fp2.getBeta(), fp1.getGamma(), fp1.getM());
-                            }
-                            break;
-                        case 2:
-                            childFpg = new FPG(fp1.getGamma(), fp1.getBeta(), fp2.getM());
-                            break;
-                    }
-                    child[childIndex].elements[j] = new FunctionWrap(next, childFpg);
-                }
-
-                childIndex++;
-            }
-            return child;
+            Crossover(parentSize, bestParents, child);
+            Crossover(parents.length, parents, otherChild);
+            ChromosomePojo[] childrens = new ChromosomePojo[child.length + otherChild.length];
+            System.arraycopy(child, 0, childrens, 0, child.length);
+            System.arraycopy(otherChild, 0, childrens, child.length, otherChild.length);
+            return childrens;
         } else if (bestParents.length == 1) {
             System.out.println("Nothing to do.");
             return null;
         }
         return null;
+    }
+
+    private void Crossover(int parentSize, ChromosomePojo[] parents, ChromosomePojo[] child) {
+        int childIndex = 0;
+        for (int i = 0; i < parents.length; i++) {
+            ChromosomePojo p1 = parents[i];
+            ChromosomePojo p2;
+            if (i + 1 < parents.length) {
+                p2 = parents[i++];
+            } else {
+                p2 = parents[0];
+            }
+            child[childIndex].elements = new FunctionWrap[p1.elements.length];
+            for (int j = 0; j < p1.elements.length; j++) {
+                FunctionWrap p1Map = p1.elements[j];
+                FunctionWrap p2Map = p2.elements[j];
+                child[childIndex].elements[j] = new FunctionWrap();
+
+                String next = p1Map.getOwner();
+                FPG fp1 = p1Map.getFpg();
+                FPG fp2 = p2Map.getFpg();
+                FPG childFpg = null;
+                Double value;
+                Double[] r;
+
+                int select = (int) Math.floor(randomValue(0, 2));
+                switch (select) {
+                case 0:
+                    if (fp2.getGamma() > fp1.getBeta()) {
+                        childFpg = new FPG(fp2.getGamma(), fp1.getBeta(), fp1.getM());
+                    } else {
+                        r = minPromMaxMapValues.get(p1Map.getOwner());
+                        do {
+                            value = randomValue(r[0], fp2.getGamma());
+                        } while (value >= fp2.getGamma());
+                        childFpg = new FPG(fp2.getGamma(), value, fp1.getM());
+                    }
+                    break;
+                case 1:
+                    if (fp2.getBeta() < fp1.getGamma()) {
+                        childFpg = new FPG(fp1.getGamma(), fp2.getBeta(), fp1.getM());
+                    } else {
+                        r = minPromMaxMapValues.get(p1Map.getOwner());
+                        do {
+                            value = randomValue( fp2.getBeta(), r[2]);
+                        } while (value <= fp2.getBeta());
+                        childFpg = new FPG(value, fp2.getBeta(), fp1.getM());
+                    }
+                    break;
+                case 2:
+                    childFpg = new FPG(fp1.getGamma(), fp1.getBeta(), fp2.getM());
+                    break;
+                }
+                child[childIndex].elements[j] = new FunctionWrap(next, childFpg);
+            }
+
+            childIndex++;
+        }
     }
 
     private class FunctionWrap {
@@ -527,6 +563,11 @@ public class GOMF {
 
         double fitness;
         FunctionWrap[] elements;
+
+        @Override
+        public String toString() {
+            return Arrays.toString(elements).replaceAll(",", "");
+        }
     }
 
     private class ChromosomeComparator implements Comparator<ChromosomePojo> {

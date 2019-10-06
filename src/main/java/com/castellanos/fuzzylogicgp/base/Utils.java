@@ -5,7 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
-import java.util.Random;
 
 /**
  *

@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - GOMF",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.gmfoptimization.GOMF",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - EDNParser",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.parser.EDNParser",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - EvaluatePredicate",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.evaluation.EvaluatePredicate",
+            "projectName": "FuzzyLogicGP"
+        }
+    ]
+}
