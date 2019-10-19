@@ -14,38 +14,46 @@ import java.util.List;
 public class AMBC implements ALogic{
 
     @Override
-    public double not(Double v1) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Double not(Double v1) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public double imp(Double v1, Double v2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Double imp(Double v1, Double v2) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public double eqv(Double v1, Double v2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Double eqv(Double v1, Double v2) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public double and(Double v1, Double v2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Double and(Double v1, Double v2) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public double or(Double v1, Double v2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Double or(Double v1, Double v2) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public double forAll(List<Double> values) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Double forAll(List<Double> values) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public double exist(List<Double> values) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Double exist(List<Double> values) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
+   
 }

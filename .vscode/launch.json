@@ -4,6 +4,13 @@
             "type": "java",
             "name": "CodeLens (Launch) - GOMF",
             "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.core.GOMF",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - GOMF",
+            "request": "launch",
             "mainClass": "com.castellanos.fuzzylogicgp.gmfoptimization.GOMF",
             "projectName": "FuzzyLogicGP"
         },

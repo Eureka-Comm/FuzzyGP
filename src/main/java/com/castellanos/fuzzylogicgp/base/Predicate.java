@@ -5,12 +5,12 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  *
@@ -20,9 +20,18 @@ public class Predicate {
 
     private HashMap<String, Node> nodes;
     private String idFather;
-    private double fitness;
-    public Predicate(Predicate p){
-        this.nodes = (HashMap<String, Node>) p.getNodes().clone();
+    private Double fitness;
+
+    public Predicate(Predicate p) {
+        this.nodes = new HashMap<>();
+        p.getNodes().forEach((k, v) -> {
+            try {
+                nodes.put(k, (Node) v.clone());
+            } catch (CloneNotSupportedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
         this.idFather = p.getIdFather();
     }
     public Predicate() {
@@ -210,11 +219,11 @@ public class Predicate {
         return true;
     }
 
-    public double getFitness() {
+    public Double getFitness() {
         return fitness;
     }
 
-    public void setFitness(double fitness) {
+    public void setFitness(Double fitness) {
         this.fitness = fitness;
     }
 

@@ -10,7 +10,6 @@ import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.gmfoptimization.GOMF;
 import com.castellanos.fuzzylogicgp.logic.AMBC;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;

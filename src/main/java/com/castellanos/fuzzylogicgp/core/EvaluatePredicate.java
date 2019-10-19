@@ -3,7 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.castellanos.fuzzylogicgp.evaluation;
+package com.castellanos.fuzzylogicgp.core;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.IMPNode;
@@ -15,17 +21,10 @@ import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
-import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
-import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
@@ -78,13 +77,13 @@ public class EvaluatePredicate {
         }
     }
 
-    public double evaluate() {
+    public Double evaluate() {
 
         dataFuzzy();
         fitCompute();
         if (p.getIdFather() != null && !p.getNode(p.getIdFather()).getType().equals(NodeType.STATE)) {
             StringColumn fa = StringColumn.create("For All");
-            double forAllValue = logic.forAll(resultColumn.asList());
+            Double forAllValue = logic.forAll(resultColumn.asList());
             p.setFitness(forAllValue);
             fa.append("" + p.getFitness());
 
@@ -117,7 +116,7 @@ public class EvaluatePredicate {
     }
 
     private void fitCompute() {
-        double result;
+        Double result;
         resultColumn = DoubleColumn.create("result");
         for (int i = 0; i < fuzzyData.rowCount(); i++) {
             try {
@@ -130,7 +129,7 @@ public class EvaluatePredicate {
     }
 
     private Double fitValue(Node node, int index) throws OperatorException {
-        double aux = 1;
+        Double aux = 1.0;
         List<Node> child;
         switch (node.getType()) {
             case AND:

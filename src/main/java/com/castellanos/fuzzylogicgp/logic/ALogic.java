@@ -12,11 +12,11 @@ import java.util.List;
  * @author hp
  */
 public interface ALogic {
-    public double not(Double v1);
-    public double imp(Double v1, Double v2);
-    public double eqv(Double v1, Double v2);
-    public double and(Double v1, Double v2);
-    public double or(Double v1, Double v2);
-    public double forAll(List<Double> values);
-    public double exist(List<Double> values);
+    public Double not(Double v1);
+    public Double imp(Double v1, Double v2);
+    public Double eqv(Double v1, Double v2);
+    public Double and(Double v1, Double v2);
+    public Double or(Double v1, Double v2);
+    public Double forAll(List<Double> values);
+    public Double exist(List<Double> values);
 }

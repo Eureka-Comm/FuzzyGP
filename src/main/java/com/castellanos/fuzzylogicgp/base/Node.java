@@ -12,7 +12,7 @@ import java.util.UUID;
  *
  * @author hp
  */
-public abstract class Node {
+public abstract class Node implements Cloneable{
     private final String id = UUID.randomUUID().toString();
     private String father;
     private NodeType type;   
@@ -53,6 +53,10 @@ public abstract class Node {
         this.father = father;
     }
     
-    
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        // TODO Auto-generated method stub
+        return super.clone();
+    }
     
 }
