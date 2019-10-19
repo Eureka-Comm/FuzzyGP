@@ -42,14 +42,14 @@ public class DataSet {
 
     public List<Double> getValues(String name) {
 
-        return this.values.get(retriveIndex(name));
+        return this.values.get(retrieveIndex(name));
     }
 
     public Double getValueAt(String name, int pos) {
-        return this.values.get(retriveIndex(name)).get(pos);
+        return this.values.get(retrieveIndex(name)).get(pos);
     }
 
-    private int retriveIndex(String name) {
+    private int retrieveIndex(String name) {
         int index = 0;
         Iterator<String> iterator = colName.iterator();
         while (iterator.hasNext() && (name.equals(iterator.next()))) {
