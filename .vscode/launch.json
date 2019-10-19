@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - DataSet",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.base.DataSet",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - GOMF",
             "request": "launch",
             "mainClass": "com.castellanos.fuzzylogicgp.core.GOMF",
