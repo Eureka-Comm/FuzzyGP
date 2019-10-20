@@ -191,5 +191,16 @@ public class ParserPredicate {
         }
 
     }
-
+    /**
+     * @return the generators
+     */
+    public List<GeneratorNode> getGenerators() {
+        return generators;
+    }
+    /**
+     * @return the states
+     */
+    public List<StateNode> getStates() {
+        return states;
+    }
 }

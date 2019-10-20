@@ -51,7 +51,7 @@ public class GOMF {
     private List<StateNode> sns;
     private final HashMap<String, Double[]> minPromMaxMapValues;
 
-    private static final Random rand = new Random((long)1000);
+    private static final Random rand = new Random();
     private final Gson print = new GsonBuilder().setPrettyPrinting().create();
     private final ChromosomeComparator chromosomeComparator = new ChromosomeComparator();
 

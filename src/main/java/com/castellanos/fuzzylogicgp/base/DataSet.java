@@ -1,6 +1,5 @@
 package com.castellanos.fuzzylogicgp.base;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

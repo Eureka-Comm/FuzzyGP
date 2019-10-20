@@ -84,6 +84,10 @@ public class Predicate {
     }
 
     public Node remove(Node node) {
+        List<Node> searchChilds = searchChilds(node);
+        for (Node node2 : searchChilds) {
+            node2.setFather(null);
+        }
         return nodes.remove(node);
     }
 
@@ -218,7 +222,15 @@ public class Predicate {
         }
         return true;
     }
+    public int dfs(Node node){
+       return dfs(node,0);
+    }
+    private int dfs(Node node, int pos){
+        if(node.getFather() == null  )
+            return pos;
+        return dfs(this.nodes.get(node.getFather()),pos+1);
 
+    }
     public Double getFitness() {
         return fitness;
     }
