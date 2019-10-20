@@ -114,7 +114,34 @@ public class Predicate {
             addNode(nodeFather, newNode);
         }
     }
+    public void update(Node toReplace, Node newNode) throws OperatorException {
+        if(toReplace!=null ){
+            List<Node> kids = searchChilds(toReplace);
+            for (Node node : kids) {
+                node.setFather(newNode.getId());
+            }
+        }
+        Node nodeFather = nodes.get(toReplace.getFather());
+        if (nodeFather != null && nodeFather instanceof OperatorNode) {
+            OperatorNode op = (OperatorNode) nodeFather;
+            newNode.setFather(toReplace.getFather());
+            if (op.getType().equals(NodeType.EQV) || op.getType().equals(NodeType.IMP)) {
+                Node[] array = (Node[]) searchChilds(nodeFather).toArray();
 
+                if (array[0].equals(toReplace)) {
+                    array[0] = newNode;
+                } else {
+                    array[1] = newNode;
+                }
+
+                addNode(nodeFather, array[0]);
+                addNode(nodeFather, array[1]);
+            } else {
+
+            }
+            addNode(nodeFather, newNode);
+        }
+    }
     public String toJson() {
         GsonBuilder gson = new GsonBuilder().setPrettyPrinting();
         return gson.create().toJson(this);
