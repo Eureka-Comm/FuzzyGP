@@ -235,7 +235,7 @@ public class EvaluatePredicate {
         System.out.println(evaluate);
         ep.resultPrint();
         //ep.exportToCsv();
-        //System.out.println(ep.exportToJSON());
+        System.out.println(ep.exportToJSON());
     }
 
 }

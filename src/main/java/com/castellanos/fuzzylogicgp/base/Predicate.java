@@ -8,6 +8,7 @@ package com.castellanos.fuzzylogicgp.base;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -18,12 +19,12 @@ import com.google.gson.GsonBuilder;
  */
 public class Predicate {
 
-    private HashMap<String, Node> nodes;
+    private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
     private Double fitness;
 
     public Predicate(Predicate p) {
-        this.nodes = new HashMap<>();
+        this.nodes = new ConcurrentHashMap<>();
         p.getNodes().forEach((k, v) -> {
             try {
                 nodes.put(k, (Node) v.clone());
@@ -35,13 +36,17 @@ public class Predicate {
         this.idFather = p.getIdFather();
     }
     public Predicate() {
-        nodes = new HashMap<>();
+        nodes = new ConcurrentHashMap<>();
     }
 
     public void addNode(Node father, Node node) throws OperatorException {
         if (father == null || nodes.isEmpty()) {
             idFather = node.getId();
             nodes.put(node.getId(), node);
+            return;
+        }
+        if(father instanceof GeneratorNode){
+            this.replace(father, node);
             return;
         }
         List<Node> childs;
@@ -73,6 +78,9 @@ public class Predicate {
                     node.setFather(father.getId());
                     nodes.put(node.getId(), node);
                 } else {
+                    System.out.println(father);
+                    System.out.println(node);
+                    System.out.println("childs: "+childs);
                     throw new OperatorException(father.getId() + " " + father.getType() + ": arity must be one element.");
                 }
                 break;
@@ -82,35 +90,56 @@ public class Predicate {
                 break;
         }
     }
-
+    @Deprecated
     public Node remove(Node node) {
         List<Node> searchChilds = searchChilds(node);
         for (Node node2 : searchChilds) {
             node2.setFather(null);
         }
+        node.setFather(null);
         return nodes.remove(node);
     }
 
     public void replace(Node toReplace, Node newNode) throws OperatorException {
-        remove(toReplace);
+       // remove(toReplace);
+        List<Node> searchChilds = searchChilds(toReplace);
+        for (Node node2 : searchChilds) {
+            node2.setFather(null);
+        }
         Node nodeFather = nodes.get(toReplace.getFather());
         if (nodeFather != null && nodeFather instanceof OperatorNode) {
             OperatorNode op = (OperatorNode) nodeFather;
             newNode.setFather(toReplace.getFather());
             if (op.getType().equals(NodeType.EQV) || op.getType().equals(NodeType.IMP)) {
-                Node[] array = (Node[]) searchChilds(nodeFather).toArray();
+                List<Node> schild = searchChilds(nodeFather);
+                Node[] array = new Node[schild.size()];
+                for (int i = 0; i < array.length; i++) {
+                    array[i] = schild.get(i);
+                }
 
-                if (array[0].equals(toReplace)) {
+                if (array[0].getId().equals(toReplace.getId())) {
                     array[0] = newNode;
                 } else {
                     array[1] = newNode;
                 }
-
+                if(op.getType().equals(NodeType.IMP)){
+                    IMPNode impNode = (IMPNode) op;
+                    impNode.setLeftID(null);
+                    impNode.setRighID(null);
+                    
+                }
+                toReplace.setFather(null);
+                for (Node node : array) {
+                    node.setFather(null);
+                }
                 addNode(nodeFather, array[0]);
                 addNode(nodeFather, array[1]);
-            } else {
-
+            }else{
+                toReplace.setFather(null);
+                addNode(nodeFather, newNode);
             }
+        }else{
+            toReplace.setFather(null);
             addNode(nodeFather, newNode);
         }
     }
@@ -121,6 +150,9 @@ public class Predicate {
                 node.setFather(newNode.getId());
             }
         }
+        if(toReplace instanceof GeneratorNode){
+            toReplace.setFather(null);
+        }
         Node nodeFather = nodes.get(toReplace.getFather());
         if (nodeFather != null && nodeFather instanceof OperatorNode) {
             OperatorNode op = (OperatorNode) nodeFather;
@@ -128,7 +160,7 @@ public class Predicate {
             if (op.getType().equals(NodeType.EQV) || op.getType().equals(NodeType.IMP)) {
                 Node[] array = (Node[]) searchChilds(nodeFather).toArray();
 
-                if (array[0].equals(toReplace)) {
+                if (array[0].getId().equals(toReplace.getId())) {
                     array[0] = newNode;
                 } else {
                     array[1] = newNode;
@@ -266,7 +298,7 @@ public class Predicate {
         this.fitness = fitness;
     }
 
-    public HashMap<String, Node> getNodes() {
+    public ConcurrentHashMap<String, Node> getNodes() {
         return nodes;
     }
 

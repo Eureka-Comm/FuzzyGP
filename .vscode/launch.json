@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - EvaluatePredicate",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.core.EvaluatePredicate",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - KDFLC",
             "request": "launch",
             "mainClass": "com.castellanos.fuzzylogicgp.core.KDFLC",

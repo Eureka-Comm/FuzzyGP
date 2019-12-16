@@ -72,9 +72,11 @@ public class KDFLC {
 
     public void execute() {
         statesByGenerators = new HashMap<>();
-        predicatePattern.getNodes().forEach((k, v) -> {
-            if (v instanceof GeneratorNode) {
-                GeneratorNode gNode = (GeneratorNode) v;
+        Iterator<Node> iterator = predicatePattern.getNodes().values().iterator();
+        while (iterator.hasNext()) {
+            Node node = iterator.next();
+            if (node instanceof GeneratorNode) {
+                GeneratorNode gNode = (GeneratorNode) node;
                 List<StateNode> states = new ArrayList<>();
                 for (String var : gNode.getVariables()) {
                     for (StateNode s : parserPredicate.getStates()) {
@@ -86,7 +88,16 @@ public class KDFLC {
                 }
                 statesByGenerators.put(gNode.getId(), states);
             }
-        });
+        }
+        /*
+         * predicatePattern.getNodes().forEach((k, v) -> { if (v instanceof
+         * GeneratorNode) { GeneratorNode gNode = (GeneratorNode) v; List<StateNode>
+         * states = new ArrayList<>(); for (String var : gNode.getVariables()) { for
+         * (StateNode s : parserPredicate.getStates()) { if (s.getLabel().equals(var)) {
+         * states.add(new StateNode(s.getLabel(), s.getColName(),
+         * s.getMembershipFunction())); break; } } }
+         * statesByGenerators.put(gNode.getId(), states); } });
+         */
         Predicate[] population = makePopulation();
 
     }
@@ -95,7 +106,8 @@ public class KDFLC {
         Predicate[] pop = new Predicate[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-            System.out.printf("ind %3d: %s\n",i+1,pop[i]);
+            System.out.printf("ind %3d: %s\n", i + 1, pop[i]);
+            // System.out.println(pop[i].toJson());
         }
 
         return pop;
@@ -104,17 +116,15 @@ public class KDFLC {
     private Predicate createRandomInd() {
         Predicate p = new Predicate(predicatePattern);
         Iterator<Node> iterator = p.getNodes().values().iterator();
-        HashMap<String,HashMap<String,Node>> subTrees = new HashMap<>();
+        HashMap<String, HashMap<String, Node>> subTrees = new HashMap<>();
+
         while (iterator.hasNext()) {
             Node node = iterator.next();
-            if ( node.getType() == NodeType.OPERATOR) {
-                Node father = p.getNode(node.getFather());
+            if (node instanceof GeneratorNode) {
+                // Node father = p.getNode(node.getFather());
                 try {
                     // p.remove(father);
-                    HashMap<String,Node> subTree = new HashMap<>();
-                    complete_tree(p, (GeneratorNode) node, father, -1, p.dfs(node), subTree);
-                    System.out.println(subTree);
-                    subTrees.put(father.getId(), subTree);
+                    complete_tree(p, (GeneratorNode) node, null, -1, p.dfs(node));
                 } catch (OperatorException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -122,46 +132,55 @@ public class KDFLC {
 
             }
         }
-        subTrees.forEach((k,v)->{
-            p.remove(p.getNode(k));
-            v.forEach((s,n)->{
-                try {
-                    p.addNode(p.getNode(s), n);
-                } catch (OperatorException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            });
-        });
+        /*
+         * subTrees.forEach((k, v) -> { p.remove(p.getNode(k)); v.forEach((s, n) -> {
+         * try { p.addNode(p.getNode(s), n); } catch (OperatorException e) { // TODO
+         * Auto-generated catch block e.printStackTrace(); } }); });
+         */
 
         return p;
     }
 
-    private void complete_tree(Predicate p, GeneratorNode gNode, Node father, int arity, int currentDepth, HashMap<String,Node>subTree)
+    private void complete_tree(Predicate p, GeneratorNode gNode, Node father, int arity, int currentDepth)
             throws OperatorException {
-        if ( currentDepth == depth ) {
+        boolean isToReplace = false;
+        if (father == null) {
+            father = p.getNode(gNode.getFather());
+            isToReplace = true;
+        }
+        if (currentDepth == depth) {
 
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
+            if(size>=2){
+                List<Node> childs = p.searchChilds(father);
+                while(childs.toString().contains(select.toString())){
+                    select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
+                }
+            }
             StateNode s = new StateNode(select.getLabel(), select.getColName(), select.getMembershipFunction());
             s.setFather(father.getId());
-            subTree.put(father.getId(), s);            
+            if (isToReplace) {
+                p.replace(gNode, s);
+            } else {
+                p.addNode(father, s);
+            }
         } else {
-            
+
             arity = rand.nextInt(gNode.getVariables().size());
-            
+
             Node newFather;
-            NodeType nType = gNode.getOperators()[rand.nextInt(gNode.getOperators().length )];
+            NodeType nType = gNode.getOperators()[rand.nextInt(gNode.getOperators().length)];
             switch (nType) {
             case AND:
                 newFather = new ANDNode();
-                if(arity<2){
+                if (arity < 2) {
                     arity = 2;
                 }
                 break;
             case OR:
                 newFather = new ORNode();
-                if(arity < 2)
+                if (arity < 2)
                     arity = 2;
                 break;
             case IMP:
@@ -182,9 +201,13 @@ public class KDFLC {
                 newFather = null;
             }
             newFather.setFather(father.getId());
-            subTree.put(father.getId(), newFather);
+            // subTree.put(father.getId(), newFather);
+            if (isToReplace)
+                p.replace(gNode, newFather);
+            else
+                p.addNode(father, newFather);
             for (int i = 0; i < arity; i++)
-                complete_tree(p, gNode, newFather, arity, currentDepth+1, subTree);
+                complete_tree(p, gNode, newFather, arity, currentDepth + 1);
         }
 
     }
@@ -208,29 +231,54 @@ public class KDFLC {
         StateNode sph = new StateNode("pH", "pH");
         StateNode sq = new StateNode("quality", "quality");
         StateNode sfa = new StateNode("fixed_acidity", "fixed_acidity");
+        StateNode sugar = new StateNode("sugar", "sugar");
+        StateNode volatile_acidity = new StateNode("volatile_acidity", "volatile_acidity");
+        StateNode citric_acid = new StateNode("citric_acid", "citric_acid");
+        StateNode chlorides = new StateNode("chlorides", "chlorides");
+        StateNode free_sulfur_dioxide = new StateNode("free_sulfur_dioxide", "free_sulfur_dioxide");
+        StateNode total_sulfur_dioxide = new StateNode("total_sulfur_dioxide", "total_sulfur_dioxide");
+        StateNode density = new StateNode("density", "density");
+
         List<StateNode> states = new ArrayList<>();
+        states.add(density);
+        states.add(volatile_acidity);
+        states.add(citric_acid);
+        states.add(chlorides);
+        states.add(free_sulfur_dioxide);
+        states.add(total_sulfur_dioxide);
         states.add(sa);
         states.add(sph);
         states.add(sq);
         states.add(sfa);
+        states.add(sugar);
         List<String> vars = new ArrayList<>();
         vars.add("alcohol");
         vars.add("pH");
-         vars.add("fixed_acidity");
+        vars.add("fixed_acidity");
+        vars.add("sugar");
+        vars.add("density");
+        vars.add("total_sulfur_dioxide");
+        vars.add("chlorides");
+        vars.add("free_sulfur_dioxide");
+        vars.add("citric_acid");
+        vars.add("volatile_acidity");
+        // vars.add("quality");
 
-        GeneratorNode g = new GeneratorNode("*", new NodeType[] { NodeType.AND, NodeType.OR,NodeType.NOT }, vars);
+        GeneratorNode g = new GeneratorNode("*",
+                new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT, NodeType.IMP }, vars);
         List<GeneratorNode> gs = new ArrayList<>();
         gs.add(g);
         String expression = "(NOT (AND \"*\" \"quality\") )";
-        expression ="(NOT \"*\")";
+        //expression = "(OR \"*\" \"quality\")";
+        //expression = "(NOT \"*\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 3, 5, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
-        /*Predicate p = pp.parser();
-        p.getNodes().forEach((k,v)->{
-            System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v));
-        });*/
+        KDFLC discovery = new KDFLC(pp, new GMBC(),3 , 10, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
+        /*
+         * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
+         * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
+         */
         discovery.execute();
     }
 
