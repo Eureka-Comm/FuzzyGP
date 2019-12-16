@@ -145,16 +145,17 @@ public class KDFLC {
             throws OperatorException {
         boolean isToReplace = false;
         if (father == null) {
-            father = p.getNode(gNode.getFather());
+            if (gNode.getFather() != null)
+                father = p.getNode(gNode.getFather());
             isToReplace = true;
         }
         if (currentDepth == depth) {
 
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
-            if(size>=2){
+            if (size >= 2 && father != null) {
                 List<Node> childs = p.searchChilds(father);
-                while(childs.toString().contains(select.toString())){
+                while (childs.toString().contains(select.toString())) {
                     select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
                 }
             }
@@ -200,8 +201,8 @@ public class KDFLC {
             default:
                 newFather = null;
             }
-            newFather.setFather(father.getId());
-            // subTree.put(father.getId(), newFather);
+            if (father != null && father.getId() != null)
+                newFather.setFather(father.getId());
             if (isToReplace)
                 p.replace(gNode, newFather);
             else
@@ -269,12 +270,13 @@ public class KDFLC {
         List<GeneratorNode> gs = new ArrayList<>();
         gs.add(g);
         String expression = "(NOT (AND \"*\" \"quality\") )";
-        //expression = "(OR \"*\" \"quality\")";
-        //expression = "(NOT \"*\")";
+        expression = "(OR \"*\" \"quality\")";
+        expression = "(NOT \"*\")";
+        expression = "\"*\"";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(),3 , 10, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 1, 10, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
         /*
          * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
          * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });

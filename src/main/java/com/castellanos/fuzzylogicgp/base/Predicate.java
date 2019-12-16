@@ -106,7 +106,10 @@ public class Predicate {
         for (Node node2 : searchChilds) {
             node2.setFather(null);
         }
-        Node nodeFather = nodes.get(toReplace.getFather());
+
+        Node nodeFather = null;
+        if(toReplace.getFather() != null)
+            nodeFather = nodes.get(toReplace.getFather());
         if (nodeFather != null && nodeFather instanceof OperatorNode) {
             OperatorNode op = (OperatorNode) nodeFather;
             newNode.setFather(toReplace.getFather());
