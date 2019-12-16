@@ -6,7 +6,6 @@
 package com.castellanos.fuzzylogicgp.base;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,7 +28,6 @@ public class Predicate {
             try {
                 nodes.put(k, (Node) v.clone());
             } catch (CloneNotSupportedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         });

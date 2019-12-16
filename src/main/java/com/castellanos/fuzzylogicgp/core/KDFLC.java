@@ -99,6 +99,13 @@ public class KDFLC {
          * statesByGenerators.put(gNode.getId(), states); } });
          */
         Predicate[] population = makePopulation();
+        GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+        for (int i = 0; i < population.length; i++) {
+            Predicate current_predicate = population[i];
+            System.out.println("Optimizando predicando");
+            gomf.optimize(current_predicate);
+        }
+        
 
     }
 
@@ -107,9 +114,7 @@ public class KDFLC {
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
             System.out.printf("ind %3d: %s\n", i + 1, pop[i]);
-            // System.out.println(pop[i].toJson());
         }
-
         return pop;
     }
 
@@ -119,12 +124,9 @@ public class KDFLC {
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
-                // Node father = p.getNode(node.getFather());
                 try {
-                    // p.remove(father);
                     complete_tree(p, (GeneratorNode) node, null, -1, p.dfs(node));
                 } catch (OperatorException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
@@ -158,6 +160,7 @@ public class KDFLC {
             }
             StateNode s = new StateNode(select.getLabel(), select.getColName(), select.getMembershipFunction());
             s.setFather(father.getId());
+            s.setEditable(true);
             if (isToReplace) {
                 p.replace(gNode, s);
             } else {
@@ -198,6 +201,7 @@ public class KDFLC {
             default:
                 newFather = null;
             }
+            newFather.setEditable(true);
             if (father != null && father.getId() != null)
                 newFather.setFather(father.getId());
             if (isToReplace)
@@ -229,7 +233,7 @@ public class KDFLC {
         StateNode sph = new StateNode("pH", "pH");
         StateNode sq = new StateNode("quality", "quality");
         StateNode sfa = new StateNode("fixed_acidity", "fixed_acidity");
-        StateNode sugar = new StateNode("sugar", "sugar");
+        StateNode sugar = new StateNode("residual_sugar", "residual_sugar");
         StateNode volatile_acidity = new StateNode("volatile_acidity", "volatile_acidity");
         StateNode citric_acid = new StateNode("citric_acid", "citric_acid");
         StateNode chlorides = new StateNode("chlorides", "chlorides");
