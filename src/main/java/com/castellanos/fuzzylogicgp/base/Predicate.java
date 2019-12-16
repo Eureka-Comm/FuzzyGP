@@ -61,10 +61,8 @@ public class Predicate {
                         IMPNode impn = (IMPNode) father;
                         if (impn.getLeftID() == null) {
                             impn.setLeftID(node.getId());
-                            //System.out.println("*L " + impn.getId() + " " + impn.getLeftID());
                         } else if (impn.getRighID() == null) {
                             impn.setRighID(node.getId());
-                            //System.out.println("*R " + impn.getId() + " " + impn.getRighID());
                         }
                     }
                     nodes.put(node.getId(), node);
@@ -114,13 +112,8 @@ public class Predicate {
             OperatorNode op = (OperatorNode) nodeFather;
             newNode.setFather(toReplace.getFather());
             if (op.getType().equals(NodeType.EQV) || op.getType().equals(NodeType.IMP)) {
-                List<Node> schild = searchChilds(nodeFather);
-                Node[] array = new Node[schild.size()];
-                for (int i = 0; i < array.length; i++) {
-                    array[i] = schild.get(i);
-                }
-
-                if (array[0].getId().equals(toReplace.getId())) {
+                Node[] array = findChild(nodeFather);                
+                if ( array[0] != null && array[0].getId().equals(toReplace.getId())) {
                     array[0] = newNode;
                 } else {
                     array[1] = newNode;
@@ -245,9 +238,21 @@ public class Predicate {
     public void setIdFather(String idFather) {
         this.idFather = idFather;
     }
+    public Node[] findChild(Node father){
+        Node[] childs = new Node[2];
+        if(father.getType().equals(NodeType.IMP)){
+            IMPNode mImpNode = (IMPNode) father;
+            if(mImpNode.getLeftID() != null)
+                childs[0] = nodes.get(mImpNode.getLeftID());
+            if(mImpNode.getRighID() !=null)
+                childs[1] = nodes.get(mImpNode.getRighID());
+        }
+        return childs;
+    }
 
     public List<Node> searchChilds(Node father) {
         List<Node> childs = new ArrayList<>();
+        
         nodes.forEach((k, v) -> {
             if (v.getFather() != null && v.getFather().equals(father.getId())) {
                 childs.add(v);

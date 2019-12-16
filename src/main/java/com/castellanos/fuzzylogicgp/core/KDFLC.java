@@ -116,8 +116,6 @@ public class KDFLC {
     private Predicate createRandomInd() {
         Predicate p = new Predicate(predicatePattern);
         Iterator<Node> iterator = p.getNodes().values().iterator();
-        HashMap<String, HashMap<String, Node>> subTrees = new HashMap<>();
-
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
@@ -150,7 +148,6 @@ public class KDFLC {
             isToReplace = true;
         }
         if (currentDepth == depth) {
-
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
             if (size >= 2 && father != null) {
@@ -273,10 +270,11 @@ public class KDFLC {
         expression = "(OR \"*\" \"quality\")";
         expression = "(NOT \"*\")";
         expression = "\"*\"";
+        expression = "(IMP \"*\" \"quality\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 1, 10, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
         /*
          * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
          * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
