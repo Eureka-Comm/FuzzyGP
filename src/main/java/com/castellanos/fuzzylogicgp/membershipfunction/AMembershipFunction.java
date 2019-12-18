@@ -5,6 +5,8 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author hp
@@ -23,5 +25,5 @@ public abstract class AMembershipFunction {
         this.type = type;
     }
         
-    public abstract double evaluate(double v);
+    public abstract BigDecimal evaluate(BigDecimal v);
 }

@@ -5,25 +5,27 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author hp
  */
 public class Singleton extends AMembershipFunction {
 
-    private double a;
+    private BigDecimal a;
 
-    public Singleton(double a) {
+    public Singleton(BigDecimal a) {
         this.a = a;
         this.setType(MembershipFunctionType.SINGLETON);
 
     }
 
-    public double getA() {
+    public BigDecimal getA() {
         return a;
     }
 
-    public void setA(double a) {
+    public void setA(BigDecimal a) {
         this.a = a;
     }
 
@@ -38,7 +40,7 @@ public class Singleton extends AMembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public BigDecimal evaluate(BigDecimal v) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

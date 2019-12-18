@@ -57,6 +57,12 @@
             <artifactId>tablesaw-json</artifactId>
             <version>0.34.2</version>
         </dependency>
+        <!-- https://github.com/eobermuhlner/big-math#bigdecimalmath -->
+        <dependency>
+            <groupId>ch.obermuhlner</groupId>
+            <artifactId>big-math</artifactId>
+            <version>2.3.0</version>
+        </dependency>
         <!-- java edn -->
         <dependency>
             <groupId>us.bpsm</groupId>

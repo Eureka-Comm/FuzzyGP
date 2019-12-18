@@ -105,7 +105,6 @@ public class KDFLC {
             System.out.println("Optimizando predicando");
             gomf.optimize(current_predicate);
         }
-        
 
     }
 
@@ -283,7 +282,13 @@ public class KDFLC {
          * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
          * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
          */
+        long startTime = System.nanoTime();
         discovery.execute();
+
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
+        System.out.println("That took " + (duration/1000000) + " milliseconds");
     }
 
 }

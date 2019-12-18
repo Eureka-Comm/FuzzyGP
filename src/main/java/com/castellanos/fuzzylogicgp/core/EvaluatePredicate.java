@@ -6,6 +6,7 @@
 package com.castellanos.fuzzylogicgp.core;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -102,6 +103,7 @@ public class EvaluatePredicate {
     public void exportToCsv() throws IOException {
         fuzzyData.write().csv(outPath);
     }
+
     public String exportToJSON() {
         Gson print = new GsonBuilder().setPrettyPrinting().create();
         return print.toJson(fuzzyData);
@@ -132,69 +134,70 @@ public class EvaluatePredicate {
         Double aux = 1.0;
         List<Node> child;
         switch (node.getType()) {
-            case AND:
-                child = p.searchChilds(node);
-                for (int i = 1; i < child.size(); i++) {
-                    aux *= fitValue(child.get(i), index);
-                }
-                return logic.and(aux, fitValue(child.get(0), index));
-            case OR:
-                child = p.searchChilds(node);
-                for (int i = 0; i < child.size(); i++) {
-                    aux *= (1 - fitValue(child.get(i), index));
-                }
-                //return logic.or(aux, fitValue(child.get(0), index));
-                return logic.or(aux, (double) child.size());
-            case NOT:
-                return logic.not(fitValue(p.searchChilds(node).get(0), index));
-            case IMP:
-                IMPNode imp = (IMPNode) node;
-                return logic.imp(fitValue(p.getNode(imp.getLeftID()), index), fitValue(p.getNode(imp.getRighID()), index));
-            case EQV:
-                child = p.searchChilds(node);
-                return logic.eqv(fitValue(child.get(0), index), fitValue(child.get(1), index));
-            case STATE:
-                StateNode st = (StateNode) node;
-                return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
-            default:
-                throw new UnsupportedOperationException("Dont supported: " + node.getType() + " : " + node.getId()); //To change body of generated methods, choose Tools | Templates.
+        case AND:
+            child = p.searchChilds(node);
+            for (int i = 1; i < child.size(); i++) {
+                aux *= fitValue(child.get(i), index);
+            }
+            return logic.and(aux, fitValue(child.get(0), index));
+        case OR:
+            child = p.searchChilds(node);
+            for (int i = 0; i < child.size(); i++) {
+                aux *= (1 - fitValue(child.get(i), index));
+            }
+            // return logic.or(aux, fitValue(child.get(0), index));
+            return logic.or(aux, (double) child.size());
+        case NOT:
+            return logic.not(fitValue(p.searchChilds(node).get(0), index));
+        case IMP:
+            IMPNode imp = (IMPNode) node;
+            return logic.imp(fitValue(p.getNode(imp.getLeftID()), index), fitValue(p.getNode(imp.getRighID()), index));
+        case EQV:
+            child = p.searchChilds(node);
+            return logic.eqv(fitValue(child.get(0), index), fitValue(child.get(1), index));
+        case STATE:
+            StateNode st = (StateNode) node;
+            return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
+        default:
+            throw new UnsupportedOperationException("Dont supported: " + node.getType() + " : " + node.getId());
         }
 
     }
 
     private void dataFuzzy() {
         fuzzyData = Table.create();
+        
         p.getNodes().forEach((String k, Node v) -> {
             if (v instanceof StateNode) {
                 StateNode s = (StateNode) v;
                 if (!fuzzyData.columnNames().contains(s.getColName())) {
                     ColumnType type = data.column(s.getColName()).type();
 
-                    DoubleColumn dc = DoubleColumn.create(s.getLabel());
+                    StringColumn dc = StringColumn.create(s.getLabel());
 
                     if (type == ColumnType.DOUBLE) {
                         Column<Double> column = (Column<Double>) data.column(s.getColName());
 
                         for (Double cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(cell));
+                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
                         }
 
                     } else if (type == ColumnType.FLOAT) {
                         Column<Float> column = (Column<Float>) data.column(s.getColName());
                         for (Float cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(cell));
+                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
                         }
 
                     } else if (type == ColumnType.INTEGER) {
                         Column<Integer> column = (Column<Integer>) data.column(s.getColName());
                         for (Integer cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(cell));
+                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
                         }
 
                     } else if (type == ColumnType.LONG) {
                         Column<Long> column = (Column<Long>) data.column(s.getColName());
                         for (Long cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(cell));
+                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
                         }
 
                     } else {
@@ -204,37 +207,43 @@ public class EvaluatePredicate {
                 }
             }
         });
-        //System.out.println(fuzzyData);
+        // System.out.println(fuzzyData);
     }
 
     public void setPredicate(Predicate p) {
         this.p = p;
     }
-    
+
     public static void main(String[] args) throws OperatorException, IOException {
 
-        FPG sfa = new FPG(8.949669806454475, 8.955120141332749, 0.795771582100403);
-        StateNode fa = new StateNode("alcohol", "alcohol", sfa);
-        FPG fpg = new FPG(3.0282200014276746, 3.244271051264134, 0.6262026929403248);
-        StateNode ca = new StateNode("quality", "quality", fpg);
+        FPG sfa = new FPG("7.96975201556474", "8.54628394558732", "0.7419780861262811");
+        StateNode fa = new StateNode("quality", "quality", sfa);
+        FPG fpg = new FPG("9.132248919293149", "12.468564784808557", "0.24484459229131095");
+        StateNode ca = new StateNode("fixed_acidity", "fixed_acidity", fpg);
         List<StateNode> states = new ArrayList<>();
         states.add(fa);
         states.add(ca);
 
-        GeneratorNode g = new GeneratorNode("*", new NodeType[]{}, new ArrayList<>());
+        GeneratorNode g = new GeneratorNode("*", new NodeType[] {}, new ArrayList<>());
         List<GeneratorNode> gs = new ArrayList<>();
 
         String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
-          expression = "(NOT \"quality\" )";
-          expression = "(IMP \"alcohol\" \"quality\")";
+        expression = "(NOT \"quality\" )";
+        expression = "(IMP (NOT \"fixed_acidity\") \"quality\")";
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 
-        EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv", "evaluation-result-fpg.csv");
+        EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv",
+                "evaluation-result-fpg.csv");
+        long startTime = System.nanoTime();
         double evaluate = ep.evaluate();
         System.out.println(evaluate);
+        long endTime = System.nanoTime();
+
+        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
+        System.out.println("That took " + (duration / 1000000) + " milliseconds");
         ep.resultPrint();
-        //ep.exportToCsv();
+        // ep.exportToCsv();
         System.out.println(ep.exportToJSON());
     }
 

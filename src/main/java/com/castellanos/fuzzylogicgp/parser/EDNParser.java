@@ -72,14 +72,14 @@ public class EDNParser {
             String[] split = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "").split(",");
             switch (split[0]) {
                 case "sigmoid":
-                    sn.setMembershipFunction(new Sigmoid(Double.valueOf(split[1]), Double.valueOf(split[2])));
+                    sn.setMembershipFunction(new Sigmoid(split[1],split[2]));
                     break;
                 case "-sigmoid":
-                    sn.setMembershipFunction(new NSigmoid(Double.valueOf(split[1]), Double.valueOf(split[2])));
+                    sn.setMembershipFunction(new NSigmoid(split[1],split[2]));
                     break;
                 case "FPG":
                     if(split.length>3)
-                    sn.setMembershipFunction(new FPG(Double.valueOf(split[1]), Double.valueOf(split[2]), Double.valueOf(split[3])));
+                    sn.setMembershipFunction(new FPG(split[1], split[2],split[3]));
                     break;
                 default:
                     System.out.println(split[0]);
