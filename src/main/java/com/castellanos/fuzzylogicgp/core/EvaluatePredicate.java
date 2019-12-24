@@ -7,6 +7,7 @@ package com.castellanos.fuzzylogicgp.core;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -78,18 +79,22 @@ public class EvaluatePredicate {
         }
     }
 
-    public Double evaluate() {
+    public BigDecimal evaluate() {
 
         dataFuzzy();
         fitCompute();
         if (p.getIdFather() != null && !p.getNode(p.getIdFather()).getType().equals(NodeType.STATE)) {
             StringColumn fa = StringColumn.create("For All");
-            Double forAllValue = logic.forAll(resultColumn.asList());
+            List<BigDecimal> rsColumn = new ArrayList<>();
+            for (Double x : resultColumn) {
+                rsColumn.add(new BigDecimal(x.toString(),MathContext.DECIMAL64));
+            }
+            BigDecimal forAllValue = logic.forAll(rsColumn);
             p.setFitness(forAllValue);
             fa.append("" + p.getFitness());
 
             StringColumn ec = StringColumn.create("Exist");
-            ec.append("" + logic.exist(resultColumn.asList()));
+            ec.append("" + logic.exist(rsColumn));
             for (int i = 1; i < fuzzyData.rowCount(); i++) {
                 fa.append("");
                 ec.append("");
@@ -97,7 +102,7 @@ public class EvaluatePredicate {
             fuzzyData.addColumns(fa, ec, resultColumn);
             return forAllValue;
         }
-        return Double.NaN;
+        return BigDecimal.ONE.negate();
     }
 
     public void exportToCsv() throws IOException {
@@ -118,35 +123,36 @@ public class EvaluatePredicate {
     }
 
     private void fitCompute() {
-        Double result;
+        BigDecimal result;
         resultColumn = DoubleColumn.create("result");
         for (int i = 0; i < fuzzyData.rowCount(); i++) {
             try {
                 result = fitValue(p.getNode(p.getIdFather()), i);
-                resultColumn.append(result);
+                resultColumn.append(result.doubleValue());
             } catch (OperatorException ex) {
                 Logger.getLogger(EvaluatePredicate.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    private Double fitValue(Node node, int index) throws OperatorException {
-        Double aux = 1.0;
+    private BigDecimal fitValue(Node node, int index) throws OperatorException {
+        BigDecimal aux = BigDecimal.ONE;
         List<Node> child;
         switch (node.getType()) {
         case AND:
             child = p.searchChilds(node);
             for (int i = 1; i < child.size(); i++) {
-                aux *= fitValue(child.get(i), index);
+                aux = aux.multiply(fitValue(child.get(i), index));
             }
             return logic.and(aux, fitValue(child.get(0), index));
         case OR:
             child = p.searchChilds(node);
             for (int i = 0; i < child.size(); i++) {
-                aux *= (1 - fitValue(child.get(i), index));
+                //aux *= (1 - fitValue(child.get(i), index));
+                aux = aux.multiply(BigDecimal.ONE.subtract(fitValue(child.get(i), index)));
             }
             // return logic.or(aux, fitValue(child.get(0), index));
-            return logic.or(aux, (double) child.size());
+            return logic.or(aux, new BigDecimal(child.size()));
         case NOT:
             return logic.not(fitValue(p.searchChilds(node).get(0), index));
         case IMP:
@@ -157,7 +163,8 @@ public class EvaluatePredicate {
             return logic.eqv(fitValue(child.get(0), index), fitValue(child.get(1), index));
         case STATE:
             StateNode st = (StateNode) node;
-            return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
+            //return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
+            return new BigDecimal(fuzzyData.getString(index, st.getLabel()),MathContext.DECIMAL64);
         default:
             throw new UnsupportedOperationException("Dont supported: " + node.getType() + " : " + node.getId());
         }
@@ -236,7 +243,7 @@ public class EvaluatePredicate {
         EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv",
                 "evaluation-result-fpg.csv");
         long startTime = System.nanoTime();
-        double evaluate = ep.evaluate();
+        BigDecimal evaluate = ep.evaluate();
         System.out.println(evaluate);
         long endTime = System.nanoTime();
 

@@ -5,52 +5,53 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
  *
  * @author hp
  */
-public class AMBC implements ALogic{
+public class AMBC implements ALogic {
 
     @Override
-    public Double not(Double v1) {
+    public BigDecimal not(BigDecimal v1) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Double imp(Double v1, Double v2) {
+    public BigDecimal imp(BigDecimal v1, BigDecimal v2) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Double eqv(Double v1, Double v2) {
+    public BigDecimal eqv(BigDecimal v1, BigDecimal v2) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Double and(Double v1, Double v2) {
+    public BigDecimal and(BigDecimal v1, BigDecimal v2) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Double or(Double v1, Double v2) {
+    public BigDecimal or(BigDecimal v1, BigDecimal v2) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Double forAll(List<Double> values) {
+    public BigDecimal forAll(List<BigDecimal> values) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Double exist(List<Double> values) {
+    public BigDecimal exist(List<BigDecimal> values) {
         // TODO Auto-generated method stub
         return null;
     }

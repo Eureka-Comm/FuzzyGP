@@ -47,7 +47,6 @@ public class GOMF {
     private final double adj_truth_value;
 
     private Table data;
-   
 
     private Predicate predicatePattern;
     private List<StateNode> sns;
@@ -86,34 +85,33 @@ public class GOMF {
     }
 
     private void genetic() {
-        //ChromosomePojo[] currentPop;
+        // ChromosomePojo[] currentPop;
         ArrayList<ChromosomePojo> currentPop;
         int iteration = 0;
 
         currentPop = makePop();
         evaluatePredicate(currentPop);
-       
-        //Arrays.sort(currentPop, chromosomeComparator);
-        currentPop.sort(chromosomeComparator);
+
+        // Arrays.sort(currentPop, chromosomeComparator);
+        //currentPop.sort(chromosomeComparator);
         chromosomePrint(iteration, currentPop);
-        
 
-        while (iteration < adj_iter && currentPop.get(currentPop.size() - 1).getFitness()< adj_truth_value) {
-
+        //while (iteration < adj_iter && currentPop.get(currentPop.size() - 1).getFitness() < adj_truth_value) {
+        while (iteration < adj_iter ) {
             iteration++;
             ArrayList<ChromosomePojo> childList = chromosomeCrossover(currentPop);
-            
+
             // Replace best
             System.out.println("child crossover: " + childList.size());
             if (childList != null) {
-                evaluatePredicate(childList);                            
+                evaluatePredicate(childList);
                 for (int i = 0; i < childList.size(); i++) {
                     ChromosomePojo get = childList.get(i);
                     for (int j = 0; j < currentPop.size(); j++) {
                         ChromosomePojo parent = currentPop.get(i);
                         if (get.getFitness() > parent.getFitness()) {
                             System.out.println("Replace " + j + " > " + get.getFitness() + " - " + parent.getFitness());
-                            currentPop.set(j, get);
+                            currentPop.set(j, get);                            
                             break;
                         }
                     }
@@ -123,13 +121,19 @@ public class GOMF {
             chromosomeMutation(currentPop);
             evaluatePredicate(currentPop);
 
-            //Arrays.sort(currentPop, chromosomeComparator);
-            currentPop.sort(chromosomeComparator);
+            // Arrays.sort(currentPop, chromosomeComparator);
+            //currentPop.sort(chromosomeComparator);
             chromosomePrint(iteration, currentPop);
         }
 
-        ChromosomePojo bestFound = currentPop.get(currentPop.size() - 1);
-        System.out.println("Best solution: " + bestFound.getFitness() + " := " + Arrays.toString(bestFound.getElements()));
+        ChromosomePojo bestFound = currentPop.get(0);
+        for (ChromosomePojo chromosomePojo : currentPop) {
+            if(chromosomePojo.fitness.compareTo(bestFound.fitness)>0){
+                bestFound = chromosomePojo;
+            }
+        }
+        System.out.println(
+                "Best solution: " + bestFound.getFitness() + " := " + Arrays.toString(bestFound.getElements()));
         for (FunctionWrap k : bestFound.getElements()) {
             Node node = predicatePattern.getNode(k.getOwner());
             if (node instanceof StateNode) {
@@ -138,14 +142,15 @@ public class GOMF {
                 System.out.println(st);
             }
         }
-        /*EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
+       /* EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
         evaluator.setPredicate(predicatePattern);
-        System.out.println("ForAll: " + evaluator.evaluate());*/
+        System.out.println("ForAll: " + evaluator.evaluate());
+        evaluator.resultPrint();*/
     }
 
     private ArrayList<ChromosomePojo> makePop() {
-        //ChromosomePojo[] pop = new ChromosomePojo[adj_num_pop];
-        ArrayList<ChromosomePojo> pop= new ArrayList<>();
+        // ChromosomePojo[] pop = new ChromosomePojo[adj_num_pop];
+        ArrayList<ChromosomePojo> pop = new ArrayList<>();
         for (int i = 0; i < adj_num_pop; i++) {
             FunctionWrap m[];
 
@@ -165,16 +170,16 @@ public class GOMF {
         FPG f = new FPG();
         Double[] r = minPromMaxValues(_item.getColName());
         minPromMaxMapValues.put(_item.getId(), r);
-        double gamma_double =randomValue(r[0], r[2]);
-        f.setGamma(new BigDecimal(randomValue(r[0], r[2]).toString(),MathContext.DECIMAL64));
+        double gamma_double = randomValue(r[0], r[2]);
+        f.setGamma(new BigDecimal(randomValue(r[0], r[2]).toString(), MathContext.DECIMAL64));
         double value;
         do {
             value = randomValue(r[0], f.getGamma().doubleValue());
-            
-        } while (value >= gamma_double);
-        //} while( value.compareTo(f.getGamma()) != -1);
 
-        f.setBeta(new BigDecimal(value,MathContext.DECIMAL64));
+        } while (value >= gamma_double);
+        // } while( value.compareTo(f.getGamma()) != -1);
+
+        f.setBeta(new BigDecimal(value, MathContext.DECIMAL64));
         f.setM(new BigDecimal(rand.nextDouble()));
 
         FunctionWrap map = new FunctionWrap(_item.getId(), f);
@@ -213,8 +218,8 @@ public class GOMF {
     }
 
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
-        
-        currentPop.parallelStream().forEach( mf ->{
+
+        currentPop.parallelStream().forEach(mf -> {
             Predicate predicate = new Predicate(predicatePattern);
             for (FunctionWrap k : mf.getElements()) {
                 Node node = predicate.getNode(k.getOwner());
@@ -224,51 +229,46 @@ public class GOMF {
                 }
             }
 
-            //mf.setFitness(evaluate(predicate));
+            // mf.setFitness(evaluate(predicate));
             EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
             evaluator.setPredicate(predicate);
             mf.setFitness(evaluator.evaluate());
         });
-        
-       /* for (int i = 0; i < currentPop.length; i++) {
-            ChromosomePojo mf = currentPop[i];
-            Predicate predicate = new Predicate(predicatePattern);
-            for (FunctionWrap k : mf.getElements()) {
-                Node node = predicate.getNode(k.getOwner());
-                if (node instanceof StateNode) {
-                    StateNode st = (StateNode) node;
-                    st.setMembershipFunction(k.getFpg());
-                }
-            }
 
-            //mf.setFitness(evaluate(predicate));
-            EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
-            evaluator.setPredicate(predicate);
-            mf.setFitness(evaluator.evaluate());
-        }*/
+        /*
+         * for (int i = 0; i < currentPop.length; i++) { ChromosomePojo mf =
+         * currentPop[i]; Predicate predicate = new Predicate(predicatePattern); for
+         * (FunctionWrap k : mf.getElements()) { Node node =
+         * predicate.getNode(k.getOwner()); if (node instanceof StateNode) { StateNode
+         * st = (StateNode) node; st.setMembershipFunction(k.getFpg()); } }
+         * 
+         * //mf.setFitness(evaluate(predicate)); EvaluatePredicate evaluator = new
+         * EvaluatePredicate(logic, data); evaluator.setPredicate(predicate);
+         * mf.setFitness(evaluator.evaluate()); }
+         */
         // return fitPop;
     }
-
 
     private void chromosomePrint(int iteration, ArrayList<ChromosomePojo> currentPop) {
         System.out.println("*****-*****-*****-*****-*****-*****-*****");
         for (int i = 0; i < currentPop.size(); i++) {
             ChromosomePojo m = currentPop.get(i);
-            //String st = "";
-            System.out.println(iteration+"[ "+i+"]"+ m.getFitness());
+            // String st = "";
+            System.out.println(iteration + "[ " + i + "]" + m.getFitness());
             for (FunctionWrap fmap : m.getElements()) {
-                //st += " " + fmap.getFpg().toString();
-                 Node node = predicatePattern.getNode(fmap.getOwner());
+                // st += " " + fmap.getFpg().toString();
+                Node node = predicatePattern.getNode(fmap.getOwner());
                 if (node instanceof StateNode) {
                     StateNode stt = (StateNode) node;
                     stt.setMembershipFunction(fmap.getFpg());
                     System.out.println(stt);
                     stt.setMembershipFunction(null);
                 }
-                
+
             }
-           
-            //System.out.println(iteration + "[" + i + "]- Fit: " + m.getFitness() + " - " + st);
+
+            // System.out.println(iteration + "[" + i + "]- Fit: " + m.getFitness() + " - "
+            // + st);
         }
     }
 
@@ -282,7 +282,7 @@ public class GOMF {
             }
         }
         return index;
-    }   
+    }
 
     private void chromosomeMutation(ArrayList<ChromosomePojo> pop) {
         for (int i = 0; i < pop.size(); i++) {
@@ -302,7 +302,7 @@ public class GOMF {
                     do {
                         value = randomValue(element.getBeta().doubleValue(), r[2]);
                     } while (value <= element_Beta);
-                    //}while (value.compareTo(element.getBeta()) != 1);
+                    // }while (value.compareTo(element.getBeta()) != 1);
                     element.setGamma(new BigDecimal(value, MathContext.DECIMAL64));
                     break;
                 case 1:
@@ -310,11 +310,11 @@ public class GOMF {
                     do {
                         value = randomValue(r[0], element.getGamma().doubleValue());
                     } while (value >= element_gamma);
-                    //} while(value.compareTo(element.getGamma()) != 1);
+                    // } while(value.compareTo(element.getGamma()) != 1);
                     element.setBeta(new BigDecimal(value, MathContext.DECIMAL64));
                     break;
                 case 2:
-                    element.setM(new BigDecimal(rand.nextDouble(),MathContext.DECIMAL64));
+                    element.setM(new BigDecimal(rand.nextDouble(), MathContext.DECIMAL64));
                     break;
                 }
             }
@@ -372,7 +372,7 @@ public class GOMF {
             } else {
                 p2 = parents[0];
             }
-            child[childIndex].setElements( new FunctionWrap[p1.elements.length]);
+            child[childIndex].setElements(new FunctionWrap[p1.elements.length]);
             for (int j = 0; j < p1.elements.length; j++) {
                 FunctionWrap p1Map = p1.getElements()[j];
                 FunctionWrap p2Map = p2.getElements()[j];
@@ -382,31 +382,30 @@ public class GOMF {
                 FPG fp1 = p1Map.getFpg();
                 FPG fp2 = p2Map.getFpg();
                 FPG childFpg = null;
-              
 
                 int select = (int) Math.floor(randomValue(0, 2).doubleValue());
                 switch (select) {
                 case 0:
-                    //if (fp2.getGamma() > fp1.getBeta()) {
-                    if( fp2.getGamma().compareTo(fp1.getBeta()) == 1){
+                    // if (fp2.getGamma() > fp1.getBeta()) {
+                    if (fp2.getGamma().compareTo(fp1.getBeta()) == 1) {
                         childFpg = new FPG(fp2.getGamma(), fp1.getBeta(), fp1.getM());
                     } else {
-                        /*r = minPromMaxMapValues.get(p1Map.getOwner());
-                        do {
-                            value = randomValue(r[0], fp2.getGamma());
-                        } while (value >= fp2.getGamma());*/
-                        childFpg = new FPG(fp1.getBeta(),fp2.getGamma(), fp1.getM());
+                        /*
+                         * r = minPromMaxMapValues.get(p1Map.getOwner()); do { value = randomValue(r[0],
+                         * fp2.getGamma()); } while (value >= fp2.getGamma());
+                         */
+                        childFpg = new FPG(fp1.getBeta(), fp2.getGamma(), fp1.getM());
                     }
                     break;
                 case 1:
-                    //if (fp2.getBeta() < fp1.getGamma()) {
-                    if( fp2.getBeta().compareTo(fp1.getGamma()) == -1){
+                    // if (fp2.getBeta() < fp1.getGamma()) {
+                    if (fp2.getBeta().compareTo(fp1.getGamma()) == -1) {
                         childFpg = new FPG(fp1.getGamma(), fp2.getBeta(), fp1.getM());
                     } else {
-                        /*r = minPromMaxMapValues.get(p1Map.getOwner());
-                        do {
-                            value = randomValue( fp2.getBeta(), r[2]);
-                        } while (value <= fp2.getBeta());*/
+                        /*
+                         * r = minPromMaxMapValues.get(p1Map.getOwner()); do { value = randomValue(
+                         * fp2.getBeta(), r[2]); } while (value <= fp2.getBeta());
+                         */
                         childFpg = new FPG(fp2.getBeta(), fp1.getGamma(), fp1.getM());
                     }
                     break;
@@ -459,37 +458,41 @@ public class GOMF {
 
     private class ChromosomePojo {
 
-        protected double fitness;
+        protected BigDecimal fitness;
         protected FunctionWrap[] elements;
-        
+
         /**
          * @param elements the elements to set
          */
         public void setElements(FunctionWrap[] elements) {
             this.elements = elements;
         }
+
         /**
          * @param fitness the fitness to set
          */
-        public void setFitness(double fitness) {
+        public void setFitness(BigDecimal fitness) {
             this.fitness = fitness;
         }
+
         /**
          * @return the elements
          */
         public FunctionWrap[] getElements() {
             return elements;
         }
+
         /**
          * @return the fitness
          */
         public double getFitness() {
-            return fitness;
+            return fitness.doubleValue();
         }
+
         @Override
         public String toString() {
             return Arrays.toString(elements).replaceAll(",", "");
-        }        
+        }
     }
 
     private class ChromosomeComparator implements Comparator<ChromosomePojo> {
@@ -509,7 +512,7 @@ public class GOMF {
     }
 
     public static void main(String[] args) throws IOException, OperatorException {
-        Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");       
+        Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
         GOMF gomf = new GOMF(d, new GMBC(), 0.15, 5, 1, 0.998);
         StateNode sa = new StateNode("alcohol", "alcohol");
         StateNode sph = new StateNode("pH", "pH");
@@ -531,6 +534,6 @@ public class GOMF {
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.println("That took " + (duration/1000000) + " milliseconds");
+        System.out.println("That took " + (duration / 1000000) + " milliseconds");
     }
 }

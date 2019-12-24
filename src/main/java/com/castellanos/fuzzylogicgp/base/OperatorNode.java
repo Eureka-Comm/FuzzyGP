@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.math.BigDecimal;
 
 /**
  *
@@ -12,16 +13,16 @@ package com.castellanos.fuzzylogicgp.base;
  */
 public abstract class OperatorNode extends Node {
 
-    private double fitness;
+    private BigDecimal fitness;
 
     public OperatorNode() {
     }
 
-    public double getFitness() {
+    public BigDecimal getFitness() {
         return fitness;
     }
 
-    public void setFitness(double fitness) {
+    public void setFitness(BigDecimal fitness) {
         this.fitness = fitness;
     }
 

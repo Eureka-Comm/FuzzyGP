@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,7 +21,7 @@ public class Predicate {
 
     private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
-    private Double fitness;
+    private BigDecimal fitness;
 
     public Predicate(Predicate p) {
         this.nodes = new ConcurrentHashMap<>();
@@ -296,11 +297,11 @@ public class Predicate {
         return dfs(this.nodes.get(node.getFather()),pos+1);
 
     }
-    public Double getFitness() {
+    public BigDecimal getFitness() {
         return fitness;
     }
 
-    public void setFitness(Double fitness) {
+    public void setFitness(BigDecimal fitness) {
         this.fitness = fitness;
     }
 
