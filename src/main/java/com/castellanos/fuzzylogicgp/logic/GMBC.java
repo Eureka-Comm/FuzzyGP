@@ -92,8 +92,8 @@ public class GMBC implements ALogic {
         // return (1 - Math.pow(Math.E, ((1.0 / values.size()) * result)));
         for (BigDecimal x : values) {
             if (!x.equals(BigDecimal.ZERO)) {
-                BigDecimal tmp = BigDecimal.ONE.subtract(x);
-                if (!tmp.equals(BigDecimal.ZERO))
+                BigDecimal tmp = BigDecimal.ONE.subtract(x,MathContext.DECIMAL64);
+                if (!tmp.equals(BigDecimal.ZERO) && tmp.compareTo(BigDecimal.ZERO) != 0)
                     result = result.add(BigDecimalMath.log(tmp, MathContext.DECIMAL64), MathContext.DECIMAL64);
             }
         }
