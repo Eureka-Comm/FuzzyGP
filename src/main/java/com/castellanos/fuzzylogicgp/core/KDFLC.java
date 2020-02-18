@@ -50,7 +50,7 @@ public class KDFLC {
 
     public KDFLC(ParserPredicate pp, ALogic logic, int depth, int num_pop, int num_iter, int num_result,
             double min_truth_value, double mut_percentage, int adj_num_pop, int adj_num_iter,
-            double adj_min_truth_value, Table data) throws OperatorException {
+            double adj_min_truth_value, Table data) throws OperatorException, CloneNotSupportedException {
         this.parserPredicate = pp;
         this.predicatePattern = pp.parser();
         this.logic = logic;
@@ -66,7 +66,7 @@ public class KDFLC {
         this.data = data;
     }
 
-    public void execute() {
+    public void execute() throws CloneNotSupportedException {
         statesByGenerators = new HashMap<>();
         Iterator<Node> iterator = predicatePattern.getNodes().values().iterator();
         while (iterator.hasNext()) {
@@ -77,7 +77,8 @@ public class KDFLC {
                 for (String var : gNode.getVariables()) {
                     for (StateNode s : parserPredicate.getStates()) {
                         if (s.getLabel().equals(var)) {
-                            states.add(new StateNode(s.getLabel(), s.getColName(), s.getMembershipFunction()));
+                            //states.add(new StateNode(s.getLabel(), s.getColName(), s.getMembershipFunction()));
+                            states.add((StateNode)s.clone());
                             break;
                         }
                     }
@@ -153,8 +154,16 @@ public class KDFLC {
                     select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
                 }
             }
-            StateNode s = new StateNode(select.getLabel(), select.getColName(), select.getMembershipFunction());
-            s.setFather(father.getId());
+            // StateNode s = new StateNode(select.getLabel(), select.getColName(),
+            // select.getMembershipFunction());
+            StateNode s = null;
+            try {
+                s = (StateNode) select.clone();
+            } catch (CloneNotSupportedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+           // s.setFather(father.getId());
             s.setEditable(true);
             if (isToReplace) {
                 p.replace(gNode, s);
@@ -222,7 +231,7 @@ public class KDFLC {
     private void evaluationChromosome(Predicate[] population) {
     }
 
-    public static void main(String[] args) throws IOException, OperatorException {
+    public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
         StateNode sa = new StateNode("alcohol", "alcohol");
         StateNode sph = new StateNode("pH", "pH");

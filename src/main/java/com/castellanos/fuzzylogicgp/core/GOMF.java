@@ -23,6 +23,7 @@ import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
+import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 import com.google.gson.Gson;
@@ -93,11 +94,12 @@ public class GOMF {
         evaluatePredicate(currentPop);
 
         // Arrays.sort(currentPop, chromosomeComparator);
-        //currentPop.sort(chromosomeComparator);
+        // currentPop.sort(chromosomeComparator);
         chromosomePrint(iteration, currentPop);
 
-        //while (iteration < adj_iter && currentPop.get(currentPop.size() - 1).getFitness() < adj_truth_value) {
-        while (iteration < adj_iter ) {
+        // while (iteration < adj_iter && currentPop.get(currentPop.size() -
+        // 1).getFitness() < adj_truth_value) {
+        while (iteration < adj_iter) {
             iteration++;
             ArrayList<ChromosomePojo> childList = chromosomeCrossover(currentPop);
 
@@ -111,7 +113,7 @@ public class GOMF {
                         ChromosomePojo parent = currentPop.get(i);
                         if (get.getFitness() > parent.getFitness()) {
                             System.out.println("Replace " + j + " > " + get.getFitness() + " - " + parent.getFitness());
-                            currentPop.set(j, get);                            
+                            currentPop.set(j, get);
                             break;
                         }
                     }
@@ -122,13 +124,13 @@ public class GOMF {
             evaluatePredicate(currentPop);
 
             // Arrays.sort(currentPop, chromosomeComparator);
-            //currentPop.sort(chromosomeComparator);
+            // currentPop.sort(chromosomeComparator);
             chromosomePrint(iteration, currentPop);
         }
 
         ChromosomePojo bestFound = currentPop.get(0);
         for (ChromosomePojo chromosomePojo : currentPop) {
-            if(chromosomePojo.fitness.compareTo(bestFound.fitness)>0){
+            if (chromosomePojo.fitness.compareTo(bestFound.fitness) > 0) {
                 bestFound = chromosomePojo;
             }
         }
@@ -142,10 +144,11 @@ public class GOMF {
                 System.out.println(st);
             }
         }
-       /* EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
-        evaluator.setPredicate(predicatePattern);
-        System.out.println("ForAll: " + evaluator.evaluate());
-        evaluator.resultPrint();*/
+        /*
+         * EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
+         * evaluator.setPredicate(predicatePattern); System.out.println("ForAll: " +
+         * evaluator.evaluate()); evaluator.resultPrint();
+         */
     }
 
     private ArrayList<ChromosomePojo> makePop() {
@@ -220,12 +223,24 @@ public class GOMF {
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
 
         currentPop.parallelStream().forEach(mf -> {
-            Predicate predicate = new Predicate(predicatePattern);
+            Predicate predicate = null;
+            try {
+                predicate = (Predicate) predicatePattern.clone();
+            } catch (CloneNotSupportedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
             for (FunctionWrap k : mf.getElements()) {
                 Node node = predicate.getNode(k.getOwner());
                 if (node instanceof StateNode) {
                     StateNode st = (StateNode) node;
-                    st.setMembershipFunction(k.getFpg());
+                    try {
+                        st.setMembershipFunction((AMembershipFunction) k.getFpg().clone());
+                    } catch (CloneNotSupportedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -511,7 +526,7 @@ public class GOMF {
 
     }
 
-    public static void main(String[] args) throws IOException, OperatorException {
+    public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
         GOMF gomf = new GOMF(d, new GMBC(), 0.15, 5, 1, 0.998);
         StateNode sa = new StateNode("alcohol", "alcohol");

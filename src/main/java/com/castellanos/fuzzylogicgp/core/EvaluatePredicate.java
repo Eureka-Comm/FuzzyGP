@@ -221,7 +221,7 @@ public class EvaluatePredicate {
         this.p = p;
     }
 
-    public static void main(String[] args) throws OperatorException, IOException {
+    public static void main(String[] args) throws OperatorException, IOException, CloneNotSupportedException {
 
         FPG sfa = new FPG("7.96975201556474", "8.54628394558732", "0.7419780861262811");
         StateNode fa = new StateNode("quality", "quality", sfa);

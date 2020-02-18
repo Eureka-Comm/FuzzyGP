@@ -26,7 +26,7 @@ import tech.tablesaw.api.Table;
  */
 public class main {
 
-    public static void main(String[] args) throws OperatorException, IOException {
+    public static void main(String[] args) throws OperatorException, IOException, CloneNotSupportedException {
         String st = "{\n"
                 + "  \"nodes\": {\n"
                 + "    \"437eea67-84d0-40af-9a4e-7179d665930a\": {\n"

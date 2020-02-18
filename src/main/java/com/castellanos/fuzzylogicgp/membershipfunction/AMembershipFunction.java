@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  *
  * @author hp
  */
-public abstract class AMembershipFunction {
+public abstract class AMembershipFunction implements Cloneable {
 
     public MembershipFunctionType type;
 
@@ -26,4 +26,8 @@ public abstract class AMembershipFunction {
     }
         
     public abstract BigDecimal evaluate(BigDecimal v);
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

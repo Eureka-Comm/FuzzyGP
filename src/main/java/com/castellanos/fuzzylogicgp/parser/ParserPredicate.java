@@ -37,7 +37,7 @@ public class ParserPredicate {
         stack = new Stack<>();
     }
 
-    public Predicate parser() throws OperatorException {
+    public Predicate parser() throws OperatorException, CloneNotSupportedException {
         List<String> split = expressionSplit(expression);
         predicate = new Predicate();
         if (isBalanced(split)) {
@@ -134,7 +134,7 @@ public class ParserPredicate {
         return elementos;
     }
 
-    private void createNodeFromExpre(String rootString) throws OperatorException {
+    private void createNodeFromExpre(String rootString) throws OperatorException, CloneNotSupportedException {
         Node tmp = null;
         switch (rootString) {
         case "AND":
@@ -166,7 +166,7 @@ public class ParserPredicate {
 
             for (int i = 0; i < states.size(); i++) {
                 if (states.get(i).getLabel().equals(rootString)) {
-                    tmp = new StateNode(states.get(i));
+                    tmp = (Node) states.get(i).clone();
                     break;
                 }
             }

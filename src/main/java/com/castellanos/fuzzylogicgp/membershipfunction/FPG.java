@@ -103,5 +103,12 @@ public class FPG extends AMembershipFunction {
     public void setM(BigDecimal m) {
         this.m = m;
     }
-
+   @Override
+   public Object clone() throws CloneNotSupportedException {
+       FPG fpg = (FPG) super.clone();
+       fpg.setBeta(new BigDecimal(this.getBeta().toString()));
+       fpg.setGamma(new BigDecimal(this.getGamma().toString()));
+       fpg.setM(new BigDecimal(this.getM().toString()));
+       return fpg;
+   }
 }

@@ -17,7 +17,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author hp
  */
-public class Predicate {
+public class Predicate implements Cloneable {
 
     private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
@@ -33,7 +33,9 @@ public class Predicate {
             }
         });
         this.idFather = p.getIdFather();
+        this.fitness = BigDecimal.ZERO;
     }
+
     public Predicate() {
         nodes = new ConcurrentHashMap<>();
     }
@@ -44,49 +46,51 @@ public class Predicate {
             nodes.put(node.getId(), node);
             return;
         }
-        if(father instanceof GeneratorNode){
+        if (father instanceof GeneratorNode) {
             this.replace(father, node);
             return;
         }
         List<Node> childs;
 
         switch (father.getType()) {
-            case IMP:
-            case EQV:
-                childs = searchChilds(father);
-                if (childs.size() < 2) {
-                    node.setFather(father.getId());
-                    if (father.getType().equals(NodeType.IMP)) {
-                        OperatorNode impn = (OperatorNode) father;
-                        if (impn.getLeftID() == null) {
-                            impn.setLeftID(node.getId());
-                        } else if (impn.getRighID() == null) {
-                            impn.setRighID(node.getId());
-                        }
+        case IMP:
+        case EQV:
+            childs = searchChilds(father);
+            if (childs.size() < 2) {
+                node.setFather(father.getId());
+                if (father.getType().equals(NodeType.IMP)) {
+                    OperatorNode impn = (OperatorNode) father;
+                    if (impn.getLeftID() == null) {
+                        impn.setLeftID(node.getId());
+                    } else if (impn.getRighID() == null) {
+                        impn.setRighID(node.getId());
                     }
-                    nodes.put(node.getId(), node);
-                } else {
-                    throw new OperatorException("\n" + father.getId() + " " + father.getType() + ": arity must be two elements.");
                 }
-                break;
-            case NOT:
-                childs = searchChilds(father);
-                if (childs.isEmpty()) {
-                    node.setFather(father.getId());
-                    nodes.put(node.getId(), node);
-                } else {
-                    System.out.println(father);
-                    System.out.println(node);
-                    System.out.println("childs: "+childs);
-                    throw new OperatorException(father.getId() + " " + father.getType() + ": arity must be one element.");
-                }
-                break;
-            default:
+                nodes.put(node.getId(), node);
+            } else {
+                throw new OperatorException(
+                        "\n" + father.getId() + " " + father.getType() + ": arity must be two elements.");
+            }
+            break;
+        case NOT:
+            childs = searchChilds(father);
+            if (childs.isEmpty()) {
                 node.setFather(father.getId());
                 nodes.put(node.getId(), node);
-                break;
+            } else {
+                System.out.println(father);
+                System.out.println(node);
+                System.out.println("childs: " + childs);
+                throw new OperatorException(father.getId() + " " + father.getType() + ": arity must be one element.");
+            }
+            break;
+        default:
+            node.setFather(father.getId());
+            nodes.put(node.getId(), node);
+            break;
         }
     }
+
     @Deprecated
     public Node remove(Node node) {
         List<Node> searchChilds = searchChilds(node);
@@ -98,30 +102,30 @@ public class Predicate {
     }
 
     public void replace(Node toReplace, Node newNode) throws OperatorException {
-       // remove(toReplace);
+        // remove(toReplace);
         List<Node> searchChilds = searchChilds(toReplace);
         for (Node node2 : searchChilds) {
             node2.setFather(null);
         }
 
         Node nodeFather = null;
-        if(toReplace.getFather() != null)
+        if (toReplace.getFather() != null)
             nodeFather = nodes.get(toReplace.getFather());
         if (nodeFather != null && nodeFather instanceof OperatorNode) {
             OperatorNode op = (OperatorNode) nodeFather;
             newNode.setFather(toReplace.getFather());
             if (op.getType().equals(NodeType.EQV) || op.getType().equals(NodeType.IMP)) {
-                Node[] array = findChild(nodeFather);                
-                if ( array[0] != null && array[0].getId().equals(toReplace.getId())) {
+                Node[] array = findChild(nodeFather);
+                if (array[0] != null && array[0].getId().equals(toReplace.getId())) {
                     array[0] = newNode;
                 } else {
                     array[1] = newNode;
                 }
-                if(op.getType().equals(NodeType.IMP)){
+                if (op.getType().equals(NodeType.IMP)) {
                     OperatorNode impNode = (OperatorNode) op;
                     impNode.setLeftID(null);
                     impNode.setRighID(null);
-                    
+
                 }
                 toReplace.setFather(null);
                 for (Node node : array) {
@@ -129,23 +133,24 @@ public class Predicate {
                 }
                 addNode(nodeFather, array[0]);
                 addNode(nodeFather, array[1]);
-            }else{
+            } else {
                 toReplace.setFather(null);
                 addNode(nodeFather, newNode);
             }
-        }else{
+        } else {
             toReplace.setFather(null);
             addNode(nodeFather, newNode);
         }
     }
+
     public void update(Node toReplace, Node newNode) throws OperatorException {
-        if(toReplace!=null ){
+        if (toReplace != null) {
             List<Node> kids = searchChilds(toReplace);
             for (Node node : kids) {
                 node.setFather(newNode.getId());
             }
         }
-        if(toReplace instanceof GeneratorNode){
+        if (toReplace instanceof GeneratorNode) {
             toReplace.setFather(null);
         }
         Node nodeFather = nodes.get(toReplace.getFather());
@@ -169,6 +174,7 @@ public class Predicate {
             addNode(nodeFather, newNode);
         }
     }
+
     public String toJson() {
         GsonBuilder gson = new GsonBuilder().setPrettyPrinting();
         return gson.create().toJson(this);
@@ -237,13 +243,14 @@ public class Predicate {
     public void setIdFather(String idFather) {
         this.idFather = idFather;
     }
-    public Node[] findChild(Node father){
+
+    public Node[] findChild(Node father) {
         Node[] childs = new Node[2];
-        if(father.getType().equals(NodeType.IMP)){
+        if (father.getType().equals(NodeType.IMP)) {
             OperatorNode mImpNode = (OperatorNode) father;
-            if(mImpNode.getLeftID() != null)
+            if (mImpNode.getLeftID() != null)
                 childs[0] = nodes.get(mImpNode.getLeftID());
-            if(mImpNode.getRighID() !=null)
+            if (mImpNode.getRighID() != null)
                 childs[1] = nodes.get(mImpNode.getRighID());
         }
         return childs;
@@ -251,7 +258,7 @@ public class Predicate {
 
     public List<Node> searchChilds(Node father) {
         List<Node> childs = new ArrayList<>();
-        
+
         nodes.forEach((k, v) -> {
             if (v.getFather() != null && v.getFather().equals(father.getId())) {
                 childs.add(v);
@@ -265,38 +272,42 @@ public class Predicate {
             if (v instanceof OperatorNode) {
                 List<Node> childs = searchChilds(v);
                 switch (v.getType()) {
-                    case AND:
-                    case OR:
-                        if (childs.size() < 2) {
-                            throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be more that two elements.");
-                        }
-                        break;
-                    case EQV:
-                    case IMP:
-                        if (childs.size() != 2) {
-                            throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be two elements.");
-                        }
-                        break;
-                    case NOT:
-                        if (childs.size() != 1) {
-                            throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be one element.");
-                        }
-                        break;
+                case AND:
+                case OR:
+                    if (childs.size() < 2) {
+                        throw new OperatorException(
+                                v.getId() + " " + v.getType() + ": arity must be more that two elements.");
+                    }
+                    break;
+                case EQV:
+                case IMP:
+                    if (childs.size() != 2) {
+                        throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be two elements.");
+                    }
+                    break;
+                case NOT:
+                    if (childs.size() != 1) {
+                        throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be one element.");
+                    }
+                    break;
 
                 }
             }
         }
         return true;
     }
-    public int dfs(Node node){
-       return dfs(node,0);
+
+    public int dfs(Node node) {
+        return dfs(node, 0);
     }
-    private int dfs(Node node, int pos){
-        if(node.getFather() == null  )
+
+    private int dfs(Node node, int pos) {
+        if (node.getFather() == null)
             return pos;
-        return dfs(this.nodes.get(node.getFather()),pos+1);
+        return dfs(this.nodes.get(node.getFather()), pos + 1);
 
     }
+
     public BigDecimal getFitness() {
         return fitness;
     }
@@ -309,9 +320,31 @@ public class Predicate {
         return nodes;
     }
 
+    /**
+     * @param nodes the nodes to set
+     */
+    public void setNodes(ConcurrentHashMap<String, Node> nodes) {
+        this.nodes = nodes;
+    }
+
     public String getIdFather() {
         return idFather;
     }
-    
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        Predicate p = (Predicate) super.clone();
+        p.setFitness(new BigDecimal(this.getFitness().toString()));
+        ConcurrentHashMap<String, Node> cp = new ConcurrentHashMap<>();
+        this.getNodes().forEach((k, v) -> {
+            try {
+                cp.put(k, (Node) v.clone());
+            } catch (CloneNotSupportedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+        p.setNodes(cp);
+       return p;
+    }
 }

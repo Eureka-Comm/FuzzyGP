@@ -72,4 +72,11 @@ public class NSigmoid extends AMembershipFunction {
     public void setBeta(BigDecimal beta) {
         this.beta = beta;
     }
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        NSigmoid ns = (NSigmoid) super.clone();
+        ns.setBeta(new BigDecimal(this.getBeta().toString()));
+        ns.setCenter(new BigDecimal(this.getCenter().toString()));
+        return ns;
+    }
 }

@@ -83,4 +83,13 @@ public class StateNode extends Node {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(this);
     }
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        StateNode state = null;
+        state = (StateNode) super.clone();
+        if(this.getMembershipFunction()!=null)
+        state.setMembershipFunction((AMembershipFunction)this.getMembershipFunction().clone());
+
+        return state;
+    }
 }
