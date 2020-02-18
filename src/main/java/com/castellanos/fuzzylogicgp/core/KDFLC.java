@@ -7,15 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import com.castellanos.fuzzylogicgp.base.ANDNode;
-import com.castellanos.fuzzylogicgp.base.EQVNode;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
-import com.castellanos.fuzzylogicgp.base.IMPNode;
-import com.castellanos.fuzzylogicgp.base.NOTNode;
 import com.castellanos.fuzzylogicgp.base.Node;
 import com.castellanos.fuzzylogicgp.base.NodeType;
-import com.castellanos.fuzzylogicgp.base.ORNode;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
+import com.castellanos.fuzzylogicgp.base.OperatorNode;
 import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
@@ -173,27 +169,27 @@ public class KDFLC {
             NodeType nType = gNode.getOperators()[rand.nextInt(gNode.getOperators().length)];
             switch (nType) {
             case AND:
-                newFather = new ANDNode();
+                newFather = new OperatorNode(NodeType.AND);
                 if (arity < 2) {
                     arity = 2;
                 }
                 break;
             case OR:
-                newFather = new ORNode();
+                newFather = new OperatorNode(NodeType.OR);
                 if (arity < 2)
                     arity = 2;
                 break;
             case IMP:
-                newFather = new IMPNode();
+                newFather = new OperatorNode(NodeType.IMP);
                 arity = 2;
                 break;
             case EQV:
-                newFather = new EQVNode();
+                newFather = new OperatorNode(NodeType.EQV);
 
                 arity = 2;
                 break;
             case NOT:
-                newFather = new NOTNode();
+                newFather = new OperatorNode(NodeType.NOT);
 
                 arity = 1;
                 break;

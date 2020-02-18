@@ -11,11 +11,14 @@ import java.math.BigDecimal;
  *
  * @author hp
  */
-public abstract class OperatorNode extends Node {
+public class OperatorNode extends Node {
 
     private BigDecimal fitness;
+    private String leftID;
+    private String righID;
 
-    public OperatorNode() {
+    public OperatorNode(NodeType type) {
+        this.setType(type);
     }
 
     public BigDecimal getFitness() {
@@ -27,12 +30,40 @@ public abstract class OperatorNode extends Node {
     }
 
     public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
+                                                                       // Tools | Templates.
     }
 
     @Override
     public String toString() {
-       return this.getType().toString();
+        return this.getType().toString();
     }
 
+    /**
+     * @return the leftID
+     */
+    public String getLeftID() {
+        return leftID;
+    }
+
+    /**
+     * @param leftID the leftID to set
+     */
+    public void setLeftID(String leftID) {
+        this.leftID = leftID;
+    }
+
+    /**
+     * @return the righID
+     */
+    public String getRighID() {
+        return righID;
+    }
+
+    /**
+     * @param righID the righID to set
+     */
+    public void setRighID(String righID) {
+        this.righID = righID;
+    }
 }

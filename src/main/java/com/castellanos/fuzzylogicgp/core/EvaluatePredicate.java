@@ -14,10 +14,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
-import com.castellanos.fuzzylogicgp.base.IMPNode;
 import com.castellanos.fuzzylogicgp.base.Node;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
+import com.castellanos.fuzzylogicgp.base.OperatorNode;
 import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
@@ -156,7 +156,7 @@ public class EvaluatePredicate {
         case NOT:
             return logic.not(fitValue(p.searchChilds(node).get(0), index));
         case IMP:
-            IMPNode imp = (IMPNode) node;
+            OperatorNode imp = (OperatorNode) node;
             return logic.imp(fitValue(p.getNode(imp.getLeftID()), index), fitValue(p.getNode(imp.getRighID()), index));
         case EQV:
             child = p.searchChilds(node);

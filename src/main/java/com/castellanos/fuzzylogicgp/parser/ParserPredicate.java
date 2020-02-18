@@ -5,13 +5,9 @@
  */
 package com.castellanos.fuzzylogicgp.parser;
 
-import com.castellanos.fuzzylogicgp.base.ANDNode;
-import com.castellanos.fuzzylogicgp.base.EQVNode;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
-import com.castellanos.fuzzylogicgp.base.IMPNode;
-import com.castellanos.fuzzylogicgp.base.NOTNode;
 import com.castellanos.fuzzylogicgp.base.Node;
-import com.castellanos.fuzzylogicgp.base.ORNode;
+import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.OperatorNode;
 import com.castellanos.fuzzylogicgp.base.Predicate;
@@ -51,28 +47,29 @@ public class ParserPredicate {
             while (stringIterator.hasNext()) {
                 rootString = stringIterator.next();
                 switch (rootString) {
-                    case "(":
-                        break;
-                    case ")":
-                        if (currentNodeRoot != null && currentNodeRoot.getFather() != null) {
-                            currentNodeRoot = predicate.getNode(currentNodeRoot.getFather());
-                        }
-                        break;
-                    default:
-                        createNodeFromExpre(rootString);
-                        break;
+                case "(":
+                    break;
+                case ")":
+                    if (currentNodeRoot != null && currentNodeRoot.getFather() != null) {
+                        currentNodeRoot = predicate.getNode(currentNodeRoot.getFather());
+                    }
+                    break;
+                default:
+                    createNodeFromExpre(rootString);
+                    break;
                 }
 
             }
             return (predicate.isValid()) ? predicate : null;
 
         }
-        throw new UnsupportedOperationException("Missing ')'"); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Missing ')'"); // To change body of generated methods, choose Tools |
+                                                                // Templates.
 
     }
 
     private boolean isBalanced(List<String> stringList) {
-        for (String s : stringList) {  // Recorremos la expresión carácter a carácter
+        for (String s : stringList) { // Recorremos la expresión carácter a carácter
             if (s.equals("(")) {
                 // Si el paréntesis es de apertura apilamos siempre
                 stack.push(s);
@@ -98,40 +95,40 @@ public class ParserPredicate {
 
         for (i1 = 0, i2 = 0; i2 < cadena.length();) {
             switch (cadena.charAt(i1)) {
-                case '(':
-                case ')':
-                    if (cadena.charAt(i1) == '(') {
-                        elementos.add("(");
-                    } else {
-                        elementos.add(")");
-                    }
-                    i1++;
-                    i2 = i1;
-                    break;
-                case '\"':
-                    i1++;
-                    i2 = i1;
-                    while (cadena.charAt(i2) != '\"') {
-                        i2++;
-                    }
-                    if (i2 > i1) {
-                        elementos.add(cadena.substring(i1, i2));
-                    }
-                    i1 = i2 + 1;
-                    i2 = i1;
-                    break;
-                case ' ':
-                    i1++;
-                    break;
-                default:
-                    i2 = i1;
-                    do {
-                        i2++;
-                        b = cadena.charAt(i2);
-                    } while (b != ' ' && b != '(' && b != ')' && b != '\"');
+            case '(':
+            case ')':
+                if (cadena.charAt(i1) == '(') {
+                    elementos.add("(");
+                } else {
+                    elementos.add(")");
+                }
+                i1++;
+                i2 = i1;
+                break;
+            case '\"':
+                i1++;
+                i2 = i1;
+                while (cadena.charAt(i2) != '\"') {
+                    i2++;
+                }
+                if (i2 > i1) {
                     elementos.add(cadena.substring(i1, i2));
-                    i1 = i2;
-                    break;
+                }
+                i1 = i2 + 1;
+                i2 = i1;
+                break;
+            case ' ':
+                i1++;
+                break;
+            default:
+                i2 = i1;
+                do {
+                    i2++;
+                    b = cadena.charAt(i2);
+                } while (b != ' ' && b != '(' && b != ')' && b != '\"');
+                elementos.add(cadena.substring(i1, i2));
+                i1 = i2;
+                break;
             }
         }
         return elementos;
@@ -140,49 +137,49 @@ public class ParserPredicate {
     private void createNodeFromExpre(String rootString) throws OperatorException {
         Node tmp = null;
         switch (rootString) {
-            case "AND":
-                tmp = new ANDNode();              
-                break;
-            case "OR":
-                tmp = new ORNode();
-                break;
-            case "EQV":
-                tmp = new EQVNode();
-                break;
-            case "IMP":
-                tmp = new IMPNode();
-                break;
-            case "NOT":
-                tmp = new NOTNode();
+        case "AND":
+            tmp = new OperatorNode(NodeType.AND);
+            break;
+        case "OR":
+            tmp = new OperatorNode(NodeType.OR);
+            break;
+        case "EQV":
+            tmp = new OperatorNode(NodeType.EQV);
+            break;
+        case "IMP":
+            tmp = new OperatorNode(NodeType.IMP);
+            break;
+        case "NOT":
+            tmp = new OperatorNode(NodeType.NOT);
 
-                break;
-            case "OPERATOR":
-                for (GeneratorNode generator : generators) {
-                    if (generator.getLabel().equals(rootString)) {
-                        tmp = generator;
-                        break;
-                    }
+            break;
+        case "OPERATOR":
+            for (GeneratorNode generator : generators) {
+                if (generator.getLabel().equals(rootString)) {
+                    tmp = generator;
+                    break;
                 }
+            }
 
-                break;
-            default:
+            break;
+        default:
 
-                for (int i = 0; i < states.size(); i++) {
-                    if (states.get(i).getLabel().equals(rootString)) {
-                        tmp = new StateNode(states.get(i));
-                        break;
-                    }
+            for (int i = 0; i < states.size(); i++) {
+                if (states.get(i).getLabel().equals(rootString)) {
+                    tmp = new StateNode(states.get(i));
+                    break;
                 }
-                for (GeneratorNode generator : generators) {
-                    if (generator.getLabel().equals(rootString)) {
-                        tmp = generator;
-                        break;
-                    }
+            }
+            for (GeneratorNode generator : generators) {
+                if (generator.getLabel().equals(rootString)) {
+                    tmp = generator;
+                    break;
                 }
-                if (tmp == null) {
-                    throw new OperatorException("Not found: " + rootString);
-                }
-                break;
+            }
+            if (tmp == null) {
+                throw new OperatorException("Not found: " + rootString);
+            }
+            break;
         }
 
         predicate.addNode(currentNodeRoot, tmp);
@@ -191,12 +188,14 @@ public class ParserPredicate {
         }
 
     }
+
     /**
      * @return the generators
      */
     public List<GeneratorNode> getGenerators() {
         return generators;
     }
+
     /**
      * @return the states
      */

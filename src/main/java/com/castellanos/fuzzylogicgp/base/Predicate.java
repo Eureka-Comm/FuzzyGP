@@ -57,7 +57,7 @@ public class Predicate {
                 if (childs.size() < 2) {
                     node.setFather(father.getId());
                     if (father.getType().equals(NodeType.IMP)) {
-                        IMPNode impn = (IMPNode) father;
+                        OperatorNode impn = (OperatorNode) father;
                         if (impn.getLeftID() == null) {
                             impn.setLeftID(node.getId());
                         } else if (impn.getRighID() == null) {
@@ -118,7 +118,7 @@ public class Predicate {
                     array[1] = newNode;
                 }
                 if(op.getType().equals(NodeType.IMP)){
-                    IMPNode impNode = (IMPNode) op;
+                    OperatorNode impNode = (OperatorNode) op;
                     impNode.setLeftID(null);
                     impNode.setRighID(null);
                     
@@ -194,7 +194,7 @@ public class Predicate {
             st += father.getType();
         }
         if (father.getType().equals(NodeType.IMP)) {
-            IMPNode impn = (IMPNode) father;
+            OperatorNode impn = (OperatorNode) father;
             Node ln = nodes.get(impn.getLeftID()), rn = nodes.get(impn.getRighID());
             if (ln instanceof OperatorNode) {
                 st += " " + makePrintTreeStruct(ln);
@@ -240,7 +240,7 @@ public class Predicate {
     public Node[] findChild(Node father){
         Node[] childs = new Node[2];
         if(father.getType().equals(NodeType.IMP)){
-            IMPNode mImpNode = (IMPNode) father;
+            OperatorNode mImpNode = (OperatorNode) father;
             if(mImpNode.getLeftID() != null)
                 childs[0] = nodes.get(mImpNode.getLeftID());
             if(mImpNode.getRighID() !=null)
