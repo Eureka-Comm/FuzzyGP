@@ -24,6 +24,7 @@ public class Predicate implements Cloneable {
     private BigDecimal fitness;
 
     public Predicate(Predicate p) {
+        
         this.nodes = new ConcurrentHashMap<>();
         p.getNodes().forEach((k, v) -> {
             try {
@@ -38,6 +39,7 @@ public class Predicate implements Cloneable {
 
     public Predicate() {
         nodes = new ConcurrentHashMap<>();
+        this.fitness = BigDecimal.ZERO;
     }
 
     public void addNode(Node father, Node node) throws OperatorException {
@@ -236,8 +238,8 @@ public class Predicate implements Cloneable {
         return gson.fromJson(st, Predicate.class);
     }
 
-    public Node getNode(String father) {
-        return nodes.get(father);
+    public Node getNode(String id) {
+        return nodes.get(id);
     }
 
     public void setIdFather(String idFather) {

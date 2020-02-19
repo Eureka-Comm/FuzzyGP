@@ -17,6 +17,7 @@ public abstract class Node implements Cloneable{
     private String father;
     private NodeType type;   
     private boolean editable;
+    private String byGenerator;
 
     public Node() {
     }
@@ -52,7 +53,18 @@ public abstract class Node implements Cloneable{
     public void setFather(String father) {
         this.father = father;
     }
-    
+    /**
+     * @return the byGenerator
+     */
+    public String getByGenerator() {
+        return byGenerator;
+    }
+    /**
+     * @param byGenerator the byGenerator to set
+     */
+    public void setByGenerator(String byGenerator) {
+        this.byGenerator = byGenerator;
+    }
     @Override
     public Object clone() throws CloneNotSupportedException {
         // TODO Auto-generated method stub

@@ -68,7 +68,7 @@ public class GMBC implements ALogic {
         // Math.log(value)).reduce(result, (accumulator, _item) -> accumulator + _item);
         BigDecimal rs = BigDecimal.ZERO;
         for (BigDecimal x : values) {
-            if (!x.equals(BigDecimal.ZERO))
+            if (!x.equals(BigDecimal.ZERO) && x.compareTo(BigDecimal.ZERO) != 0)
                 rs = rs.add(BigDecimalMath.log(x, MathContext.DECIMAL64), MathContext.DECIMAL64);
         }
 

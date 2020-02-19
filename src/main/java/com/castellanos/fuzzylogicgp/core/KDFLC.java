@@ -16,6 +16,7 @@ import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
+import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 
 import tech.tablesaw.api.Table;
@@ -77,8 +78,11 @@ public class KDFLC {
                 for (String var : gNode.getVariables()) {
                     for (StateNode s : parserPredicate.getStates()) {
                         if (s.getLabel().equals(var)) {
-                            //states.add(new StateNode(s.getLabel(), s.getColName(), s.getMembershipFunction()));
-                            states.add((StateNode)s.clone());
+                            // states.add(new StateNode(s.getLabel(), s.getColName(),
+                            // s.getMembershipFunction()));
+                            StateNode ss = (StateNode) s.clone();
+                            ss.setByGenerator(gNode.getId());
+                            states.add(ss);
                             break;
                         }
                     }
@@ -97,10 +101,16 @@ public class KDFLC {
          */
         Predicate[] population = makePopulation();
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-        for (int i = 0; i < population.length; i++) {
+
+       /* for (int i = 0; i < population.length; i++) {
             Predicate current_predicate = population[i];
             System.out.println("Optimizando predicando");
             gomf.optimize(current_predicate);
+        }*/
+        mutation(population);
+        System.out.println("After mutation");
+        for (int i = 0; i < population.length; i++) {
+            System.out.println((i+1)+": "+population[i]);
         }
 
     }
@@ -163,8 +173,9 @@ public class KDFLC {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-           // s.setFather(father.getId());
+            // s.setFather(father.getId());
             s.setEditable(true);
+            
             if (isToReplace) {
                 p.replace(gNode, s);
             } else {
@@ -206,6 +217,7 @@ public class KDFLC {
                 newFather = null;
             }
             newFather.setEditable(true);
+            newFather.setByGenerator(gNode.getId());
             if (father != null && father.getId() != null)
                 newFather.setFather(father.getId());
             if (isToReplace)
@@ -219,6 +231,49 @@ public class KDFLC {
     }
 
     private void mutation(Predicate[] population) {
+        for (Predicate predicate : population) {
+            predicate.getNodes().forEachEntry(50, (entry)->{
+                Node v = entry.getValue();
+                
+            });
+            Iterator<String> iterator = predicate.getNodes().keySet().iterator();
+            while(iterator.hasNext()){
+                String id = iterator.next();
+                Node v = predicate.getNode(id);
+                if (v.isEditable() && rand.nextDouble() <= mut_percentage) {
+                    switch (v.getType()) {
+                    case OR:
+                        v.setType(NodeType.AND);
+                        break;
+                    case AND:
+                        v.setType(NodeType.OR);
+                        break;
+                    case IMP:
+                        v.setType(NodeType.EQV);
+                        break;
+                    case EQV:
+                        v.setType(NodeType.IMP);
+                    case STATE:
+                        List<StateNode> ls = statesByGenerators.get(v.getByGenerator());
+                        StateNode ns = ls.get(rand.nextInt(ls.size()));
+                        StateNode state = (StateNode) v;
+                        state.setColName(ns.getColName());
+                        state.setLabel(ns.getLabel());
+                        if (ns.getMembershipFunction() != null) {
+                            try {
+                                state.setMembershipFunction((AMembershipFunction) ns.getMembershipFunction().clone());
+                            } catch (CloneNotSupportedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                        break;                        
+                    }
+                    predicate.getNodes().computeIfPresent(id, (k,vv)->v);
+                }
+
+            }
+        }
     }
 
     private Predicate[] crossover(Predicate[] population) {
