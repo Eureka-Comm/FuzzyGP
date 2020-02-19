@@ -5,6 +5,8 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.util.Arrays;
+
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,6 +22,23 @@ public class StateNode extends Node {
     private AMembershipFunction membershipFunction;
 
     public StateNode() {
+    }
+    public static StateNode parseState(String string){
+        StateNode s = new StateNode();
+        String split[] = string.replace("{", "").replace("}", "").trim().split(":");
+        String label = null, colname = "";
+        for (String st : split) {
+            String sub[] = st.split(" ");   
+            if(sub[0].contains("label")){
+                label = sub[1].replaceAll("\"", "").trim();
+            }else if(sub[0].contains("colname")){
+                colname = sub[1].replaceAll("\"", "").trim();
+            }else if(sub[0].contains("f")){
+                System.out.println(st);
+            }
+        }
+        System.out.println(label+" "+colname);
+        return null;
     }
     public StateNode(StateNode state){
         this.label = state.getLabel();

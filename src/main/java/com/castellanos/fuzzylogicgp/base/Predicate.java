@@ -334,6 +334,7 @@ public class Predicate implements Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Predicate p = (Predicate) super.clone();
+        if(this.getFitness()!=null)
         p.setFitness(new BigDecimal(this.getFitness().toString()));
         ConcurrentHashMap<String, Node> cp = new ConcurrentHashMap<>();
         this.getNodes().forEach((k, v) -> {

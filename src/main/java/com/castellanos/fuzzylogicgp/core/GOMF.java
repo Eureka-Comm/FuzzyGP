@@ -140,7 +140,12 @@ public class GOMF {
             Node node = predicatePattern.getNode(k.getOwner());
             if (node instanceof StateNode) {
                 StateNode st = (StateNode) node;
-                st.setMembershipFunction(k.getFpg());
+                try {
+                    st.setMembershipFunction((AMembershipFunction) k.getFpg().clone());
+                } catch (CloneNotSupportedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 System.out.println(st);
             }
         }
@@ -174,7 +179,7 @@ public class GOMF {
         Double[] r = minPromMaxValues(_item.getColName());
         minPromMaxMapValues.put(_item.getId(), r);
         double gamma_double = randomValue(r[0], r[2]);
-        f.setGamma(new BigDecimal(randomValue(r[0], r[2]).toString(), MathContext.DECIMAL64));
+        f.setGamma(new BigDecimal(randomValue(r[0], r[2]).toString()));
         double value;
         do {
             value = randomValue(r[0], f.getGamma().doubleValue());
@@ -182,7 +187,7 @@ public class GOMF {
         } while (value >= gamma_double);
         // } while( value.compareTo(f.getGamma()) != -1);
 
-        f.setBeta(new BigDecimal(value, MathContext.DECIMAL64));
+        f.setBeta(new BigDecimal(value));
         f.setM(new BigDecimal(rand.nextDouble()));
 
         FunctionWrap map = new FunctionWrap(_item.getId(), f);
@@ -214,9 +219,9 @@ public class GOMF {
         return (rand.doubles(min, max + 1).findFirst().getAsDouble());
     }
 
-    public void optimize(Table data, Predicate p) {
+    public void optimize(Table data, Predicate p) throws CloneNotSupportedException {
         this.data = data;
-        this.predicatePattern = p;
+        this.predicatePattern = (Predicate) p.clone();
         genetic();
     }
 
@@ -318,7 +323,7 @@ public class GOMF {
                         value = randomValue(element.getBeta().doubleValue(), r[2]);
                     } while (value <= element_Beta);
                     // }while (value.compareTo(element.getBeta()) != 1);
-                    element.setGamma(new BigDecimal(value, MathContext.DECIMAL64));
+                    element.setGamma(new BigDecimal(value));
                     break;
                 case 1:
                     Double element_gamma = Double.valueOf(element.getGamma().toString());
@@ -326,10 +331,10 @@ public class GOMF {
                         value = randomValue(r[0], element.getGamma().doubleValue());
                     } while (value >= element_gamma);
                     // } while(value.compareTo(element.getGamma()) != 1);
-                    element.setBeta(new BigDecimal(value, MathContext.DECIMAL64));
+                    element.setBeta(new BigDecimal(value));
                     break;
                 case 2:
-                    element.setM(new BigDecimal(rand.nextDouble(), MathContext.DECIMAL64));
+                    element.setM(new BigDecimal(rand.nextDouble()));
                     break;
                 }
             }
@@ -403,29 +408,29 @@ public class GOMF {
                 case 0:
                     // if (fp2.getGamma() > fp1.getBeta()) {
                     if (fp2.getGamma().compareTo(fp1.getBeta()) == 1) {
-                        childFpg = new FPG(fp2.getGamma(), fp1.getBeta(), fp1.getM());
+                        childFpg = new FPG( fp1.getBeta().toString(),fp2.getGamma().toString(), fp1.getM().toString());
                     } else {
                         /*
                          * r = minPromMaxMapValues.get(p1Map.getOwner()); do { value = randomValue(r[0],
                          * fp2.getGamma()); } while (value >= fp2.getGamma());
                          */
-                        childFpg = new FPG(fp1.getBeta(), fp2.getGamma(), fp1.getM());
+                        childFpg = new FPG(fp1.getGamma().toString(), fp2.getBeta().toString(), fp1.getM().toString());
                     }
                     break;
                 case 1:
                     // if (fp2.getBeta() < fp1.getGamma()) {
                     if (fp2.getBeta().compareTo(fp1.getGamma()) == -1) {
-                        childFpg = new FPG(fp1.getGamma(), fp2.getBeta(), fp1.getM());
+                        childFpg = new FPG(fp2.getBeta().toString(), fp1.getGamma().toString(), fp1.getM().toString());
                     } else {
                         /*
                          * r = minPromMaxMapValues.get(p1Map.getOwner()); do { value = randomValue(
                          * fp2.getBeta(), r[2]); } while (value <= fp2.getBeta());
                          */
-                        childFpg = new FPG(fp2.getBeta(), fp1.getGamma(), fp1.getM());
+                        childFpg = new FPG(fp1.getGamma().toString(),fp2.getBeta().toString(),  fp1.getM().toString());
                     }
                     break;
                 case 2:
-                    childFpg = new FPG(fp1.getGamma(), fp1.getBeta(), fp2.getM());
+                    childFpg = new FPG( fp1.getBeta().toString(), fp1.getGamma().toString(),fp2.getM().toString());
                     break;
                 }
                 child[childIndex].getElements()[j] = new FunctionWrap(next, childFpg);

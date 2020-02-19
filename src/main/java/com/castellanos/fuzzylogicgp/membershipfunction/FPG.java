@@ -22,17 +22,10 @@ public class FPG extends AMembershipFunction {
     private BigDecimal beta;
     private BigDecimal m;
 
-    public FPG(String gamma, String beta, String m) {
-        this.gamma = new BigDecimal(gamma, MathContext.DECIMAL128);
-        this.beta = new BigDecimal(beta, MathContext.DECIMAL128);
-        this.m = new BigDecimal(m, MathContext.DECIMAL128);
-        this.setType(MembershipFunctionType.FPG);
-    }
-
-    public FPG(BigDecimal gamma, BigDecimal beta, BigDecimal m) {
-        this.gamma = gamma;
-        this.beta = beta;
-        this.m = m;
+    public FPG(String beta, String gamma, String m) {
+        this.gamma = new BigDecimal(gamma);
+        this.beta = new BigDecimal(beta);
+        this.m = new BigDecimal(m);
         this.setType(MembershipFunctionType.FPG);
     }
 
@@ -103,12 +96,13 @@ public class FPG extends AMembershipFunction {
     public void setM(BigDecimal m) {
         this.m = m;
     }
-   @Override
-   public Object clone() throws CloneNotSupportedException {
-       FPG fpg = (FPG) super.clone();
-       fpg.setBeta(new BigDecimal(this.getBeta().toString()));
-       fpg.setGamma(new BigDecimal(this.getGamma().toString()));
-       fpg.setM(new BigDecimal(this.getM().toString()));
-       return fpg;
-   }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        FPG fpg = (FPG) super.clone();
+        fpg.setBeta(new BigDecimal(this.getBeta().toString()));
+        fpg.setGamma(new BigDecimal(this.getGamma().toString()));
+        fpg.setM(new BigDecimal(this.getM().toString()));
+        return fpg;
+    }
 }

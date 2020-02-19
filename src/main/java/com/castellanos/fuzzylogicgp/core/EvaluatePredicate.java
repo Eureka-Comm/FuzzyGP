@@ -222,14 +222,20 @@ public class EvaluatePredicate {
     }
 
     public static void main(String[] args) throws OperatorException, IOException, CloneNotSupportedException {
+        //gamma beta m
+        
+        StateNode fa = new StateNode("quality", "quality");
+        fa.setMembershipFunction(new FPG("4.64066010479289303702898905612528324127197265625" ,"6.32103387937757", "0.8927270592003833105110288670402951538562774658203125"));
 
-        FPG sfa = new FPG("7.96975201556474", "8.54628394558732", "0.7419780861262811");
-        StateNode fa = new StateNode("quality", "quality", sfa);
-        FPG fpg = new FPG("9.132248919293149", "12.468564784808557", "0.24484459229131095");
-        StateNode ca = new StateNode("fixed_acidity", "fixed_acidity", fpg);
+        /*FPG fpg = new FPG("9.132248919293149", "12.468564784808557", "0.24484459229131095");
+        StateNode ca = new StateNode("fixed_acidity", "fixed_acidity", fpg);*/
+        StateNode sa = new StateNode("alcohol", "alcohol");
+        sa.setMembershipFunction(new FPG("8.8521837925260609125643895822577178478240966796875","12.324224042632622","0.76521757447250549066808389397920109331607818603515625"));
+        //beta gamma m
         List<StateNode> states = new ArrayList<>();
         states.add(fa);
-        states.add(ca);
+        //states.add(ca);
+        states.add(sa);
 
         GeneratorNode g = new GeneratorNode("*", new NodeType[] {}, new ArrayList<>());
         List<GeneratorNode> gs = new ArrayList<>();
@@ -237,6 +243,8 @@ public class EvaluatePredicate {
         String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
         expression = "(NOT \"quality\" )";
         expression = "(IMP (NOT \"fixed_acidity\") \"quality\")";
+         expression = "(IMP \"alcohol\" \"quality\")";
+
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 
@@ -249,9 +257,10 @@ public class EvaluatePredicate {
 
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
         System.out.println("That took " + (duration / 1000000) + " milliseconds");
-        ep.resultPrint();
+        //ep.resultPrint();
         // ep.exportToCsv();
-        System.out.println(ep.exportToJSON());
+        //System.out.println(ep.exportToJSON());
+        //StateNode.parseState("{:label \"quality \" :colname \"quality\" :f [FPG 3.39817096929029727192528298473916947841644287109375 7.34277098376588 0.74726864798339953654959799678181298077106475830078125]}");
     }
 
 }
