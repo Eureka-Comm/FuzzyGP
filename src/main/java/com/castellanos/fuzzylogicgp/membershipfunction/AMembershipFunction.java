@@ -16,7 +16,7 @@ public abstract class AMembershipFunction implements Cloneable {
     public MembershipFunctionType type;
 
     public abstract boolean isValid();
-
+  
     public MembershipFunctionType getType() {
         return type;
     }
