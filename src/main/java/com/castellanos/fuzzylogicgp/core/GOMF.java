@@ -226,7 +226,7 @@ public class GOMF {
     }
 
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
-
+        System.out.println(currentPop);
         currentPop.parallelStream().forEach(mf -> {
             Predicate predicate = null;
             try {

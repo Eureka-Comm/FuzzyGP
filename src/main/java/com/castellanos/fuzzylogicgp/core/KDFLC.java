@@ -101,16 +101,14 @@ public class KDFLC {
          */
         Predicate[] population = makePopulation();
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-
-       /* for (int i = 0; i < population.length; i++) {
-            Predicate current_predicate = population[i];
-            System.out.println("Optimizando predicando");
-            gomf.optimize(current_predicate);
-        }*/
+        System.out.println("before mutation");
+        for (int i = 0; i < population.length; i++) {
+            System.out.println((i + 1) + ": " + population[i]);
+        }
         mutation(population);
         System.out.println("After mutation");
         for (int i = 0; i < population.length; i++) {
-            System.out.println((i+1)+": "+population[i]);
+            System.out.println((i + 1) + ": " + population[i]);
         }
 
     }
@@ -170,12 +168,11 @@ public class KDFLC {
             try {
                 s = (StateNode) select.clone();
             } catch (CloneNotSupportedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             // s.setFather(father.getId());
             s.setEditable(true);
-            
+
             if (isToReplace) {
                 p.replace(gNode, s);
             } else {
@@ -188,33 +185,33 @@ public class KDFLC {
             Node newFather;
             NodeType nType = gNode.getOperators()[rand.nextInt(gNode.getOperators().length)];
             switch (nType) {
-            case AND:
-                newFather = new OperatorNode(NodeType.AND);
-                if (arity < 2) {
+                case AND:
+                    newFather = new OperatorNode(NodeType.AND);
+                    if (arity < 2) {
+                        arity = 2;
+                    }
+                    break;
+                case OR:
+                    newFather = new OperatorNode(NodeType.OR);
+                    if (arity < 2)
+                        arity = 2;
+                    break;
+                case IMP:
+                    newFather = new OperatorNode(NodeType.IMP);
                     arity = 2;
-                }
-                break;
-            case OR:
-                newFather = new OperatorNode(NodeType.OR);
-                if (arity < 2)
+                    break;
+                case EQV:
+                    newFather = new OperatorNode(NodeType.EQV);
+
                     arity = 2;
-                break;
-            case IMP:
-                newFather = new OperatorNode(NodeType.IMP);
-                arity = 2;
-                break;
-            case EQV:
-                newFather = new OperatorNode(NodeType.EQV);
+                    break;
+                case NOT:
+                    newFather = new OperatorNode(NodeType.NOT);
 
-                arity = 2;
-                break;
-            case NOT:
-                newFather = new OperatorNode(NodeType.NOT);
-
-                arity = 1;
-                break;
-            default:
-                newFather = null;
+                    arity = 1;
+                    break;
+                default:
+                    newFather = null;
             }
             newFather.setEditable(true);
             newFather.setByGenerator(gNode.getId());
@@ -231,47 +228,45 @@ public class KDFLC {
     }
 
     private void mutation(Predicate[] population) {
-        for (Predicate predicate : population) {
-            predicate.getNodes().forEachEntry(50, (entry)->{
-                Node v = entry.getValue();
-                
-            });
-            Iterator<String> iterator = predicate.getNodes().keySet().iterator();
-            while(iterator.hasNext()){
-                String id = iterator.next();
-                Node v = predicate.getNode(id);
-                if (v.isEditable() && rand.nextDouble() <= mut_percentage) {
-                    switch (v.getType()) {
-                    case OR:
-                        v.setType(NodeType.AND);
-                        break;
-                    case AND:
-                        v.setType(NodeType.OR);
-                        break;
-                    case IMP:
-                        v.setType(NodeType.EQV);
-                        break;
-                    case EQV:
-                        v.setType(NodeType.IMP);
-                    case STATE:
-                        List<StateNode> ls = statesByGenerators.get(v.getByGenerator());
-                        StateNode ns = ls.get(rand.nextInt(ls.size()));
-                        StateNode state = (StateNode) v;
-                        state.setColName(ns.getColName());
-                        state.setLabel(ns.getLabel());
-                        if (ns.getMembershipFunction() != null) {
-                            try {
-                                state.setMembershipFunction((AMembershipFunction) ns.getMembershipFunction().clone());
-                            } catch (CloneNotSupportedException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                        break;                        
-                    }
-                    predicate.getNodes().computeIfPresent(id, (k,vv)->v);
-                }
+        for (int i = 0; i < population.length; i++) {
+            if (rand.nextDouble() < mut_percentage) {
+                Iterator<String> iterator = population[i].getNodes().keys().asIterator();
+                while (iterator.hasNext()) {
+                    String k = iterator.next();
+                    Node n = population[i].getNode(k);
+                    if (n != null && n.isEditable() && rand.nextDouble() < 0.5) {
+                        switch (n.getType()) {
+                            case OR:
+                                n.setType(NodeType.AND);
+                                population[i].getNodes().put(k, n);
+                                break;
+                            case AND:
+                                n.setType(NodeType.OR);
+                                population[i].getNodes().put(k, n);
+                                break;
+                            case IMP:
+                                n.setType(NodeType.EQV);
+                                population[i].getNodes().put(k, n);
+                                break;
+                            case EQV:
+                                n.setType(NodeType.IMP);
+                                population[i].getNodes().put(k, n);
+                            case STATE:
+                                List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
+                                StateNode state = ls.get(rand.nextInt(ls.size()));
+                                StateNode s = (StateNode) n;
+                                s.setColName(state.getColName());
+                                s.setLabel(state.getLabel());
+                                if (s.getMembershipFunction() != null) {
+                                    s.setMembershipFunction(s.getMembershipFunction());
+                                }
+                                population[i].getNodes().put(k, s);
 
+                            default:
+                                break;
+                        }
+                    }
+                }
             }
         }
     }
@@ -325,7 +320,7 @@ public class KDFLC {
         vars.add("volatile_acidity");
         // vars.add("quality");
 
-        GeneratorNode g = new GeneratorNode("*",
+        GeneratorNode g = new GeneratorNode("first_nivel",
                 new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT, NodeType.IMP }, vars);
         List<GeneratorNode> gs = new ArrayList<>();
         gs.add(g);
@@ -333,11 +328,11 @@ public class KDFLC {
         expression = "(OR \"*\" \"quality\")";
         expression = "(NOT \"*\")";
         expression = "\"*\"";
-        expression = "(IMP \"*\" \"quality\")";
+        expression = "(IMP \"first_nivel\" \"quality\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.5, 2, 1, 0.0, d);
         /*
          * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
          * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
@@ -348,7 +343,7 @@ public class KDFLC {
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.println("That took " + (duration/1000000) + " milliseconds");
+        System.out.println("That took " + (duration / 1000000) + " milliseconds");
     }
 
 }

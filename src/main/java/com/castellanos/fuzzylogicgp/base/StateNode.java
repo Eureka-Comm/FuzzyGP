@@ -23,29 +23,31 @@ public class StateNode extends Node {
 
     public StateNode() {
     }
-    public static StateNode parseState(String string){
+
+    public static StateNode parseState(String string) {
         StateNode s = new StateNode();
         String split[] = string.replace("{", "").replace("}", "").trim().split(":");
         String label = null, colname = "";
         for (String st : split) {
-            String sub[] = st.split(" ");   
-            if(sub[0].contains("label")){
+            String sub[] = st.split(" ");
+            if (sub[0].contains("label")) {
                 label = sub[1].replaceAll("\"", "").trim();
-            }else if(sub[0].contains("colname")){
+            } else if (sub[0].contains("colname")) {
                 colname = sub[1].replaceAll("\"", "").trim();
-            }else if(sub[0].contains("f")){
+            } else if (sub[0].contains("f")) {
                 System.out.println(st);
             }
         }
-        System.out.println(label+" "+colname);
+        System.out.println(label + " " + colname);
         return null;
     }
-    public StateNode(StateNode state){
+
+    public StateNode(StateNode state) {
         this.label = state.getLabel();
         this.colName = state.getColName();
         this.setType(NodeType.STATE);
-        if(state.getMembershipFunction()!=null)
-            this.membershipFunction  = state.getMembershipFunction();
+        if (state.getMembershipFunction() != null)
+            this.membershipFunction = state.getMembershipFunction();
         this.setEditable(state.isEditable());
     }
 
@@ -92,7 +94,8 @@ public class StateNode extends Node {
     @Override
     public String toString() {
         if (this.membershipFunction != null) {
-            return String.format("{:label \"%s\" :colname \"%s\" :f [%s]}", this.label, this.colName, this.membershipFunction);
+            return String.format("{:label \"%s\" :colname \"%s\" :f [%s]}", this.label, this.colName,
+                    this.membershipFunction);
         } else {
             return String.format("{:label \"%s\" :colname \"%s\"}", this.label, this.colName);
         }
@@ -102,12 +105,13 @@ public class StateNode extends Node {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         return gson.toJson(this);
     }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         StateNode state = null;
         state = (StateNode) super.clone();
-        if(this.getMembershipFunction()!=null)
-        state.setMembershipFunction((AMembershipFunction)this.getMembershipFunction().clone());
+        if (this.getMembershipFunction() != null)
+            state.setMembershipFunction((AMembershipFunction) this.getMembershipFunction().clone());
 
         return state;
     }

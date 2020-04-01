@@ -7,15 +7,14 @@ package com.castellanos.fuzzylogicgp.base;
 
 import java.util.UUID;
 
-
 /**
  *
  * @author hp
  */
-public abstract class Node implements Cloneable{
+public abstract class Node implements Cloneable {
     private final String id = UUID.randomUUID().toString();
     private String father;
-    private NodeType type;   
+    private NodeType type;
     private boolean editable;
     private String byGenerator;
 
@@ -38,10 +37,6 @@ public abstract class Node implements Cloneable{
         this.editable = editable;
     }
 
-   
-
-
-
     public String getId() {
         return id;
     }
@@ -53,24 +48,26 @@ public abstract class Node implements Cloneable{
     public void setFather(String father) {
         this.father = father;
     }
+
     /**
      * @return the byGenerator
      */
     public String getByGenerator() {
         return byGenerator;
     }
+
     /**
      * @param byGenerator the byGenerator to set
      */
     public void setByGenerator(String byGenerator) {
         this.byGenerator = byGenerator;
     }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
-        // TODO Auto-generated method stub
         Node node = null;
         node = (Node) super.clone();
         return node;
     }
-    
+
 }
