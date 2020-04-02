@@ -1,7 +1,9 @@
 package com.castellanos.fuzzylogicgp.core;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -78,8 +80,6 @@ public class KDFLC {
                 for (String var : gNode.getVariables()) {
                     for (StateNode s : parserPredicate.getStates()) {
                         if (s.getLabel().equals(var)) {
-                            // states.add(new StateNode(s.getLabel(), s.getColName(),
-                            // s.getMembershipFunction()));
                             StateNode ss = (StateNode) s.clone();
                             ss.setByGenerator(gNode.getId());
                             states.add(ss);
@@ -90,25 +90,45 @@ public class KDFLC {
                 statesByGenerators.put(gNode.getId(), states);
             }
         }
-        /*
-         * predicatePattern.getNodes().forEach((k, v) -> { if (v instanceof
-         * GeneratorNode) { GeneratorNode gNode = (GeneratorNode) v; List<StateNode>
-         * states = new ArrayList<>(); for (String var : gNode.getVariables()) { for
-         * (StateNode s : parserPredicate.getStates()) { if (s.getLabel().equals(var)) {
-         * states.add(new StateNode(s.getLabel(), s.getColName(),
-         * s.getMembershipFunction())); break; } } }
-         * statesByGenerators.put(gNode.getId(), states); } });
-         */
         Predicate[] population = makePopulation();
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-        System.out.println("before mutation");
         for (int i = 0; i < population.length; i++) {
-            System.out.println((i + 1) + ": " + population[i]);
+            gomf.optimize(population[i]);            
         }
-        mutation(population);
-        System.out.println("After mutation");
+        Arrays.sort(population);
         for (int i = 0; i < population.length; i++) {
-            System.out.println((i + 1) + ": " + population[i]);
+            System.out.println(i+" "+population[i]+" "+population[i].getFitness());
+            /*Iterator<String> k =population[i].getNodes().keys().asIterator();
+            while(k.hasNext()){
+                Node n = population[i].getNode(k.next());
+                if(n instanceof StateNode){
+                    System.out.println(((StateNode) n));
+                }
+            }*/
+        }
+        int iteration = 1;
+        //TODO: falta seleccion y cruza
+        BigDecimal truth_value = new BigDecimal(min_truth_value);
+        while(iteration < num_iter && population[population.length - 1].getFitness().compareTo(truth_value) < 0){
+
+            Predicate[] offspring = new Predicate[population.length / 2];
+            TournamentSelection tournamentSelection = new TournamentSelection(population, population.length / 2);
+            tournamentSelection.execute();
+            for (int i = 0; i < offspring.length; i++) {
+                Predicate a = tournamentSelection.getNext();
+                Predicate b = tournamentSelection.getNext();
+                offspring[i] = crossover(a, b);
+            }
+            mutation(population);
+            for (int i = 0; i < offspring.length; i++) {
+                for (int j = 0; j < population.length; j++) {
+                    if(offspring[i].getFitness().compareTo(population[j].getFitness())> 0){
+                        population[j] = (Predicate) offspring[i].clone();
+                        break;
+                    }
+                }
+            }
+            iteration ++;
         }
 
     }
@@ -136,11 +156,6 @@ public class KDFLC {
 
             }
         }
-        /*
-         * subTrees.forEach((k, v) -> { p.remove(p.getNode(k)); v.forEach((s, n) -> {
-         * try { p.addNode(p.getNode(s), n); } catch (OperatorException e) { // TODO
-         * Auto-generated catch block e.printStackTrace(); } }); });
-         */
 
         return p;
     }
@@ -162,8 +177,6 @@ public class KDFLC {
                     select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
                 }
             }
-            // StateNode s = new StateNode(select.getLabel(), select.getColName(),
-            // select.getMembershipFunction());
             StateNode s = null;
             try {
                 s = (StateNode) select.clone();
@@ -271,6 +284,12 @@ public class KDFLC {
         }
     }
 
+    private Predicate crossover(Predicate a, Predicate b) {
+        Predicate child = new Predicate();
+
+        return child;
+    }
+
     private Predicate[] crossover(Predicate[] population) {
         Predicate[] childs = new Predicate[(population.length % 2 == 0) ? population.length / 2
                 : population.length / 2 + 1];
@@ -332,7 +351,7 @@ public class KDFLC {
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.5, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
         /*
          * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
          * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });

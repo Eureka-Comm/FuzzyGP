@@ -17,7 +17,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author hp
  */
-public class Predicate implements Cloneable {
+public class Predicate implements Cloneable,Comparable<Predicate> {
 
     private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
@@ -343,11 +343,15 @@ public class Predicate implements Cloneable {
             try {
                 cp.put(k, (Node) v.clone());
             } catch (CloneNotSupportedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         });
         p.setNodes(cp);
        return p;
+    }
+
+    @Override
+    public int compareTo(Predicate p) {
+        return this.fitness.compareTo(p.getFitness());
     }
 }
