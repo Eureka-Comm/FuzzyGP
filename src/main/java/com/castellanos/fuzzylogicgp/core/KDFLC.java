@@ -93,23 +93,21 @@ public class KDFLC {
         Predicate[] population = makePopulation();
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
         for (int i = 0; i < population.length; i++) {
-            gomf.optimize(population[i]);            
+            gomf.optimize(population[i]);
         }
         Arrays.sort(population);
         for (int i = 0; i < population.length; i++) {
-            System.out.println(i+" "+population[i]+" "+population[i].getFitness());
-            /*Iterator<String> k =population[i].getNodes().keys().asIterator();
-            while(k.hasNext()){
-                Node n = population[i].getNode(k.next());
-                if(n instanceof StateNode){
-                    System.out.println(((StateNode) n));
-                }
-            }*/
+            System.out.println(i + " " + population[i] + " " + population[i].getFitness());
+            /*
+             * Iterator<String> k =population[i].getNodes().keys().asIterator();
+             * while(k.hasNext()){ Node n = population[i].getNode(k.next()); if(n instanceof
+             * StateNode){ System.out.println(((StateNode) n)); } }
+             */
         }
         int iteration = 1;
-        //TODO: falta seleccion y cruza
+        // TODO: falta seleccion y cruza
         BigDecimal truth_value = new BigDecimal(min_truth_value);
-        while(iteration < num_iter && population[population.length - 1].getFitness().compareTo(truth_value) < 0){
+        while (iteration < num_iter && population[population.length - 1].getFitness().compareTo(truth_value) < 0) {
 
             Predicate[] offspring = new Predicate[population.length / 2];
             TournamentSelection tournamentSelection = new TournamentSelection(population, population.length / 2);
@@ -119,16 +117,22 @@ public class KDFLC {
                 Predicate b = tournamentSelection.getNext();
                 offspring[i] = crossover(a, b);
             }
-            mutation(population);
+            mutation(offspring);
+            for (int i = 0; i < offspring.length; i++) {
+                gomf.optimize(offspring[i]);
+            }
             for (int i = 0; i < offspring.length; i++) {
                 for (int j = 0; j < population.length; j++) {
-                    if(offspring[i].getFitness().compareTo(population[j].getFitness())> 0){
+                    if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
                         population[j] = (Predicate) offspring[i].clone();
                         break;
                     }
                 }
             }
-            iteration ++;
+            Arrays.sort(population);
+            System.out.println(iteration + " " + population[population.length - 1] + " "
+                    + population[population.length - 1].getFitness());
+            iteration++;
         }
 
     }
