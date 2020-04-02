@@ -116,10 +116,15 @@ public class KDFLC {
             Predicate[] offspring = new Predicate[population.length / 2];
             TournamentSelection tournamentSelection = new TournamentSelection(population, population.length / 2);
             tournamentSelection.execute();
+            System.out.println("Selection");
+            for (Predicate predicate : tournamentSelection.getAll()) {
+                System.out.println(predicate);
+            }
             for (int i = 0; i < offspring.length; i++) {
                 Predicate a = tournamentSelection.getNext();
                 Predicate b = tournamentSelection.getNext();
                 offspring[i] = crossover(a, b);
+                offspring[i++] = crossover(b, a);
             }
             mutation(offspring);
             for (int i = 0; i < offspring.length; i++) {
@@ -366,7 +371,7 @@ public class KDFLC {
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.1, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 10, 20, 10, 1f, 0.1, 2, 1, 0.0, d);
         /*
          * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
          * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
