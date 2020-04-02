@@ -7,7 +7,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
@@ -104,6 +107,7 @@ public class KDFLC {
              * StateNode){ System.out.println(((StateNode) n)); } }
              */
         }
+        
         int iteration = 1;
         // TODO: falta seleccion y cruza
         BigDecimal truth_value = new BigDecimal(min_truth_value);
@@ -247,43 +251,50 @@ public class KDFLC {
     private void mutation(Predicate[] population) {
         for (int i = 0; i < population.length; i++) {
             if (rand.nextDouble() < mut_percentage) {
-                Iterator<String> iterator = population[i].getNodes().keys().asIterator();
-                while (iterator.hasNext()) {
-                    String k = iterator.next();
-                    Node n = population[i].getNode(k);
-                    if (n != null && n.isEditable() && rand.nextDouble() < 0.5) {
-                        switch (n.getType()) {
-                            case OR:
-                                n.setType(NodeType.AND);
-                                population[i].getNodes().put(k, n);
-                                break;
-                            case AND:
-                                n.setType(NodeType.OR);
-                                population[i].getNodes().put(k, n);
-                                break;
-                            case IMP:
-                                n.setType(NodeType.EQV);
-                                population[i].getNodes().put(k, n);
-                                break;
-                            case EQV:
-                                n.setType(NodeType.IMP);
-                                population[i].getNodes().put(k, n);
-                            case STATE:
-                                List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
-                                StateNode state = ls.get(rand.nextInt(ls.size()));
-                                StateNode s = (StateNode) n;
-                                s.setColName(state.getColName());
-                                s.setLabel(state.getLabel());
-                                if (s.getMembershipFunction() != null) {
-                                    s.setMembershipFunction(s.getMembershipFunction());
-                                }
-                                population[i].getNodes().put(k, s);
+                ConcurrentMap<String, Node> editableNode = population[i].getNodes().entrySet().stream()
+                        .filter(n -> n.getValue().isEditable())
+                        .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
+                String[] keys = editableNode.keySet().toArray(new String[editableNode.size()]);
 
-                            default:
-                                break;
-                        }
-                    }
+                String k = keys[rand.nextInt(keys.length)];
+                Node n = population[i].getNode(k);
+                int intents = 0;
+                while(n.getType() == NodeType.NOT && intents < keys.length){
+                    k = keys[rand.nextInt(keys.length)];
+                    n = population[i].getNode(k);
+                    intents++;
                 }
+                switch (n.getType()) {
+                    case OR:
+                        n.setType(NodeType.AND);
+                        population[i].getNodes().put(k, n);
+                        break;
+                    case AND:
+                        n.setType(NodeType.OR);
+                        population[i].getNodes().put(k, n);
+                        break;
+                    case IMP:
+                        n.setType(NodeType.EQV);
+                        population[i].getNodes().put(k, n);
+                        break;
+                    case EQV:
+                        n.setType(NodeType.IMP);
+                        population[i].getNodes().put(k, n);
+                    case STATE:
+                        List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
+                        StateNode state = ls.get(rand.nextInt(ls.size()));
+                        StateNode s = (StateNode) n;
+                        s.setColName(state.getColName());
+                        s.setLabel(state.getLabel());
+                        if (s.getMembershipFunction() != null) {
+                            s.setMembershipFunction(s.getMembershipFunction());
+                        }
+                        population[i].getNodes().put(k, s);
+
+                    default:
+                        break;
+                }
+
             }
         }
     }
@@ -355,7 +366,7 @@ public class KDFLC {
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.05, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 5, 20, 10, 0.85, 0.1, 2, 1, 0.0, d);
         /*
          * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
          * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
