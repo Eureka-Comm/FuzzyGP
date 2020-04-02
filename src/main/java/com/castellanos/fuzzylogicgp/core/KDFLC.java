@@ -310,15 +310,7 @@ public class KDFLC {
         return child;
     }
 
-    private Predicate[] crossover(Predicate[] population) {
-        Predicate[] childs = new Predicate[(population.length % 2 == 0) ? population.length / 2
-                : population.length / 2 + 1];
-
-        return childs;
-    }
-
-    private void evaluationChromosome(Predicate[] population) {
-    }
+    
 
     public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
