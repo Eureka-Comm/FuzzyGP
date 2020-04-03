@@ -17,14 +17,14 @@ import com.google.gson.GsonBuilder;
  *
  * @author hp
  */
-public class Predicate implements Cloneable,Comparable<Predicate> {
+public class Predicate implements Cloneable, Comparable<Predicate> {
 
     private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
     private BigDecimal fitness;
 
     public Predicate(Predicate p) {
-        
+
         this.nodes = new ConcurrentHashMap<>();
         p.getNodes().forEach((k, v) -> {
             try {
@@ -55,41 +55,42 @@ public class Predicate implements Cloneable,Comparable<Predicate> {
         List<Node> childs;
 
         switch (father.getType()) {
-        case IMP:
-        case EQV:
-            childs = searchChilds(father);
-            if (childs.size() < 2) {
-                node.setFather(father.getId());
-                if (father.getType().equals(NodeType.IMP)) {
-                    OperatorNode impn = (OperatorNode) father;
-                    if (impn.getLeftID() == null) {
-                        impn.setLeftID(node.getId());
-                    } else if (impn.getRighID() == null) {
-                        impn.setRighID(node.getId());
+            case IMP:
+            case EQV:
+                childs = searchChilds(father);
+                if (childs.size() < 2) {
+                    node.setFather(father.getId());
+                    if (father.getType().equals(NodeType.IMP)) {
+                        OperatorNode impn = (OperatorNode) father;
+                        if (impn.getLeftID() == null) {
+                            impn.setLeftID(node.getId());
+                        } else if (impn.getRighID() == null) {
+                            impn.setRighID(node.getId());
+                        }
                     }
+                    nodes.put(node.getId(), node);
+                } else {
+                    throw new OperatorException(
+                            "\n" + father.getId() + " " + father.getType() + ": arity must be two elements.");
                 }
-                nodes.put(node.getId(), node);
-            } else {
-                throw new OperatorException(
-                        "\n" + father.getId() + " " + father.getType() + ": arity must be two elements.");
-            }
-            break;
-        case NOT:
-            childs = searchChilds(father);
-            if (childs.isEmpty()) {
+                break;
+            case NOT:
+                childs = searchChilds(father);
+                if (childs.isEmpty()) {
+                    node.setFather(father.getId());
+                    nodes.put(node.getId(), node);
+                } else {
+                    System.out.println(father);
+                    System.out.println(node);
+                    System.out.println("childs: " + childs);
+                    throw new OperatorException(
+                            father.getId() + " " + father.getType() + ": arity must be one element.");
+                }
+                break;
+            default:
                 node.setFather(father.getId());
                 nodes.put(node.getId(), node);
-            } else {
-                System.out.println(father);
-                System.out.println(node);
-                System.out.println("childs: " + childs);
-                throw new OperatorException(father.getId() + " " + father.getType() + ": arity must be one element.");
-            }
-            break;
-        default:
-            node.setFather(father.getId());
-            nodes.put(node.getId(), node);
-            break;
+                break;
         }
     }
 
@@ -99,8 +100,8 @@ public class Predicate implements Cloneable,Comparable<Predicate> {
         for (Node node2 : searchChilds) {
             node2.setFather(null);
         }
-        node.setFather(null);
-        return nodes.remove(node);
+        // node.setFather(null);
+        return nodes.remove(node.getId());
     }
 
     public void replace(Node toReplace, Node newNode) throws OperatorException {
@@ -274,24 +275,25 @@ public class Predicate implements Cloneable,Comparable<Predicate> {
             if (v instanceof OperatorNode) {
                 List<Node> childs = searchChilds(v);
                 switch (v.getType()) {
-                case AND:
-                case OR:
-                    if (childs.size() < 2) {
-                        throw new OperatorException(
-                                v.getId() + " " + v.getType() + ": arity must be more that two elements.");
-                    }
-                    break;
-                case EQV:
-                case IMP:
-                    if (childs.size() != 2) {
-                        throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be two elements.");
-                    }
-                    break;
-                case NOT:
-                    if (childs.size() != 1) {
-                        throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be one element.");
-                    }
-                    break;
+                    case AND:
+                    case OR:
+                        if (childs.size() < 2) {
+                            throw new OperatorException(
+                                    v.getId() + " " + v.getType() + ": arity must be more that two elements.");
+                        }
+                        break;
+                    case EQV:
+                    case IMP:
+                        if (childs.size() != 2) {
+                            throw new OperatorException(
+                                    v.getId() + " " + v.getType() + ": arity must be two elements.");
+                        }
+                        break;
+                    case NOT:
+                        if (childs.size() != 1) {
+                            throw new OperatorException(v.getId() + " " + v.getType() + ": arity must be one element.");
+                        }
+                        break;
 
                 }
             }
@@ -335,19 +337,22 @@ public class Predicate implements Cloneable,Comparable<Predicate> {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        Predicate p = (Predicate) super.clone();
-        if(this.getFitness()!=null)
-        p.setFitness(new BigDecimal(this.getFitness().toString()));
+        Predicate p = new Predicate();
+
+        if (this.getFitness() != null)
+            p.setFitness(new BigDecimal(this.getFitness().toString()));
         ConcurrentHashMap<String, Node> cp = new ConcurrentHashMap<>();
         this.getNodes().forEach((k, v) -> {
             try {
                 cp.put(k, (Node) v.clone());
+                if (getIdFather() != null && k.equals(this.getIdFather()))
+                    p.setIdFather(v.getId());
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
         });
         p.setNodes(cp);
-       return p;
+        return p;
     }
 
     @Override

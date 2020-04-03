@@ -33,8 +33,8 @@ public class TournamentSelection {
             } else {
                 selection.add(pop[b]);
             }
-
         }
+        next = selection.iterator();
     }
 
     /**
