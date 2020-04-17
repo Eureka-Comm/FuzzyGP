@@ -18,14 +18,14 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 public class FPG extends AMembershipFunction {
 
-    private BigDecimal gamma;
-    private BigDecimal beta;
-    private BigDecimal m;
+    private double gamma;
+    private double beta;
+    private double m;
 
     public FPG(String beta, String gamma, String m) {
-        this.gamma = new BigDecimal(gamma);
-        this.beta = new BigDecimal(beta);
-        this.m = new BigDecimal(m);
+        this.gamma = Double.parseDouble(gamma);
+        this.beta = Double.parseDouble(beta);
+        this.m = Double.parseDouble(m);
         this.setType(MembershipFunctionType.FPG);
     }
 
@@ -45,16 +45,18 @@ public class FPG extends AMembershipFunction {
     }
 
     @Override
-    public BigDecimal evaluate(BigDecimal v) {
+    public double evaluate(double v) {
         // BigDecimal sigm, sigmm, M;
 
+        double sigm, sigmm, M;
+          sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m); 
+          sigmm = pow(1.0 - new Sigmoid(gamma, beta).evaluate(v), 1.0 - m); 
+          M = pow(m, m) * pow((1 - m), (1 -
+          m));
+          
+          return ((sigm * sigmm) / M);
+         
         /*
-         * sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m); sigmm = pow(1.0 - new
-         * Sigmoid(gamma, beta).evaluate(v), 1.0 - m); M = pow(m, m) * pow((1 - m), (1 -
-         * m));
-         * 
-         * return ((sigm * sigmm) / M);
-         */
         BigDecimal one = new BigDecimal("1", MathContext.DECIMAL128);
         BigDecimal calc_sig = new Sigmoid(gamma, beta).evaluate(v);
 
@@ -70,39 +72,41 @@ public class FPG extends AMembershipFunction {
         // Apfloat(one.subtract(m))));
         BigDecimal bgM = BigDecimalMath.pow(m, m, MathContext.DECIMAL128)
                 .multiply(BigDecimalMath.pow(one.subtract(m), one.subtract(m), MathContext.DECIMAL128));
-        return bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);
+        return bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);*/
     }
 
-    public BigDecimal getGamma() {
+    public double getGamma() {
         return gamma;
     }
 
-    public void setGamma(BigDecimal gamma) {
+    public void setGamma(double gamma) {
         this.gamma = gamma;
     }
 
-    public BigDecimal getBeta() {
+    public double getBeta() {
         return beta;
     }
 
-    public void setBeta(BigDecimal beta) {
+    public void setBeta(double beta) {
         this.beta = beta;
     }
 
-    public BigDecimal getM() {
+    public double getM() {
         return m;
     }
 
-    public void setM(BigDecimal m) {
+    public void setM(double m) {
         this.m = m;
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         FPG fpg = (FPG) super.clone();
+        /*
         fpg.setBeta(new BigDecimal(this.getBeta().toString()));
         fpg.setGamma(new BigDecimal(this.getGamma().toString()));
         fpg.setM(new BigDecimal(this.getM().toString()));
+        */
         return fpg;
     }
 }

@@ -21,7 +21,7 @@ public class Predicate implements Cloneable, Comparable<Predicate> {
 
     private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
-    private BigDecimal fitness;
+    private Double fitness;
 
     public Predicate(Predicate p) {
 
@@ -34,12 +34,12 @@ public class Predicate implements Cloneable, Comparable<Predicate> {
             }
         });
         this.idFather = p.getIdFather();
-        this.fitness = BigDecimal.ZERO;
+        this.fitness = 0.0;
     }
 
     public Predicate() {
         nodes = new ConcurrentHashMap<>();
-        this.fitness = BigDecimal.ZERO;
+        this.fitness = 0.0;
     }
 
     public void addNode(Node father, Node node) throws OperatorException {
@@ -312,11 +312,11 @@ public class Predicate implements Cloneable, Comparable<Predicate> {
 
     }
 
-    public BigDecimal getFitness() {
+    public double getFitness() {
         return fitness;
     }
 
-    public void setFitness(BigDecimal fitness) {
+    public void setFitness(double fitness) {
         this.fitness = fitness;
     }
 
@@ -339,8 +339,8 @@ public class Predicate implements Cloneable, Comparable<Predicate> {
     public Object clone() throws CloneNotSupportedException {
         Predicate p = new Predicate();
 
-        if (this.getFitness() != null)
-            p.setFitness(new BigDecimal(this.getFitness().toString()));
+        /*if (this.getFitness() != null)
+            p.setFitness(new BigDecimal(this.getFitness().toString()));*/
         ConcurrentHashMap<String, Node> cp = new ConcurrentHashMap<>();
         this.getNodes().forEach((k, v) -> {
             try {

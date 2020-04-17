@@ -16,18 +16,18 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 public class Sigmoid extends AMembershipFunction {
 
-    private BigDecimal center;
-    private BigDecimal beta;
+    private double center;
+    private double beta;
 
-    public Sigmoid(final BigDecimal center, final BigDecimal beta) {
+    public Sigmoid( double center,  double beta) {
         this.center = center;
         this.beta = beta;
         this.setType(MembershipFunctionType.SIGMOID);
     }
 
-    public Sigmoid(final String center, final String beta) {
-        this.center = new BigDecimal(center, MathContext.DECIMAL128);
-        this.beta = new BigDecimal(beta, MathContext.DECIMAL128);
+    public Sigmoid( String center,  String beta) {
+        this.center = Double.parseDouble(center );
+        this.beta = Double.parseDouble(beta);
         this.setType(MembershipFunctionType.SIGMOID);
     }
 
@@ -42,40 +42,39 @@ public class Sigmoid extends AMembershipFunction {
     }
 
     @Override
-    public BigDecimal evaluate(final BigDecimal v) {
-        BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);
+    public double evaluate( double v) {
+       /* BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);
         BigDecimal lg01 = BigDecimalMath.log(new BigDecimal("0.01"), MathContext.DECIMAL128);
         BigDecimal one = new BigDecimal("1");
         BigDecimal vexp = BigDecimalMath
                 .exp(((((lg99.subtract(lg01)).divide(center.subtract(beta), MathContext.DECIMAL128)).negate())
                         .multiply(v.subtract(center))), MathContext.DECIMAL128);
 
-        return one.divide(one.add(vexp), MathContext.DECIMAL128);
-        // return
-        // (1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center)))));
+        return one.divide(one.add(vexp), MathContext.DECIMAL128);*/
+        return (1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center)))));
 
     }
 
-    public BigDecimal getCenter() {
+    public double getCenter() {
         return center;
     }
 
-    public void setCenter(final BigDecimal center) {
+    public void setCenter( double center) {
         this.center = center;
     }
 
-    public BigDecimal getBeta() {
+    public double getBeta() {
         return beta;
     }
 
-    public void setBeta(final BigDecimal beta) {
+    public void setBeta(final double beta) {
         this.beta = beta;
     }
     @Override
     public Object clone() throws CloneNotSupportedException {
         Sigmoid s = (Sigmoid) super.clone();
-        s.setBeta(new BigDecimal(this.getBeta().toString()));
-        s.setCenter(new BigDecimal(this.getCenter().toString()));
+        /*s.setBeta(new BigDecimal(this.getBeta().toString()));
+        s.setCenter(new BigDecimal(this.getCenter().toString()));*/
         return s;
     }
 

@@ -15,46 +15,47 @@ import java.util.List;
 public class AMBC implements ALogic {
 
     @Override
-    public BigDecimal not(BigDecimal v1) {
+    public double not(double v1) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     @Override
-    public BigDecimal imp(BigDecimal v1, BigDecimal v2) {
+    public double imp(double v1, double v2) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     @Override
-    public BigDecimal eqv(BigDecimal v1, BigDecimal v2) {
+    public double eqv(double v1, double v2) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     @Override
-    public BigDecimal and(BigDecimal v1, BigDecimal v2) {
+    public double and(double v1, double v2) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     @Override
-    public BigDecimal or(BigDecimal v1, BigDecimal v2) {
+    public double or(double v1, double v2) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     @Override
-    public BigDecimal forAll(List<BigDecimal> values) {
+    public double forAll(List<Double> values) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
     @Override
-    public BigDecimal exist(List<BigDecimal> values) {
+    public double exist(List<Double> values) {
         // TODO Auto-generated method stub
-        return null;
+        return 0;
     }
 
+    
    
 }

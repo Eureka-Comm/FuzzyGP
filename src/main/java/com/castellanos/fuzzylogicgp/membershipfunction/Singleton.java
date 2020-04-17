@@ -13,19 +13,19 @@ import java.math.BigDecimal;
  */
 public class Singleton extends AMembershipFunction {
 
-    private BigDecimal a;
+    private double a;
 
-    public Singleton(BigDecimal a) {
+    public Singleton(double a) {
         this.a = a;
         this.setType(MembershipFunctionType.SINGLETON);
 
     }
 
-    public BigDecimal getA() {
+    public double getA() {
         return a;
     }
 
-    public void setA(BigDecimal a) {
+    public void setA(double a) {
         this.a = a;
     }
 
@@ -40,8 +40,9 @@ public class Singleton extends AMembershipFunction {
     }
 
     @Override
-    public BigDecimal evaluate(BigDecimal v) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public double evaluate(double v) {
+        return ( a == v)? 1.0 : 0.0;
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

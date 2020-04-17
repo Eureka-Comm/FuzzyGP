@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  */
 public class OperatorNode extends Node {
 
-    private BigDecimal fitness;
+    private double fitness;
     private String leftID;
     private String righID;
 
@@ -21,11 +21,11 @@ public class OperatorNode extends Node {
         this.setType(type);
     }
 
-    public BigDecimal getFitness() {
+    public double getFitness() {
         return fitness;
     }
 
-    public void setFitness(BigDecimal fitness) {
+    public void setFitness(double fitness) {
         this.fitness = fitness;
     }
 

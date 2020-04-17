@@ -5,7 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import java.math.BigDecimal;
 
 /**
  *
@@ -25,7 +24,7 @@ public abstract class AMembershipFunction implements Cloneable {
         this.type = type;
     }
         
-    public abstract BigDecimal evaluate(BigDecimal v);
+    public abstract double evaluate(double v);
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();

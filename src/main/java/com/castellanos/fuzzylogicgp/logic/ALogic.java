@@ -5,7 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -13,11 +12,11 @@ import java.util.List;
  * @author hp
  */
 public interface ALogic {
-    public BigDecimal not(BigDecimal v1);
-    public BigDecimal imp(BigDecimal v1, BigDecimal v2);
-    public BigDecimal eqv(BigDecimal v1, BigDecimal v2);
-    public BigDecimal and(BigDecimal v1, BigDecimal v2);
-    public BigDecimal or(BigDecimal v1, BigDecimal v2);
-    public BigDecimal forAll(List<BigDecimal> values);
-    public BigDecimal exist(List<BigDecimal> values);
+    public double not(double v1);
+    public double imp(double v1, double v2);
+    public double eqv(double v1, double v2);
+    public double and(double v1, double v2);
+    public double or(double v1, double v2);
+    public double forAll(List<Double> values);
+    public double exist(List<Double> values);
 }

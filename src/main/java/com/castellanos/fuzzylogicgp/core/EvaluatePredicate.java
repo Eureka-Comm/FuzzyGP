@@ -79,17 +79,17 @@ public class EvaluatePredicate {
         }
     }
 
-    public BigDecimal evaluate() {
+    public double evaluate() {
 
         dataFuzzy();
         fitCompute();
-        if (p.getIdFather() != null && !p.getNode(p.getIdFather()).getType().equals(NodeType.STATE)) {
+        //if (p.getIdFather() != null && !p.getNode(p.getIdFather()).getType().equals(NodeType.STATE)) {
             StringColumn fa = StringColumn.create("For All");
-            List<BigDecimal> rsColumn = new ArrayList<>();
+            List<Double> rsColumn = new ArrayList<>();
             for (Double x : resultColumn) {
-                rsColumn.add(new BigDecimal(x.toString(),MathContext.DECIMAL64));
+                rsColumn.add(x);
             }
-            BigDecimal forAllValue = logic.forAll(rsColumn);
+            double forAllValue = logic.forAll(rsColumn);
             p.setFitness(forAllValue);
             fa.append("" + p.getFitness());
 
@@ -101,8 +101,8 @@ public class EvaluatePredicate {
             }
             fuzzyData.addColumns(fa, ec, resultColumn);
             return forAllValue;
-        }
-        return BigDecimal.ONE.negate();
+        //}
+        //return BigDecimal.ONE.negate();
     }
 
     public void exportToCsv() throws IOException {
@@ -123,7 +123,7 @@ public class EvaluatePredicate {
     }
 
     private void fitCompute() {
-        BigDecimal result;
+        Double result;
         resultColumn = DoubleColumn.create("result");
         for (int i = 0; i < fuzzyData.rowCount(); i++) {
             try {
@@ -135,24 +135,24 @@ public class EvaluatePredicate {
         }
     }
 
-    private BigDecimal fitValue(Node node, int index) throws OperatorException {
-        BigDecimal aux = BigDecimal.ONE;
+    private double fitValue(Node node, int index) throws OperatorException {
+        Double aux = 1.0;
         List<Node> child;
         switch (node.getType()) {
         case AND:
             child = p.searchChilds(node);
             for (int i = 1; i < child.size(); i++) {
-                aux = aux.multiply(fitValue(child.get(i), index));
+                aux *= (fitValue(child.get(i), index));
             }
             return logic.and(aux, fitValue(child.get(0), index));
         case OR:
             child = p.searchChilds(node);
             for (int i = 0; i < child.size(); i++) {
-                //aux *= (1 - fitValue(child.get(i), index));
-                aux = aux.multiply(BigDecimal.ONE.subtract(fitValue(child.get(i), index)));
+                aux *= (1 - fitValue(child.get(i), index));
+               // aux = aux.multiply(BigDecimal.ONE.subtract(fitValue(child.get(i), index)));
             }
-            // return logic.or(aux, fitValue(child.get(0), index));
-            return logic.or(aux, new BigDecimal(child.size()));
+            return logic.or(aux, fitValue(child.get(0), index));
+           // return logic.or(aux, new BigDecimal(child.size()));
         case NOT:
             return logic.not(fitValue(p.searchChilds(node).get(0), index));
         case IMP:
@@ -163,8 +163,8 @@ public class EvaluatePredicate {
             return logic.eqv(fitValue(child.get(0), index), fitValue(child.get(1), index));
         case STATE:
             StateNode st = (StateNode) node;
-            //return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
-            return new BigDecimal(fuzzyData.getString(index, st.getLabel()),MathContext.DECIMAL64);
+            return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
+           // return new BigDecimal(fuzzyData.getString(index, st.getLabel()),MathContext.DECIMAL64);
         default:
             throw new UnsupportedOperationException("Dont supported: " + node.getType() + " : " + node.getId());
         }
@@ -180,31 +180,31 @@ public class EvaluatePredicate {
                 if (!fuzzyData.columnNames().contains(s.getColName())) {
                     ColumnType type = data.column(s.getColName()).type();
 
-                    StringColumn dc = StringColumn.create(s.getLabel());
+                    DoubleColumn dc = DoubleColumn.create(s.getLabel());
 
                     if (type == ColumnType.DOUBLE) {
                         Column<Double> column = (Column<Double>) data.column(s.getColName());
 
                         for (Double cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
+                            dc.append(s.getMembershipFunction().evaluate((cell)));
                         }
 
                     } else if (type == ColumnType.FLOAT) {
                         Column<Float> column = (Column<Float>) data.column(s.getColName());
                         for (Float cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
+                            dc.append(s.getMembershipFunction().evaluate((cell)));
                         }
 
                     } else if (type == ColumnType.INTEGER) {
                         Column<Integer> column = (Column<Integer>) data.column(s.getColName());
                         for (Integer cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
+                            dc.append(s.getMembershipFunction().evaluate((cell)));
                         }
 
                     } else if (type == ColumnType.LONG) {
                         Column<Long> column = (Column<Long>) data.column(s.getColName());
                         for (Long cell : column) {
-                            dc.append(s.getMembershipFunction().evaluate(new BigDecimal(cell)).toString());
+                            dc.append(s.getMembershipFunction().evaluate((cell)));
                         }
 
                     } else {
@@ -225,7 +225,7 @@ public class EvaluatePredicate {
         //gamma beta m
         
         StateNode fa = new StateNode("quality", "quality");
-        fa.setMembershipFunction(new FPG("4.64066010479289303702898905612528324127197265625" ,"6.32103387937757", "0.8927270592003833105110288670402951538562774658203125"));
+        fa.setMembershipFunction(new FPG("3.56893329" ,"7.36404367", "0.15235532"));
 
         /*FPG fpg = new FPG("9.132248919293149", "12.468564784808557", "0.24484459229131095");
         StateNode ca = new StateNode("fixed_acidity", "fixed_acidity", fpg);*/
@@ -244,21 +244,22 @@ public class EvaluatePredicate {
         expression = "(NOT \"quality\" )";
         expression = "(IMP (NOT \"fixed_acidity\") \"quality\")";
          expression = "(IMP \"alcohol\" \"quality\")";
+         expression = "\"quality\"";
 
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         Predicate pp = parser.parser();
 
         EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv",
-                "evaluation-result-fpg.csv");
+                "evaluation-double.csv");
         long startTime = System.nanoTime();
-        BigDecimal evaluate = ep.evaluate();
+        Double evaluate = ep.evaluate(); 
         System.out.println(evaluate);
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
         System.out.println("That took " + (duration / 1000000) + " milliseconds");
-        //ep.resultPrint();
-        // ep.exportToCsv();
+        ep.resultPrint();
+        ep.exportToCsv();
         //System.out.println(ep.exportToJSON());
         //StateNode.parseState("{:label \"quality \" :colname \"quality\" :f [FPG 3.39817096929029727192528298473916947841644287109375 7.34277098376588 0.74726864798339953654959799678181298077106475830078125]}");
     }
