@@ -105,8 +105,8 @@ public class KDFLC {
 
         int iteration = 1;
         // TODO: falta seleccion y cruza
-        BigDecimal truth_value = new BigDecimal(min_truth_value);
-        while (iteration < num_iter && population[population.length - 1].getFitness().compareTo(truth_value) < 0) {
+        //BigDecimal truth_value = new BigDecimal(min_truth_value);
+        while (iteration < num_iter && population[population.length - 1].getFitness().compareTo(min_truth_value) < 0) {
 
             Predicate[] offspring = new Predicate[population.length / 2];
             TournamentSelection tournamentSelection = new TournamentSelection(population, population.length / 2);

@@ -312,11 +312,11 @@ public class Predicate implements Cloneable, Comparable<Predicate> {
 
     }
 
-    public double getFitness() {
+    public Double getFitness() {
         return fitness;
     }
 
-    public void setFitness(double fitness) {
+    public void setFitness(Double fitness) {
         this.fitness = fitness;
     }
 

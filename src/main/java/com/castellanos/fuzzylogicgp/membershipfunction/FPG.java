@@ -18,9 +18,9 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 public class FPG extends AMembershipFunction {
 
-    private double gamma;
-    private double beta;
-    private double m;
+    private Double gamma;
+    private Double beta;
+    private Double m;
 
     public FPG(String beta, String gamma, String m) {
         this.gamma = Double.parseDouble(gamma);
@@ -75,27 +75,27 @@ public class FPG extends AMembershipFunction {
         return bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);*/
     }
 
-    public double getGamma() {
+    public Double getGamma() {
         return gamma;
     }
 
-    public void setGamma(double gamma) {
+    public void setGamma(Double gamma) {
         this.gamma = gamma;
     }
 
-    public double getBeta() {
+    public Double getBeta() {
         return beta;
     }
 
-    public void setBeta(double beta) {
+    public void setBeta(Double beta) {
         this.beta = beta;
     }
 
-    public double getM() {
+    public Double getM() {
         return m;
     }
 
-    public void setM(double m) {
+    public void setM(Double m) {
         this.m = m;
     }
 

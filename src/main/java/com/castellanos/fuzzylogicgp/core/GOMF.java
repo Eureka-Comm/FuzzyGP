@@ -92,8 +92,8 @@ public class GOMF {
         evaluatePredicate(currentPop);
 
         // chromosomePrint(iteration, currentPop);
-        BigDecimal truth_value = new BigDecimal(adj_truth_value);
-        while (iteration < adj_iter && currentPop.get(currentPop.size() - 1).getFitness().compareTo(truth_value) < 0) {
+        //BigDecimal truth_value = new BigDecimal(adj_truth_value);
+        while (iteration < adj_iter && currentPop.get(currentPop.size() - 1).getFitness().compareTo(adj_truth_value) < 0) {
             // while (iteration < adj_iter) {
             iteration++;
             ArrayList<ChromosomePojo> childList = chromosomeCrossover(currentPop);
@@ -169,16 +169,16 @@ public class GOMF {
         Double[] r = minPromMaxValues(_item.getColName());
         minPromMaxMapValues.put(_item.getId(), r);
         double gamma_double = randomValue(r[0], r[2]);
-        f.setGamma(new BigDecimal(randomValue(r[0], r[2]).toString()));
+        f.setGamma((randomValue(r[0], r[2])));
         double value;
         do {
-            value = randomValue(r[0], f.getGamma().doubleValue());
+            value = randomValue(r[0], f.getGamma());
 
         } while (value >= gamma_double);
         // } while( value.compareTo(f.getGamma()) != -1);
 
-        f.setBeta(new BigDecimal(value));
-        f.setM(new BigDecimal(rand.nextDouble()));
+        f.setBeta((value));
+        f.setM((rand.nextDouble()));
 
         FunctionWrap map = new FunctionWrap(_item.getId(), f);
         return map;
@@ -294,23 +294,23 @@ public class GOMF {
 
                 switch (index) {
                     case 0:
-                        Double element_Beta = Double.valueOf(element.getBeta().toString());
+                        Double element_Beta = element.getBeta();
                         do {
                             value = randomValue(element.getBeta().doubleValue(), r[2]);
                         } while (value <= element_Beta);
                         // }while (value.compareTo(element.getBeta()) != 1);
-                        element.setGamma(new BigDecimal(value));
+                        element.setGamma((value));
                         break;
                     case 1:
-                        Double element_gamma = Double.valueOf(element.getGamma().toString());
+                        Double element_gamma = element.getGamma();
                         do {
                             value = randomValue(r[0], element.getGamma().doubleValue());
                         } while (value >= element_gamma);
                         // } while(value.compareTo(element.getGamma()) != 1);
-                        element.setBeta(new BigDecimal(value));
+                        element.setBeta((value));
                         break;
                     case 2:
-                        element.setM(new BigDecimal(rand.nextDouble()));
+                        element.setM((rand.nextDouble()));
                         break;
                 }
             }
@@ -458,7 +458,7 @@ public class GOMF {
 
     private class ChromosomePojo {
 
-        protected BigDecimal fitness;
+        protected Double fitness;
         protected FunctionWrap[] elements;
 
         /**
@@ -471,7 +471,7 @@ public class GOMF {
         /**
          * @param fitness the fitness to set
          */
-        public void setFitness(BigDecimal fitness) {
+        public void setFitness(Double fitness) {
             this.fitness = fitness;
         }
 
@@ -485,7 +485,7 @@ public class GOMF {
         /**
          * @return the fitness
          */
-        public BigDecimal getFitness() {
+        public Double getFitness() {
             return fitness;
         }
 
