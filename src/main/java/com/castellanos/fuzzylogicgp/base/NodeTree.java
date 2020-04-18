@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import com.google.gson.GsonBuilder;
 
-public class NodeTree extends Node implements Serializable {
+public class NodeTree extends Node implements Comparable<NodeTree> {
     /**
      *
      */
@@ -223,9 +223,12 @@ public class NodeTree extends Node implements Serializable {
 
     public static void getNodesByType(NodeTree tree, ArrayList<Node> nodes, NodeType type) {
         for (Node n : tree.getChildrens()) {
-            if (n.getType().equals(type)) {
+            if (type == null) {
                 nodes.add(n);
-            } else if (n instanceof NodeTree) {
+            } else if (n.getType().equals(type)) {
+                nodes.add(n);
+            }
+            if (n instanceof NodeTree) {
                 getNodesByType((NodeTree) n, nodes, type);
             }
         }
@@ -270,7 +273,7 @@ public class NodeTree extends Node implements Serializable {
             if (n.getId().equals(node.getId())) {
                 return pos + 1;
             } else if (n instanceof GeneratorNode) {
-                int position = dfs((NodeTree) n, node, pos );
+                int position = dfs((NodeTree) n, node, pos);
                 if (position != -1) {
                     return position;
                 }
@@ -279,19 +282,24 @@ public class NodeTree extends Node implements Serializable {
         return -1;
     }
 
-	public static void replace(NodeTree nodeTree, Node toReplace, Node newNode) throws OperatorException {
+    public static void replace(NodeTree nodeTree, Node toReplace, Node newNode) throws OperatorException {
         int pos = -1;
         for (int i = 0; i < nodeTree.getChildrens().size(); i++) {
-            if(nodeTree.getChildrens().get(i).getId().equals(toReplace.getId())){
+            if (nodeTree.getChildrens().get(i).getId().equals(toReplace.getId())) {
                 pos = i;
-                break;            
+                break;
             }
         }
-        if(pos != -1){
+        if (pos != -1) {
             nodeTree.getChildrens().set(pos, newNode);
-        }else{
-            throw new OperatorException(nodeTree.getId()+ " is not the parent of "+toReplace.getId());
+        } else {
+            throw new OperatorException(nodeTree.getId() + " is not the parent of " + toReplace.getId());
         }
-	}
+    }
+
+    @Override
+    public int compareTo(NodeTree tree) {
+        return this.fitness.compareTo(tree.getFitness());
+    }
 
 }

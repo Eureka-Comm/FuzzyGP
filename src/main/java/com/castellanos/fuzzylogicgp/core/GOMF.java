@@ -224,7 +224,7 @@ public class GOMF {
 
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
         //System.out.println(currentPop);
-        currentPop.parallelStream().forEach(mf -> {
+        currentPop.forEach(mf -> {
             NodeTree predicate = null;
             try {
                 predicate = (NodeTree) predicatePattern.clone();
