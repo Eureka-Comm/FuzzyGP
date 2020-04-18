@@ -5,7 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import java.math.BigDecimal;
 
 /**
  *

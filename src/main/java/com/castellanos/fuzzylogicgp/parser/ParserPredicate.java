@@ -10,7 +10,6 @@ import com.castellanos.fuzzylogicgp.base.Node;
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
-import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,7 +51,7 @@ public class ParserPredicate {
                         break;
                     case ")":
                         if (currentNodeRoot != null) {
-                            currentNodeRoot = predicate.getNodeParent(predicate, currentNodeRoot.getId());
+                            currentNodeRoot = NodeTree.getNodeParent(predicate, currentNodeRoot.getId());
                         }
                         break;
                     default:

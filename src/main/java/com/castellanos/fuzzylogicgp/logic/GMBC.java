@@ -5,11 +5,8 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.List;
 
-import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  * Logica Compensatoria Basada en la Media Geometrica.

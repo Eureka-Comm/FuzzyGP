@@ -189,7 +189,7 @@ public class EvaluatePredicate {
 
     private void dataFuzzy() {
         fuzzyData = Table.create();
-        p.getAllStates().forEach(v -> {
+        NodeTree.getNodesByType(p, NodeType.STATE).forEach(v -> {
             StateNode s = (StateNode) v;
             if (!fuzzyData.columnNames().contains(s.getColName())) {
                 ColumnType type = data.column(s.getColName()).type();
@@ -285,9 +285,7 @@ public class EvaluatePredicate {
         ep.resultPrint();
         System.out.println(pp);
         System.out.println(pp.toJson());
-        NodeTree clon = (NodeTree) pp.clone();
-        System.out.println(clon);
-        System.out.println(clon.toJson());
+        
         // ep.exportToCsv();
         // System.out.println(ep.exportToJSON());
         // StateNode.parseState("{:label \"quality \" :colname \"quality\" :f [FPG

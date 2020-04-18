@@ -7,10 +7,6 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import static java.lang.Math.pow;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-
-import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  *

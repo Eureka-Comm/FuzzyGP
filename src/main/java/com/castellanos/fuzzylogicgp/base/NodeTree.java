@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import com.google.gson.GsonBuilder;
 
-public class NodeTree extends Node  implements Serializable {
+public class NodeTree extends Node implements Serializable {
     /**
      *
      */
@@ -162,22 +162,6 @@ public class NodeTree extends Node  implements Serializable {
         return null;
     }
 
-    private void getStates(NodeTree node, ArrayList<StateNode> states) {
-        for (Node n : node.getChildrens()) {
-            if (n instanceof StateNode) {
-                states.add((StateNode) n);
-            } else if (n instanceof NodeTree) {
-                getStates((NodeTree) n, states);
-            }
-        }
-    }
-
-    public ArrayList<StateNode> getAllStates() {
-        ArrayList<StateNode> states = new ArrayList<>();
-        getStates(this, states);
-        return states;
-    }
-
     private String makePrintStruct(Node node) {
         String st = "";
         if (node instanceof NodeTree) {
@@ -214,7 +198,7 @@ public class NodeTree extends Node  implements Serializable {
         return true;
     }
 
-    public NodeTree getNodeParent(NodeTree root, String idChild) {
+    public static NodeTree getNodeParent(NodeTree root, String idChild) {
         if (idChild == null) {
             return null;
         }
@@ -229,7 +213,22 @@ public class NodeTree extends Node  implements Serializable {
             }
         }
         return null;
+    }
 
+    public static ArrayList<Node> getNodesByType(NodeTree tree, NodeType type) {
+        ArrayList<Node> nodes = new ArrayList<>();
+        getNodesByType(tree, nodes, type);
+        return nodes;
+    }
+
+    public static void getNodesByType(NodeTree tree, ArrayList<Node> nodes, NodeType type) {
+        for (Node n : tree.getChildrens()) {
+            if (n.getType().equals(type)) {
+                nodes.add(n);
+            } else if (n instanceof NodeTree) {
+                getNodesByType((NodeTree) n, nodes, type);
+            }
+        }
     }
 
     public String toJson() {
@@ -259,17 +258,40 @@ public class NodeTree extends Node  implements Serializable {
 
     }
 
-    private void auxClone(NodeTree currentRoot, Node current) throws OperatorException, CloneNotSupportedException {
-        if (current instanceof NodeTree) {
-            NodeTree tree = new NodeTree(current.getType());
-            for (Node node : ((NodeTree) current).getChildrens()) {
-                tree.addChild((Node) node.clone());
-                auxClone(tree, node);
-            }
-            currentRoot.addChild(tree);
-        } else {
-            currentRoot.addChild((Node) current.clone());
-        }
+    public static int dfs(NodeTree root, Node node) {
+        return dfs(root, node, 1);
     }
+
+    private static int dfs(NodeTree root, Node node, int pos) {
+        if (node.getId().equals(node.getId())) {
+            return pos;
+        }
+        for (Node n : root.getChildrens()) {
+            if (n.getId().equals(node.getId())) {
+                return pos + 1;
+            } else if (n instanceof GeneratorNode) {
+                int position = dfs((NodeTree) n, node, pos );
+                if (position != -1) {
+                    return position;
+                }
+            }
+        }
+        return -1;
+    }
+
+	public static void replace(NodeTree nodeTree, Node toReplace, Node newNode) throws OperatorException {
+        int pos = -1;
+        for (int i = 0; i < nodeTree.getChildrens().size(); i++) {
+            if(nodeTree.getChildrens().get(i).getId().equals(toReplace.getId())){
+                pos = i;
+                break;            
+            }
+        }
+        if(pos != -1){
+            nodeTree.getChildrens().set(pos, newNode);
+        }else{
+            throw new OperatorException(nodeTree.getId()+ " is not the parent of "+toReplace.getId());
+        }
+	}
 
 }

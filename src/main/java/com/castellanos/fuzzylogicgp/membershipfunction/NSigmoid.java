@@ -5,10 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-
-import ch.obermuhlner.math.big.BigDecimalMath;
 
 /**
  *

@@ -16,7 +16,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author hp
  */
-public class Predicate implements Cloneable, Comparable<Predicate> {
+public class Predicate  {
 /*
     private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
@@ -323,39 +323,5 @@ public class Predicate implements Cloneable, Comparable<Predicate> {
         return nodes;
     }
 
-    /**
-     * @param nodes the nodes to set
-     */
-    public void setNodes(ConcurrentHashMap<String, Node> nodes) {
-        this.nodes = nodes;
-    }
-
-    public String getIdFather() {
-        return idFather;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        Predicate p = new Predicate();
-
-        /*if (this.getFitness() != null)
-            p.setFitness(new BigDecimal(this.getFitness().toString()));*/
-        ConcurrentHashMap<String, Node> cp = new ConcurrentHashMap<>();
-        this.getNodes().forEach((k, v) -> {
-            try {
-                cp.put(k, (Node) v.clone());
-                if (getIdFather() != null && k.equals(this.getIdFather()))
-                    p.setIdFather(v.getId());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        });
-        p.setNodes(cp);
-        return p;
-    }
-
-    @Override
-    public int compareTo(Predicate p) {
-        return this.fitness.compareTo(p.getFitness());
-   }*/
+ */
 }

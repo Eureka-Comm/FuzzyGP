@@ -78,7 +78,7 @@ public class GOMF {
                 }
             }
         });*/
-        predicatePattern.getAllStates().forEach(v->{
+        NodeTree.getNodesByType(predicatePattern, NodeType.STATE).forEach(v->{
             if(v instanceof StateNode){
                 StateNode c = (StateNode) v;
                 if (c.getMembershipFunction() == null) {
