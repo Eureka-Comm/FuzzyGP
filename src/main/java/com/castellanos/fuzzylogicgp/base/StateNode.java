@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
@@ -15,8 +16,12 @@ import com.google.gson.GsonBuilder;
  *
  * @author hp
  */
-public class StateNode extends Node {
+public class StateNode extends Node implements Serializable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -196106920996217719L;
     private String label;
     private String colName;
     private AMembershipFunction membershipFunction;

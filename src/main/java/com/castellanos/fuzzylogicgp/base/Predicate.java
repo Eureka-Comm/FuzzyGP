@@ -5,7 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +17,7 @@ import com.google.gson.GsonBuilder;
  * @author hp
  */
 public class Predicate implements Cloneable, Comparable<Predicate> {
-
+/*
     private ConcurrentHashMap<String, Node> nodes;
     private String idFather;
     private Double fitness;
@@ -358,5 +357,5 @@ public class Predicate implements Cloneable, Comparable<Predicate> {
     @Override
     public int compareTo(Predicate p) {
         return this.fitness.compareTo(p.getFitness());
-    }
+   }*/
 }

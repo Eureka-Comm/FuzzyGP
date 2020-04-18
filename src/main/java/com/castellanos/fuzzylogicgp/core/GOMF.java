@@ -6,8 +6,6 @@
 package com.castellanos.fuzzylogicgp.core;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -17,9 +15,9 @@ import java.util.Random;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
+import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
-import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
@@ -49,7 +47,7 @@ public class GOMF {
 
     private Table data;
 
-    private Predicate predicatePattern;
+    private NodeTree predicatePattern;
     private List<StateNode> sns;
     private final HashMap<String, Double[]> minPromMaxMapValues;
 
@@ -69,11 +67,19 @@ public class GOMF {
 
     }
 
-    public void optimize(Predicate p) {
+    public void optimize(NodeTree p) {
         this.predicatePattern = p;
         sns = new ArrayList<>();
-        predicatePattern.getNodes().forEach((k, v) -> {
+        /*predicatePattern.getNodes().forEach((k, v) -> {
             if (v.getType().equals(NodeType.STATE)) {
+                StateNode c = (StateNode) v;
+                if (c.getMembershipFunction() == null) {
+                    sns.add(c);
+                }
+            }
+        });*/
+        predicatePattern.getAllStates().forEach(v->{
+            if(v instanceof StateNode){
                 StateNode c = (StateNode) v;
                 if (c.getMembershipFunction() == null) {
                     sns.add(c);
@@ -118,9 +124,9 @@ public class GOMF {
             chromosomeMutation(currentPop);
             evaluatePredicate(currentPop);
 
-            // Arrays.sort(currentPop, chromosomeComparator);
-            // currentPop.sort(chromosomeComparator);
-           // chromosomePrint(iteration, currentPop);
+            //Arrays.sort(currentPop, chromosomeComparator);
+             currentPop.sort(chromosomeComparator);
+           //chromosomePrint(iteration, currentPop);
         }
 
         ChromosomePojo bestFound = currentPop.get(0);
@@ -132,7 +138,8 @@ public class GOMF {
         //System.out.println("Best solution: " + bestFound.getFitness() + " := " + Arrays.toString(bestFound.getElements()));
         predicatePattern.setFitness(bestFound.getFitness());
         for (FunctionWrap k : bestFound.getElements()) {
-            Node node = predicatePattern.getNode(k.getOwner());
+            //Node node = predicatePattern.getNode(k.getOwner());
+            Node node = predicatePattern.findById(k.getOwner());
             if (node instanceof StateNode) {
                 StateNode st = (StateNode) node;
                 try {
@@ -209,24 +216,24 @@ public class GOMF {
         return (rand.doubles(min, max + 1).findFirst().getAsDouble());
     }
 
-    public void optimize(Table data, Predicate p) throws CloneNotSupportedException {
+    public void optimize(Table data, NodeTree p)  {
         this.data = data;
-        this.predicatePattern = (Predicate) p.clone();
+        this.predicatePattern = p;
         genetic();
     }
 
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
         //System.out.println(currentPop);
         currentPop.parallelStream().forEach(mf -> {
-            Predicate predicate = null;
+            NodeTree predicate = null;
             try {
-                predicate = (Predicate) predicatePattern.clone();
+                predicate = (NodeTree) predicatePattern.clone();
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
 
             for (FunctionWrap k : mf.getElements()) {
-                Node node = predicate.getNode(k.getOwner());
+                Node node = predicate.findById(k.getOwner());
                 if (node instanceof StateNode) {
                     StateNode st = (StateNode) node;
                     try {
@@ -253,7 +260,7 @@ public class GOMF {
             System.out.println(iteration + "[ " + i + "]" + m.getFitness());
             for (FunctionWrap fmap : m.getElements()) {
                 // st += " " + fmap.getFpg().toString();
-                Node node = predicatePattern.getNode(fmap.getOwner());
+                Node node = predicatePattern.findById(fmap.getOwner());
                 if (node instanceof StateNode) {
                     StateNode stt = (StateNode) node;
                     stt.setMembershipFunction(fmap.getFpg());
@@ -506,7 +513,7 @@ public class GOMF {
 
     public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
-        GOMF gomf = new GOMF(d, new GMBC(), 0.15, 5, 1, 0.998);
+        GOMF gomf = new GOMF(d, new GMBC(), 0.15, 5, 5, 1);
         StateNode sa = new StateNode("alcohol", "alcohol");
         StateNode sph = new StateNode("pH", "pH");
         StateNode sq = new StateNode("quality", "quality");
@@ -520,10 +527,12 @@ public class GOMF {
         GeneratorNode g = new GeneratorNode("*", new NodeType[] {}, new ArrayList<>());
         List<GeneratorNode> gs = new ArrayList<>();
         gs.add(g);
-        String expression = "(IMP \"alcohol\" \"quality\")";
+        String expression = "(IMP (AND \"alcohol\" \"fixed_acidity\") \"quality\")";
         long startTime = System.nanoTime();
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
-        gomf.optimize(pp.parser());
+        NodeTree p = pp.parser();
+        gomf.optimize(p);
+        System.out.println(p+" "+p.getFitness());
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.

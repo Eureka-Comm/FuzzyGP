@@ -5,12 +5,13 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.io.Serializable;
 
 /**
  *
  * @author hp
  */
-public abstract class AMembershipFunction implements Cloneable {
+public abstract class AMembershipFunction implements Cloneable , Serializable{
 
     public MembershipFunctionType type;
 

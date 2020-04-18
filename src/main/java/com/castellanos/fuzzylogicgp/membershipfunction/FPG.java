@@ -18,6 +18,10 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 public class FPG extends AMembershipFunction {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7249037051439575667L;
     private Double gamma;
     private Double beta;
     private Double m;

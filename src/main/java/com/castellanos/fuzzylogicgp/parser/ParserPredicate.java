@@ -7,9 +7,9 @@ package com.castellanos.fuzzylogicgp.parser;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
+import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
-import com.castellanos.fuzzylogicgp.base.OperatorNode;
 import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class ParserPredicate {
     private final String expression;
     private Stack<String> stack;
     private Node currentNodeRoot;
-    private Predicate predicate;
+    private NodeTree predicate;
     private final List<StateNode> states;
     private final List<GeneratorNode> generators;
 
@@ -37,9 +37,10 @@ public class ParserPredicate {
         stack = new Stack<>();
     }
 
-    public Predicate parser() throws OperatorException, CloneNotSupportedException {
+    public NodeTree parser() throws OperatorException, CloneNotSupportedException {
         List<String> split = expressionSplit(expression);
-        predicate = new Predicate();
+        // predicate = new Predicate();
+        predicate = null;
         if (isBalanced(split)) {
             Iterator<String> stringIterator = split.iterator();
             String rootString;
@@ -47,18 +48,23 @@ public class ParserPredicate {
             while (stringIterator.hasNext()) {
                 rootString = stringIterator.next();
                 switch (rootString) {
-                case "(":
-                    break;
-                case ")":
-                    if (currentNodeRoot != null && currentNodeRoot.getFather() != null) {
-                        currentNodeRoot = predicate.getNode(currentNodeRoot.getFather());
-                    }
-                    break;
-                default:
-                    createNodeFromExpre(rootString);
-                    break;
+                    case "(":
+                        break;
+                    case ")":
+                        if (currentNodeRoot != null) {
+                            currentNodeRoot = predicate.getNodeParent(predicate, currentNodeRoot.getId());
+                        }
+                        break;
+                    default:
+                        createNodeFromExpre(rootString);
+                        break;
                 }
 
+            }
+            if (predicate == null && currentNodeRoot != null) {
+                NodeTree p = new NodeTree();
+                p.addChild(currentNodeRoot);
+                return p;
             }
             return (predicate.isValid()) ? predicate : null;
 
@@ -95,40 +101,40 @@ public class ParserPredicate {
 
         for (i1 = 0, i2 = 0; i2 < cadena.length();) {
             switch (cadena.charAt(i1)) {
-            case '(':
-            case ')':
-                if (cadena.charAt(i1) == '(') {
-                    elementos.add("(");
-                } else {
-                    elementos.add(")");
-                }
-                i1++;
-                i2 = i1;
-                break;
-            case '\"':
-                i1++;
-                i2 = i1;
-                while (cadena.charAt(i2) != '\"') {
-                    i2++;
-                }
-                if (i2 > i1) {
+                case '(':
+                case ')':
+                    if (cadena.charAt(i1) == '(') {
+                        elementos.add("(");
+                    } else {
+                        elementos.add(")");
+                    }
+                    i1++;
+                    i2 = i1;
+                    break;
+                case '\"':
+                    i1++;
+                    i2 = i1;
+                    while (cadena.charAt(i2) != '\"') {
+                        i2++;
+                    }
+                    if (i2 > i1) {
+                        elementos.add(cadena.substring(i1, i2));
+                    }
+                    i1 = i2 + 1;
+                    i2 = i1;
+                    break;
+                case ' ':
+                    i1++;
+                    break;
+                default:
+                    i2 = i1;
+                    do {
+                        i2++;
+                        b = cadena.charAt(i2);
+                    } while (b != ' ' && b != '(' && b != ')' && b != '\"');
                     elementos.add(cadena.substring(i1, i2));
-                }
-                i1 = i2 + 1;
-                i2 = i1;
-                break;
-            case ' ':
-                i1++;
-                break;
-            default:
-                i2 = i1;
-                do {
-                    i2++;
-                    b = cadena.charAt(i2);
-                } while (b != ' ' && b != '(' && b != ')' && b != '\"');
-                elementos.add(cadena.substring(i1, i2));
-                i1 = i2;
-                break;
+                    i1 = i2;
+                    break;
             }
         }
         return elementos;
@@ -137,54 +143,62 @@ public class ParserPredicate {
     private void createNodeFromExpre(String rootString) throws OperatorException, CloneNotSupportedException {
         Node tmp = null;
         switch (rootString) {
-        case "AND":
-            tmp = new OperatorNode(NodeType.AND);
-            break;
-        case "OR":
-            tmp = new OperatorNode(NodeType.OR);
-            break;
-        case "EQV":
-            tmp = new OperatorNode(NodeType.EQV);
-            break;
-        case "IMP":
-            tmp = new OperatorNode(NodeType.IMP);
-            break;
-        case "NOT":
-            tmp = new OperatorNode(NodeType.NOT);
+            case "AND":
+                tmp = new NodeTree(NodeType.AND);
+                break;
+            case "OR":
+                tmp = new NodeTree(NodeType.OR);
+                break;
+            case "EQV":
+                tmp = new NodeTree(NodeType.EQV);
+                break;
+            case "IMP":
+                tmp = new NodeTree(NodeType.IMP);
+                break;
+            case "NOT":
+                tmp = new NodeTree(NodeType.NOT);
 
-            break;
-        case "OPERATOR":
-            for (GeneratorNode generator : generators) {
-                if (generator.getLabel().equals(rootString)) {
-                    tmp = generator;
-                    break;
+                break;
+            case "OPERATOR":
+                for (GeneratorNode generator : generators) {
+                    if (generator.getLabel().equals(rootString)) {
+                        tmp = generator;
+                        break;
+                    }
                 }
-            }
 
-            break;
-        default:
+                break;
+            default:
 
-            for (int i = 0; i < states.size(); i++) {
-                if (states.get(i).getLabel().equals(rootString)) {
-                    tmp = (Node) states.get(i).clone();
-                    break;
+                for (int i = 0; i < states.size(); i++) {
+                    if (states.get(i).getLabel().equals(rootString)) {
+                        tmp = (Node) states.get(i).clone();
+                        break;
+                    }
                 }
-            }
-            for (GeneratorNode generator : generators) {
-                if (generator.getLabel().equals(rootString)) {
-                    tmp = generator;
-                    break;
+                for (GeneratorNode generator : generators) {
+                    if (generator.getLabel().equals(rootString)) {
+                        tmp = generator;
+                        break;
+                    }
                 }
-            }
-            if (tmp == null) {
-                throw new OperatorException("Not found: " + rootString);
-            }
-            break;
+                if (tmp == null) {
+                    throw new OperatorException("Not found: " + rootString);
+                }
+                break;
         }
 
-        predicate.addNode(currentNodeRoot, tmp);
-        if (tmp instanceof OperatorNode) {
+        // predicate.addNode(currentNodeRoot, tmp);
+        if (predicate == null && tmp instanceof NodeTree) {
+            predicate = (NodeTree) tmp;
+        }
+        if (currentNodeRoot == null) {
             currentNodeRoot = tmp;
+        }
+        if (!currentNodeRoot.getId().equals(tmp.getId()) && currentNodeRoot instanceof NodeTree) {
+            ((NodeTree) currentNodeRoot).addChild(tmp);
+            if (tmp instanceof NodeTree)
+                currentNodeRoot = tmp;
         }
 
     }

@@ -16,6 +16,10 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 public class NSigmoid extends AMembershipFunction {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3118936100100373869L;
     private double center;
     private double beta;
 

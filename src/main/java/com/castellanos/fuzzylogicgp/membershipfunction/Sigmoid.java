@@ -16,6 +16,10 @@ import ch.obermuhlner.math.big.BigDecimalMath;
  */
 public class Sigmoid extends AMembershipFunction {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8054075265710944588L;
     private double center;
     private double beta;
 

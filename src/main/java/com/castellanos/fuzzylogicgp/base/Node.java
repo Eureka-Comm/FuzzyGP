@@ -5,15 +5,15 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  *
  * @author hp
  */
-public abstract class Node implements Cloneable {
+public abstract class Node implements Cloneable, Serializable {
     private final String id = UUID.randomUUID().toString();
-    private String father;
     private NodeType type;
     private boolean editable;
     private String byGenerator;
@@ -39,14 +39,6 @@ public abstract class Node implements Cloneable {
 
     public String getId() {
         return id;
-    }
-
-    public String getFather() {
-        return father;
-    }
-
-    public void setFather(String father) {
-        this.father = father;
     }
 
     /**

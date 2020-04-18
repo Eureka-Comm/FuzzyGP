@@ -5,14 +5,19 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  *
  * @author hp
  */
-public class OperatorNode extends Node {
+public class OperatorNode extends Node implements Serializable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -4847569043801222596L;
     private double fitness;
     private String leftID;
     private String righID;

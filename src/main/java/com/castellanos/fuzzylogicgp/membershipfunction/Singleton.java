@@ -13,6 +13,10 @@ import java.math.BigDecimal;
  */
 public class Singleton extends AMembershipFunction {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -4595317229883563585L;
     private double a;
 
     public Singleton(double a) {

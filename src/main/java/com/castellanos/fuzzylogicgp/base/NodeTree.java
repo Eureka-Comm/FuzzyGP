@@ -1,0 +1,275 @@
+package com.castellanos.fuzzylogicgp.base;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import com.google.gson.GsonBuilder;
+
+public class NodeTree extends Node  implements Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 7984595590989290929L;
+    private Double fitness;
+    private ArrayList<Node> childrens;
+    private String leftID;
+    private String righID;
+
+    public NodeTree() {
+        setType(NodeType.OPERATOR);
+        this.childrens = new ArrayList<>();
+    }
+
+    public NodeTree(NodeType type) throws OperatorException {
+        this.childrens = new ArrayList<>();
+        switch (type) {
+            case AND:
+                setType(type);
+                break;
+            case OR:
+                setType(type);
+                break;
+            case IMP:
+                setType(type);
+                break;
+            case EQV:
+                setType(type);
+                break;
+            case NOT:
+                setType(type);
+                break;
+            default:
+                throw new OperatorException(this.getId() + " " + this.getType() + ": illegal assigment.");
+
+        }
+    }
+
+    /**
+     * @param fitness the fitness to set
+     */
+    public void setFitness(Double fitness) {
+        this.fitness = fitness;
+    }
+
+    /**
+     * @return the childrens
+     */
+    public ArrayList<Node> getChildrens() {
+        return childrens;
+    }
+
+    public void addChild(Node node) throws OperatorException {
+        switch (this.getType()) {
+            case AND:
+            case OR:
+                this.childrens.add(node);
+                break;
+            case IMP:
+            case EQV:
+                if (childrens.isEmpty()) {
+                    this.leftID = node.getId();
+                    this.childrens.add(node);
+                } else if (childrens.size() == 1) {
+                    this.righID = node.getId();
+                    this.childrens.add(node);
+                } else {
+                    throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
+                }
+                break;
+            case NOT:
+                if (childrens.isEmpty()) {
+                    this.childrens.add(node);
+                    break;
+                } else
+                    throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be one element.");
+            case OPERATOR:
+                this.childrens.add(node);
+                break;
+            default:
+                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be ? element.");
+        }
+    }
+
+    /**
+     * @return the leftID
+     */
+    public String getLeftID() {
+        return leftID;
+    }
+
+    /**
+     * @return the righID
+     */
+    public String getRighID() {
+        return righID;
+    }
+
+    /**
+     * @param leftID the leftID to set
+     */
+    public void setLeftID(String leftID) {
+        this.leftID = leftID;
+    }
+
+    /**
+     * @param righID the righID to set
+     */
+    public void setRighID(String righID) {
+        this.righID = righID;
+    }
+
+    /**
+     * @return the fitness
+     */
+    public Double getFitness() {
+        return fitness;
+    }
+
+    @Override
+    public String toString() {
+        if (childrens.isEmpty()) {
+            return String.format("(%s)", this.getType());
+        }
+        String st = makePrintStruct(this);
+        /*
+         * for (Node node : childrens) { if(node instanceof NodeTree){
+         * st+=" "+makePrintStruct((NodeTree) node); }else if( node instanceof
+         * StateNode){ st += String.format(" \"%s\"", ((StateNode) node).getLabel() );
+         * }else if(node instanceof GeneratorNode){ st += String.format(" \"%s\"",
+         * ((GeneratorNode)node).getLabel()); } }
+         */
+        return st;
+    }
+
+    public Node findById(String id) {
+        for (Node node : childrens) {
+            if (node.getId().equals(id))
+                return node;
+
+            if (node instanceof NodeTree) {
+                Node find = ((NodeTree) node).findById(id);
+                if (find != null) {
+                    return find;
+                }
+            }
+
+        }
+        return null;
+    }
+
+    private void getStates(NodeTree node, ArrayList<StateNode> states) {
+        for (Node n : node.getChildrens()) {
+            if (n instanceof StateNode) {
+                states.add((StateNode) n);
+            } else if (n instanceof NodeTree) {
+                getStates((NodeTree) n, states);
+            }
+        }
+    }
+
+    public ArrayList<StateNode> getAllStates() {
+        ArrayList<StateNode> states = new ArrayList<>();
+        getStates(this, states);
+        return states;
+    }
+
+    private String makePrintStruct(Node node) {
+        String st = "";
+        if (node instanceof NodeTree) {
+            NodeTree nodeTree = (NodeTree) node;
+            if (nodeTree.getChildrens().isEmpty()) {
+                return "(" + nodeTree.getType() + ")";
+            } else {
+                st += "(" + nodeTree.getType();
+                if (nodeTree.getType() == NodeType.IMP || nodeTree.getType() == NodeType.EQV) {
+                    if (nodeTree.getLeftID() != null) {
+                        st += " " + makePrintStruct(nodeTree.findById(nodeTree.getLeftID()));
+                    }
+                    if (nodeTree.getRighID() != null) {
+                        st += " " + makePrintStruct(nodeTree.findById(nodeTree.getRighID()));
+                    }
+                } else {
+                    for (Node chilNode : nodeTree.getChildrens()) {
+                        st += " " + makePrintStruct(chilNode);
+                    }
+                }
+            }
+        } else if (node instanceof StateNode) {
+            st += String.format(" \"%s\"", ((StateNode) node).getLabel());
+            return st;
+        } else if (node instanceof GeneratorNode) {
+            st += String.format(" \"%s\"", ((GeneratorNode) node).getLabel());
+            return st;
+        }
+
+        return st + ")";
+    }
+
+    public boolean isValid() {
+        return true;
+    }
+
+    public NodeTree getNodeParent(NodeTree root, String idChild) {
+        if (idChild == null) {
+            return null;
+        }
+        for (Node node : root.getChildrens()) {
+            if (node.getId().equals(idChild)) {
+                return root;
+            } else if (node instanceof NodeTree) {
+                NodeTree parent = getNodeParent((NodeTree) node, idChild);
+                if (parent != null) {
+                    return parent;
+                }
+            }
+        }
+        return null;
+
+    }
+
+    public String toJson() {
+        GsonBuilder gson = new GsonBuilder().setPrettyPrinting();
+        return gson.create().toJson(this);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(this);
+
+            oos.flush();
+            oos.close();
+            bos.close();
+            byte[] byteData = bos.toByteArray();
+            ByteArrayInputStream bais = new ByteArrayInputStream(byteData);
+            Object object = (Object) new ObjectInputStream(bais).readObject();
+            return object;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    private void auxClone(NodeTree currentRoot, Node current) throws OperatorException, CloneNotSupportedException {
+        if (current instanceof NodeTree) {
+            NodeTree tree = new NodeTree(current.getType());
+            for (Node node : ((NodeTree) current).getChildrens()) {
+                tree.addChild((Node) node.clone());
+                auxClone(tree, node);
+            }
+            currentRoot.addChild(tree);
+        } else {
+            currentRoot.addChild((Node) current.clone());
+        }
+    }
+
+}

@@ -14,10 +14,10 @@ import java.util.stream.Collectors;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
+import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.OperatorNode;
-import com.castellanos.fuzzylogicgp.base.Predicate;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
@@ -35,7 +35,7 @@ import tech.tablesaw.api.Table;
  */
 public class KDFLC {
     private ParserPredicate parserPredicate;
-    private Predicate predicatePattern;
+    private NodeTree predicatePattern;
     private HashMap<String, List<StateNode>> statesByGenerators;
     private ALogic logic;
     private int depth;
