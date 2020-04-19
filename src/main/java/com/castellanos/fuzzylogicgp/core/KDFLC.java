@@ -1,5 +1,6 @@
 package com.castellanos.fuzzylogicgp.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,7 +26,10 @@ import com.castellanos.fuzzylogicgp.logic.GMBC;
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 
+import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.csv.CsvWriteOptions;
 
 /**
  * fuzzy compensatory logical knowledge discovery
@@ -129,6 +133,7 @@ public class KDFLC {
                 i++;
             }
             mutation(offspring);
+            gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
             for (int i = 0; i < offspring.length; i++) {
                 gomf.optimize(offspring[i]);
             }
@@ -150,6 +155,7 @@ public class KDFLC {
             }
             iteration++;
         }
+        Collections.sort(resultList, Collections.reverseOrder());
         System.out.println("post execution: ");
         for (int i = 0; i < population.length; i++) {
             System.out.println(i + " " + population[i] + " " + population[i].getFitness());
@@ -425,6 +431,31 @@ public class KDFLC {
         return new NodeTree[] { ac, bc };
     }
 
+    public void exportToCsv() throws IOException {
+        Table fuzzyData = Table.create();
+        ArrayList<Double> v = new ArrayList<>();
+        ArrayList<String> p = new ArrayList<>();
+        ArrayList<String> d = new ArrayList<>();
+        for (int i = 0; i < resultList.size(); i++) {
+            v.add(resultList.get(i).getFitness());
+            p.add("'"+resultList.get(i).toString()+"'");
+            ArrayList<String> st = new ArrayList<>();
+            for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
+                if (node instanceof StateNode) {
+                    StateNode s = (StateNode) node;
+                    st.add(s.toString());
+                }
+            }
+            d.add("'"+st.toString()+"'");
+        }
+        DoubleColumn value = DoubleColumn.create("truth-value",v.toArray(new Double[v.size()]));
+
+        StringColumn predicates = StringColumn.create("predicate", p);
+        StringColumn data = StringColumn.create("data", d);
+        fuzzyData.addColumns(value, predicates, data);
+        fuzzyData.write().toFile(new File("result.csv"));
+    }
+
     public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
         StateNode sa = new StateNode("alcohol", "alcohol");
@@ -476,7 +507,7 @@ public class KDFLC {
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 3, 100, 50, 10, 1f, 0.15, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 10, 10, 1f, 0.15, 2, 1, 0.0, d);
         // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
         // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
         /*
@@ -490,6 +521,7 @@ public class KDFLC {
 
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
         System.out.println("That took " + (duration / 1000000) + " milliseconds");
+        discovery.exportToCsv();
     }
 
 }
