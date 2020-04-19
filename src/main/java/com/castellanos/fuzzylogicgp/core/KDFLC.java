@@ -73,7 +73,8 @@ public class KDFLC {
         this.adj_min_truth_value = adj_min_truth_value;
         this.data = data;
         this.resultList = new ArrayList<>();
-        this.min_truth_value = (min_truth_value <= 1) ? (min_truth_value > 0.0005) ? min_truth_value - 0.005 : 0.0 : 0.5;
+        this.min_truth_value = (min_truth_value <= 1) ? (min_truth_value > 0.0005) ? min_truth_value - 0.005 : 0.0
+                : 0.5;
     }
 
     public void execute() throws CloneNotSupportedException, OperatorException {
@@ -164,7 +165,7 @@ public class KDFLC {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-            //System.out.printf("ind %3d: %s\n", i + 1, pop[i]);
+            // System.out.printf("ind %3d: %s\n", i + 1, pop[i]);
         }
         return pop;
     }
@@ -376,6 +377,7 @@ public class KDFLC {
                     case EQV:
                         clon.setType(NodeType.IMP);
                         NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        break;
                     case STATE:
                         List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
                         StateNode state = ls.get(rand.nextInt(ls.size()));
@@ -386,7 +388,7 @@ public class KDFLC {
                             s.setMembershipFunction(s.getMembershipFunction());
                         }
                         NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
-
+                        break;
                     default:
                         break;
                 }
@@ -474,7 +476,7 @@ public class KDFLC {
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 10, 10, 1f, 0.15, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 3, 100, 50, 10, 1f, 0.15, 2, 1, 0.0, d);
         // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
         // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
         /*

@@ -189,7 +189,8 @@ public class EvaluatePredicate {
 
     private void dataFuzzy() {
         fuzzyData = Table.create();
-        NodeTree.getNodesByType(p, NodeType.STATE).forEach(v -> {
+        ArrayList<Node> nodes = NodeTree.getNodesByType(p, NodeType.STATE);
+        for (Node v : nodes) {
             StateNode s = (StateNode) v;
             if (!fuzzyData.columnNames().contains(s.getColName())) {
                 ColumnType type = data.column(s.getColName()).type();
@@ -226,7 +227,7 @@ public class EvaluatePredicate {
                 }
                 fuzzyData.addColumns(dc);
             }
-        });
+        }
         // System.out.println(fuzzyData);
     }
 
