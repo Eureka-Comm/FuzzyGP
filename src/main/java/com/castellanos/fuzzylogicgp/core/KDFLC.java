@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,7 @@ public class KDFLC {
     // Aux
     private static final Random rand = new Random();
     private Table data;
+    private ArrayList<NodeTree> resultList;
 
     public KDFLC(ParserPredicate pp, ALogic logic, int depth, int num_pop, int num_iter, int num_result,
             double min_truth_value, double mut_percentage, int adj_num_pop, int adj_num_iter,
@@ -70,6 +72,8 @@ public class KDFLC {
         this.adj_num_iter = adj_num_iter;
         this.adj_min_truth_value = adj_min_truth_value;
         this.data = data;
+        this.resultList = new ArrayList<>();
+        this.min_truth_value = (min_truth_value <= 1) ? (min_truth_value > 0.0005) ? min_truth_value - 0.005 : 0.0 : 0.5;
     }
 
     public void execute() throws CloneNotSupportedException, OperatorException {
@@ -99,48 +103,60 @@ public class KDFLC {
         for (int i = 0; i < population.length; i++) {
             gomf.optimize(population[i]);
         }
-        Arrays.sort(population);
+        Arrays.sort(population, Collections.reverseOrder());
         for (int i = 0; i < population.length; i++) {
-            System.out.println(i + " " + population[i] + " " + population[i].getFitness());
-        }
-        System.out.println("mutate");
-
-        mutation(population);
-        for (int i = 0; i < population.length; i++) {
-            gomf.optimize(population[i]);
-        }
-       // Arrays.sort(population);
-
-        for (int i = 0; i < population.length; i++) {
-            System.out.println(i + " " + population[i] + " " + population[i].getFitness());
+            if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
+                resultList.add((NodeTree) population[i].clone());
+            }
         }
         int iteration = 1;
-        // TODO: falta seleccion y cruza
-        // BigDecimal truth_value = new BigDecimal(min_truth_value);
+        while (iteration < num_iter && resultList.size() < num_result) {
+            int offspring_size = population.length / 2;
+            if (offspring_size % 2 != 0) {
+                offspring_size++;
+            }
+            NodeTree[] offspring = new NodeTree[offspring_size];
+            TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
+            tournamentSelection.execute();
 
-        /*
-         * while (iteration < num_iter && population[population.length -
-         * 1].getFitness().compareTo(min_truth_value) < 0) {
-         * 
-         * NodeTree[] offspring = new NodeTree[population.length / 2];
-         * TournamentSelection tournamentSelection = new TournamentSelection(population,
-         * population.length / 2); tournamentSelection.execute();
-         * System.out.println("Selection"); for (NodeTree predicate :
-         * tournamentSelection.getAll()) { System.out.println(predicate); }
-         * System.out.println("Offspring"); for (int i = 0; i < offspring.length; i++) {
-         * NodeTree a = tournamentSelection.getNext(); NodeTree b =
-         * tournamentSelection.getNext(); offspring[i] = crossover(a, b);
-         * System.out.println(offspring[i]); offspring[i++] = crossover(b, a);
-         * System.out.println(offspring[i]); } System.out.println("mutate");
-         * mutation(offspring); for (int i = 0; i < offspring.length; i++) {
-         * gomf.optimize(offspring[i]); } for (int i = 0; i < offspring.length; i++) {
-         * for (int j = 0; j < population.length; j++) { if
-         * (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
-         * population[j] = (NodeTree) offspring[i].clone(); break; } } }
-         * Arrays.sort(population); System.out.println(iteration + " " +
-         * population[population.length - 1] + " " + population[population.length -
-         * 1].getFitness()); iteration++; }
-         */
+            for (int i = 0; i < offspring.length; i++) {
+                NodeTree a = tournamentSelection.getNext();
+                NodeTree b = tournamentSelection.getNext();
+                NodeTree[] cross = crossover(a, b);
+                offspring[i] = cross[0];
+                offspring[i + 1] = cross[1];
+                i++;
+            }
+            mutation(offspring);
+            for (int i = 0; i < offspring.length; i++) {
+                gomf.optimize(offspring[i]);
+            }
+            for (int i = 0; i < offspring.length; i++) {
+                for (int j = 0; j < population.length; j++) {
+                    if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
+                        population[j] = (NodeTree) offspring[i].clone();
+                        break;
+                    }
+                }
+            }
+            Arrays.sort(population, Collections.reverseOrder());
+            System.out.println("Iteration " + iteration + " " + population[population.length - 1] + " "
+                    + population[population.length - 1].getFitness());
+            for (int i = 0; i < population.length; i++) {
+                if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
+                    resultList.add((NodeTree) population[i].clone());
+                }
+            }
+            iteration++;
+        }
+        System.out.println("post execution: ");
+        for (int i = 0; i < population.length; i++) {
+            System.out.println(i + " " + population[i] + " " + population[i].getFitness());
+        }
+        System.out.println("Result list " + resultList.size());
+        for (int i = 0; i < resultList.size(); i++) {
+            System.out.println(i + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
+        }
 
     }
 
@@ -148,7 +164,7 @@ public class KDFLC {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-            System.out.printf("ind %3d: %s\n", i + 1, pop[i]);
+            //System.out.printf("ind %3d: %s\n", i + 1, pop[i]);
         }
         return pop;
     }
@@ -335,14 +351,7 @@ public class KDFLC {
     private void mutation(NodeTree[] population) throws OperatorException, CloneNotSupportedException {
         for (int i = 0; i < population.length; i++) {
             if (rand.nextDouble() < mut_percentage) {
-                List<Node> editableNode = NodeTree.getNodesByType(population[i], null);
-                Iterator <Node> iter = editableNode.iterator();
-                while(iter.hasNext()){
-                    Node iNode = iter.next();
-                    if(!iNode.isEditable()){
-                        iter.remove();
-                    }
-                }
+                List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
                 Node n = editableNode.get(rand.nextInt(editableNode.size()));
 
                 int intents = 0;
@@ -385,64 +394,34 @@ public class KDFLC {
             }
         }
     }
-    /*
-     * 
-     * 
-     * private Predicate crossover(Predicate a, Predicate b) { Predicate child =
-     * null;
-     * 
-     * ConcurrentMap<String, Node> a_en = a.getNodes().entrySet().stream().filter(n
-     * -> n.getValue().isEditable())
-     * .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
-     * ConcurrentMap<String, Node> b_en = b.getNodes().entrySet().stream().filter(n
-     * -> n.getValue().isEditable())
-     * .collect(Collectors.toConcurrentMap(Map.Entry::getKey, Map.Entry::getValue));
-     * if (a_en.size() <= 2 || b_en.size() <= 2) { if
-     * (a.getFitness().compareTo(b.getFitness()) > 0) { try { child = (Predicate)
-     * a.clone(); } catch (CloneNotSupportedException e) { e.printStackTrace(); } }
-     * else { try { child = (Predicate) b.clone(); } catch
-     * (CloneNotSupportedException e) { e.printStackTrace(); } } return child; } try
-     * { child = (Predicate) a.clone(); } catch (CloneNotSupportedException e) {
-     * e.printStackTrace(); } String[] ak = a_en.keySet().toArray(new
-     * String[a_en.size()]); String bk[] = b_en.keySet().toArray(new
-     * String[b_en.size()]); int intents = 0; String akey, bkey = null; boolean flag
-     * = false; do { intents++; akey = ak[rand.nextInt(ak.length)]; int a_deep =
-     * child.dfs(child.getNode(akey)); for (int i = 0; i < bk.length; i++) { bkey =
-     * bk[rand.nextInt(bk.length)]; if (a_deep <= b.dfs(b.getNode(bkey))) { flag =
-     * true; break; } } } while (intents < ak.length && !flag); if (bkey != null &&
-     * flag) { Node a_sub = child.getNode(akey); Node b_sub = b.getNode(bkey); if
-     * (a_sub.getFather() != null) { child.remove(a_sub); Node subtree; try {
-     * subtree = (Node) b_sub.clone();
-     * child.addNode(child.getNode(a_sub.getFather()), subtree); if (b_sub
-     * instanceof OperatorNode) { connectSubTree(child, subtree, b, b_sub); } return
-     * child; } catch (CloneNotSupportedException | OperatorException e) {
-     * e.printStackTrace(); }
-     * 
-     * } else { Predicate p = new Predicate(); Node subtree; try { subtree = (Node)
-     * b_sub.clone(); p.addNode(null, subtree); if (b_sub instanceof OperatorNode) {
-     * connectSubTree(p, subtree, b, b_sub); } return p; } catch
-     * (CloneNotSupportedException | OperatorException e) { e.printStackTrace(); }
-     * 
-     * }
-     * 
-     * }
-     * 
-     * return child; }
-     * 
-     * private void connectSubTree(Predicate child, Node fatherFRomChild, Predicate
-     * b, Node subTreeFromB) throws OperatorException, CloneNotSupportedException {
-     * if (subTreeFromB instanceof OperatorNode) { if (subTreeFromB.getType() ==
-     * NodeType.IMP) { Node[] childs = b.findChild(subTreeFromB); for (int i = 0; i
-     * < childs.length; i++) { Node father = (Node) childs[i].clone();
-     * child.addNode(fatherFRomChild, father); connectSubTree(child, father, b,
-     * childs[i]); } } else { List<Node> childs = b.searchChilds(subTreeFromB); for
-     * (int i = 0; i < childs.size(); i++) { Node father = (Node)
-     * childs.get(i).clone(); child.addNode(fatherFRomChild, father);
-     * connectSubTree(child, father, b, childs.get(i)); } } } else {
-     * child.addNode(fatherFRomChild, (Node) subTreeFromB.clone()); }
-     * 
-     * }
-     */
+
+    private NodeTree[] crossover(NodeTree a, NodeTree b) throws CloneNotSupportedException, OperatorException {
+        NodeTree ac = (NodeTree) a.clone();
+        NodeTree bc = (NodeTree) b.clone();
+
+        ArrayList<Node> a_editable = NodeTree.getEditableNodes(ac);
+        ArrayList<Node> b_editable = NodeTree.getEditableNodes(bc);
+        Node cand = a_editable.get(rand.nextInt(a_editable.size()));
+        int nivel = NodeTree.dfs(ac, cand);
+        int nivel_b;
+        Node cand_b;
+        do {
+            cand_b = b_editable.get(rand.nextInt(b_editable.size()));
+            nivel_b = NodeTree.dfs(bc, cand_b);
+        } while (nivel_b > nivel);
+        NodeTree.replace(NodeTree.getNodeParent(ac, cand.getId()), cand, (Node) cand_b.clone());
+
+        if (nivel <= nivel_b) {
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone());
+        } else {
+            do {
+                cand = a_editable.get(rand.nextInt(a_editable.size()));
+                nivel = NodeTree.dfs(ac, cand);
+            } while (nivel > nivel_b);
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone());
+        }
+        return new NodeTree[] { ac, bc };
+    }
 
     public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
         Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
@@ -488,14 +467,14 @@ public class KDFLC {
         List<GeneratorNode> gs = new ArrayList<>();
         gs.add(g);
         String expression = "(NOT (AND \"*\" \"quality\") )";
-        expression = "(OR \"*\" \"quality\")";
+        expression = "(IMP \"*\" \"quality\")";
         // expression = "(NOT \"*\")";
         // expression = "\"*\"";
         // expression = "(IMP \"first_nivel\" \"quality\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 20, 20, 10, 1f, 0.1, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 10, 10, 1f, 0.15, 2, 1, 0.0, d);
         // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
         // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
         /*

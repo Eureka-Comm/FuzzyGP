@@ -71,7 +71,7 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
                 break;
             case IMP:
             case EQV:
-                if (childrens.isEmpty()) {
+                if (this.childrens.isEmpty()) {
                     this.leftID = node.getId();
                     this.childrens.add(node);
                 } else if (childrens.size() == 1) {
@@ -221,6 +221,13 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         return nodes;
     }
 
+    public static ArrayList<Node> getEditableNodes(NodeTree tree) {
+        ArrayList<Node> nodes = new ArrayList<>();
+        getNodesByType(tree, nodes, null);
+        nodes.removeIf(node -> !node.isEditable());
+        return nodes;
+    }
+
     public static void getNodesByType(NodeTree tree, ArrayList<Node> nodes, NodeType type) {
         for (Node n : tree.getChildrens()) {
             if (type == null) {
@@ -292,6 +299,13 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         }
         if (pos != -1) {
             nodeTree.getChildrens().set(pos, newNode);
+            if (nodeTree.getType() == NodeType.EQV || nodeTree.getType() == NodeType.IMP) {
+                if (nodeTree.getLeftID().equals(toReplace.getId())) {
+                    nodeTree.setLeftID(newNode.getId());
+                } else if (nodeTree.getRighID().equals(toReplace.getId())) {
+                    nodeTree.setRighID(newNode.getId());
+                }
+            }
         } else {
             throw new OperatorException(nodeTree.getId() + " is not the parent of " + toReplace.getId());
         }
@@ -300,6 +314,32 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
     @Override
     public int compareTo(NodeTree tree) {
         return this.fitness.compareTo(tree.getFitness());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((childrens == null) ? 0 : childrens.hashCode());
+        result = prime * result + ((fitness == null) ? 0 : fitness.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        NodeTree other = (NodeTree) obj;
+        if (childrens == null) {
+            if (other.childrens != null)
+                return false;
+        } else if (!this.toString().equals(other.toString()) && fitness != null && other.fitness != null && !fitness.equals(other.fitness))
+            return false;
+        return true;
     }
 
 }
