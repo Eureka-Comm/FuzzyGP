@@ -87,13 +87,4 @@ public class EDNParser {
         }
         return states;
     }
-
-    public static void main(String[] args) throws FileNotFoundException {
-        String path = "/home/hp/Dropbox/ITCM/servicio social/universe-cmd/universe-cmd for Mac OS X/eval-fpg.txt";
-        path = "/home/hp/Dropbox/ITCM/servicio social/universe-cmd/universe-cmd for Mac OS X/examples/evaluateEjemploFun.txt";
-          path = "/home/hp/Dropbox/ITCM/servicio social/universe-cmd/universe-cmd for Mac OS X/evaluate.txt";
-        EDNParser ednp = new EDNParser(path);
-        ednp.parser();
-
-    }
 }

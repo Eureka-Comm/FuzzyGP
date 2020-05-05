@@ -178,7 +178,7 @@ public class EvaluatePredicate {
                 return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
             // return new BigDecimal(fuzzyData.getString(index,
             // st.getLabel()),MathContext.DECIMAL64);
-            case OPERATOR:
+           case OPERATOR:
                 nodeTree = (NodeTree) node;
                 return fitValue(nodeTree.getChildrens().get(0), index);
             default:
@@ -268,8 +268,8 @@ public class EvaluatePredicate {
         expression = "(NOT \"quality\" )";
        /// expression = "(IMP (NOT \"fixed_acidity\") (AND \"alcohol\" \"quality\"))";
        // expression = "(IMP (AND \"alcohol\" \"quality\") \"quality\")";
-        //expression = " \"quality\"";
-        expression = "(IMP \"alcohol\" \"quality\")";
+        expression = " \"quality\"";
+        //expression = "(IMP \"alcohol\" \"quality\")";
 
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         NodeTree pp = parser.parser();

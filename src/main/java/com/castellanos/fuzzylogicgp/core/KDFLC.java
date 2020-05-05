@@ -2,7 +2,6 @@ package com.castellanos.fuzzylogicgp.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -171,7 +170,7 @@ public class KDFLC {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-            // System.out.printf("ind %3d: %s\n", i + 1, pop[i]);
+             System.out.printf("ind %3d: %s\n", i , pop[i]);
         }
         return pop;
     }
@@ -190,9 +189,9 @@ public class KDFLC {
             if (node instanceof GeneratorNode) {
                 try {
                     if (rand.nextDouble() < 0.5)
-                        complete_tree(p, (GeneratorNode) node, null, -1, NodeTree.dfs(p, node));
+                        complete_tree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
                     else
-                        growTree(p, (GeneratorNode) node, null, -1, NodeTree.dfs(p, node));
+                        growTree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
                 } catch (OperatorException e) {
                     e.printStackTrace();
                 }
@@ -217,10 +216,22 @@ public class KDFLC {
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
             if (size >= 2 && father != null) {
-                ArrayList<Node> childs = p.getChildrens();
-                while (childs.toString().contains(select.toString())) {
+                ArrayList<Node> childs = ((NodeTree) father).getChildrens();
+                boolean contains = false;
+                int intents = 1;
+                do{
+                    for (Node node : childs) {
+                        if(node instanceof StateNode){
+                            StateNode st = ((StateNode) node);
+                            if(st.getLabel().equals(select.getLabel())){
+                                contains = true;
+                            }
+                        }
+                    }
+                    if(contains)
                     select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
-                }
+                    intents++;
+                }while(contains && intents < size);
             }
             StateNode s = null;
             try {
@@ -289,14 +300,27 @@ public class KDFLC {
                 isToReplace = true;
             }
         }
-        if (currentDepth >= depth || rand.nextDouble() < 0.65) {
+        if ((currentDepth >= depth || rand.nextDouble() < 0.65) && father != null) {
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
             if (size >= 2 && father != null) {
-                ArrayList<Node> childs = p.getChildrens();
-                while (childs.toString().contains(select.toString())) {
+
+                ArrayList<Node> childs = ((NodeTree) father).getChildrens();
+                boolean contains = false;
+                int intents = 1;
+                do{
+                    for (Node node : childs) {
+                        if(node instanceof StateNode){
+                            StateNode st = ((StateNode) node);
+                            if(st.getLabel().equals(select.getLabel())){
+                                contains = true;
+                            }
+                        }
+                    }
+                    if(contains)
                     select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
-                }
+                    intents++;
+                }while(contains && intents < size);
             }
             StateNode s = null;
             try {
@@ -502,12 +526,12 @@ public class KDFLC {
         String expression = "(NOT (AND \"*\" \"quality\") )";
         expression = "(IMP \"*\" \"quality\")";
         // expression = "(NOT \"*\")";
-        // expression = "\"*\"";
+         //expression = "\"*\"";
         // expression = "(IMP \"first_nivel\" \"quality\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 10, 10, 1f, 0.15, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 20, 10, 0.7f, 0.15, 2, 1, 0.0, d);
         // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
         // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
         /*

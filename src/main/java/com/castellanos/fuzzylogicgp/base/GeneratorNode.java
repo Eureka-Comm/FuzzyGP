@@ -13,6 +13,10 @@ import java.util.List;
  */
 public class GeneratorNode extends Node {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -5456955267782382254L;
     private String label;
     private NodeType operators[];
     private List<String> variables;

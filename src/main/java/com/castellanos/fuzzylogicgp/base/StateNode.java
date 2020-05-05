@@ -16,7 +16,7 @@ import com.google.gson.GsonBuilder;
  *
  * @author hp
  */
-public class StateNode extends Node implements Serializable {
+public class StateNode extends Node {
 
     /**
      *

@@ -6,13 +6,12 @@
 package com.castellanos.fuzzylogicgp.base;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  *
  * @author hp
  */
-public class OperatorNode extends Node implements Serializable {
+public class OperatorNode extends Node {
 
     /**
      *
