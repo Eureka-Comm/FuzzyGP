@@ -300,7 +300,7 @@ public class KDFLC {
                 isToReplace = true;
             }
         }
-        if ((currentDepth >= depth || rand.nextDouble() < 0.65) && father != null) {
+        if ((currentDepth >= depth || rand.nextDouble() < 0.65) && (father != null && currentDepth != 0)) {
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
             if (size >= 2 && father != null) {
@@ -531,7 +531,7 @@ public class KDFLC {
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 20, 10, 0.7f, 0.15, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 3, 100, 20, 10, 0.7f, 0.15, 2, 1, 0.0, d);
         // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
         // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
         /*
