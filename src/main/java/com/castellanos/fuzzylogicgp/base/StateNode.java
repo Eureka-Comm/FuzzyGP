@@ -5,8 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
-import java.io.Serializable;
-import java.util.Arrays;
+
 
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.google.gson.Gson;
@@ -27,6 +26,7 @@ public class StateNode extends Node {
     private AMembershipFunction membershipFunction;
 
     public StateNode() {
+        setType(NodeType.STATE);
     }
 
     public static StateNode parseState(String string) {
@@ -113,9 +113,12 @@ public class StateNode extends Node {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        StateNode state = null;
-        state = (StateNode) super.clone();
-        if (this.getMembershipFunction() != null)
+        StateNode state = new StateNode();
+        if(label!=null)
+        state.setLabel(label);
+        if(colName!=null)
+        state.setColName(colName);
+        if (membershipFunction != null)
             state.setMembershipFunction((AMembershipFunction) this.getMembershipFunction().clone());
 
         return state;

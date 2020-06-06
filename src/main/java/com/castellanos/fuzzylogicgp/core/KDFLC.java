@@ -108,56 +108,66 @@ public class KDFLC {
             gomf.optimize(population[i]);
         }
         Arrays.sort(population, Collections.reverseOrder());
-        for (int i = 0; i < population.length; i++) {
-            if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
-                resultList.add((NodeTree) population[i].clone());
-            }
-        }
-        int iteration = 1;
-        while (iteration < num_iter && resultList.size() < num_result) {
-            int offspring_size = population.length / 2;
-            if (offspring_size % 2 != 0) {
-                offspring_size++;
-            }
-            NodeTree[] offspring = new NodeTree[offspring_size];
-            TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
-            tournamentSelection.execute();
+        boolean isToDiscovery = isToDiscovery(predicatePattern);
 
-            for (int i = 0; i < offspring.length; i++) {
-                NodeTree a = tournamentSelection.getNext();
-                NodeTree b = tournamentSelection.getNext();
-                NodeTree[] cross = crossover(a, b);
-                offspring[i] = cross[0];
-                offspring[i + 1] = cross[1];
-                i++;
-            }
-            mutation(offspring);
-            gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-            for (int i = 0; i < offspring.length; i++) {
-                gomf.optimize(offspring[i]);
-            }
-            for (int i = 0; i < offspring.length; i++) {
-                for (int j = 0; j < population.length; j++) {
-                    if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
-                        population[j] = (NodeTree) offspring[i].clone();
-                        break;
-                    }
-                }
-            }
-            Arrays.sort(population, Collections.reverseOrder());
-            System.out.println("Iteration " + iteration + " " + population[population.length - 1] + " "
-                    + population[population.length - 1].getFitness());
-            for (int i = 0; i < population.length; i++) {
+        for (int i = 0; i < population.length; i++) {
+            if (isToDiscovery) {
                 if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                     resultList.add((NodeTree) population[i].clone());
                 }
+            } else {
+                if (population[i].getFitness() >= min_truth_value) {
+                    resultList.add((NodeTree) population[i].clone());
+                }
             }
-            iteration++;
         }
-        Collections.sort(resultList, Collections.reverseOrder());
-        System.out.println("post execution: ");
-        for (int i = 0; i < population.length; i++) {
-            System.out.println(i + " " + population[i] + " " + population[i].getFitness());
+        if (isToDiscovery) {
+            int iteration = 1;
+            while (iteration < num_iter && resultList.size() < num_result) {
+                int offspring_size = population.length / 2;
+                if (offspring_size % 2 != 0) {
+                    offspring_size++;
+                }
+                NodeTree[] offspring = new NodeTree[offspring_size];
+                TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
+                tournamentSelection.execute();
+
+                for (int i = 0; i < offspring.length; i++) {
+                    NodeTree a = tournamentSelection.getNext();
+                    NodeTree b = tournamentSelection.getNext();
+                    NodeTree[] cross = crossover(a, b);
+                    offspring[i] = cross[0];
+                    offspring[i + 1] = cross[1];
+                    i++;
+                }
+                mutation(offspring);
+                gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+                for (int i = 0; i < offspring.length; i++) {
+                    gomf.optimize(offspring[i]);
+                }
+                for (int i = 0; i < offspring.length; i++) {
+                    for (int j = 0; j < population.length; j++) {
+                        if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
+                            population[j] = (NodeTree) offspring[i].clone();
+                            break;
+                        }
+                    }
+                }
+                Arrays.sort(population, Collections.reverseOrder());
+                System.out.println("Iteration " + iteration + " " + population[population.length - 1] + " "
+                        + population[population.length - 1].getFitness());
+                for (int i = 0; i < population.length; i++) {
+                    if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
+                        resultList.add((NodeTree) population[i].clone());
+                    }
+                }
+                iteration++;
+            }
+            Collections.sort(resultList, Collections.reverseOrder());
+            System.out.println("post execution: ");
+            for (int i = 0; i < population.length; i++) {
+                System.out.println(i + " " + population[i] + " " + population[i].getFitness());
+            }
         }
         System.out.println("Result list " + resultList.size());
         for (int i = 0; i < resultList.size(); i++) {
@@ -166,11 +176,24 @@ public class KDFLC {
 
     }
 
+    private boolean isToDiscovery(NodeTree predicate) {
+        ArrayList<Node> operators = NodeTree.getNodesByType(predicate, NodeType.OPERATOR);
+        String representation = predicate.toString();
+        for (Node node : operators) {
+            if (node instanceof GeneratorNode) {
+                GeneratorNode gn = (GeneratorNode) node;
+                if (representation.contains(gn.getLabel()))
+                    return true;
+            }
+        }
+        return false;
+    }
+
     private NodeTree[] makePopulation() {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-             System.out.printf("ind %3d: %s\n", i , pop[i]);
+            System.out.printf("ind %3d: %s\n", i, pop[i]);
         }
         return pop;
     }
@@ -219,19 +242,19 @@ public class KDFLC {
                 ArrayList<Node> childs = ((NodeTree) father).getChildrens();
                 boolean contains = false;
                 int intents = 1;
-                do{
+                do {
                     for (Node node : childs) {
-                        if(node instanceof StateNode){
+                        if (node instanceof StateNode) {
                             StateNode st = ((StateNode) node);
-                            if(st.getLabel().equals(select.getLabel())){
+                            if (st.getLabel().equals(select.getLabel())) {
                                 contains = true;
                             }
                         }
                     }
-                    if(contains)
-                    select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
+                    if (contains)
+                        select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
                     intents++;
-                }while(contains && intents < size);
+                } while (contains && intents < size);
             }
             StateNode s = null;
             try {
@@ -308,19 +331,19 @@ public class KDFLC {
                 ArrayList<Node> childs = ((NodeTree) father).getChildrens();
                 boolean contains = false;
                 int intents = 1;
-                do{
+                do {
                     for (Node node : childs) {
-                        if(node instanceof StateNode){
+                        if (node instanceof StateNode) {
                             StateNode st = ((StateNode) node);
-                            if(st.getLabel().equals(select.getLabel())){
+                            if (st.getLabel().equals(select.getLabel())) {
                                 contains = true;
                             }
                         }
                     }
-                    if(contains)
-                    select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
+                    if (contains)
+                        select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
                     intents++;
-                }while(contains && intents < size);
+                } while (contains && intents < size);
             }
             StateNode s = null;
             try {
@@ -462,7 +485,7 @@ public class KDFLC {
         ArrayList<String> d = new ArrayList<>();
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
-            p.add("'"+resultList.get(i).toString()+"'");
+            p.add("'" + resultList.get(i).toString() + "'");
             ArrayList<String> st = new ArrayList<>();
             for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
                 if (node instanceof StateNode) {
@@ -470,9 +493,9 @@ public class KDFLC {
                     st.add(s.toString());
                 }
             }
-            d.add("'"+st.toString()+"'");
+            d.add("'" + st.toString() + "'");
         }
-        DoubleColumn value = DoubleColumn.create("truth-value",v.toArray(new Double[v.size()]));
+        DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
 
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
@@ -524,14 +547,14 @@ public class KDFLC {
         List<GeneratorNode> gs = new ArrayList<>();
         gs.add(g);
         String expression = "(NOT (AND \"*\" \"quality\") )";
-        expression = "(IMP \"*\" \"quality\")";
-        // expression = "(NOT \"*\")";
-         //expression = "\"*\"";
-        // expression = "(IMP \"first_nivel\" \"quality\")";
+        expression = "(IMP  \"*\" \"quality\")";
+        //expression = "(NOT \"*\")";
+        // expression = "\"*\"";
+      //  expression = "(IMP \"alcohol\" \"quality\")";
 
         ParserPredicate pp = new ParserPredicate(expression, states, gs);
 
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 3, 100, 20, 10, 0.7f, 0.15, 2, 1, 0.0, d);
+        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 50, 10, 0.9f, 0.15, 2, 1, 0.0, d);
         // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
         // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
         /*

@@ -17,12 +17,13 @@ public abstract class Node implements Cloneable, Serializable {
      *
      */
     private static final long serialVersionUID = 2377425499330019252L;
-    private final String id = UUID.randomUUID().toString();
+    private final String id ;
     private NodeType type;
     private boolean editable;
     private String byGenerator;
 
     public Node() {
+        id = UUID.randomUUID().toString();
     }
 
     public NodeType getType() {

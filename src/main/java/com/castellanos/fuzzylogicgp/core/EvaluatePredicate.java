@@ -269,7 +269,7 @@ public class EvaluatePredicate {
        /// expression = "(IMP (NOT \"fixed_acidity\") (AND \"alcohol\" \"quality\"))";
        // expression = "(IMP (AND \"alcohol\" \"quality\") \"quality\")";
         expression = " \"quality\"";
-        //expression = "(IMP \"alcohol\" \"quality\")";
+        expression = "(IMP \"alcohol\" \"quality\")";
 
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         NodeTree pp = parser.parser();
@@ -285,7 +285,7 @@ public class EvaluatePredicate {
         System.out.println("That took " + (duration / 1000000) + " milliseconds");
         ep.resultPrint();
         System.out.println(pp);
-        System.out.println(pp.toJson());
+        //System.out.println(pp.toJson());
         
         // ep.exportToCsv();
         // System.out.println(ep.exportToJSON());
