@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DataSet<FuzzyLogicGP>",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.base.DataSet",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-EvaluatePredicate<FuzzyLogicGP>",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.core.EvaluatePredicate",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-GOMF<FuzzyLogicGP>",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.core.GOMF",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-KDFLC<FuzzyLogicGP>",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.core.KDFLC",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<FuzzyLogicGP>",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.core.Main",
+            "projectName": "FuzzyLogicGP",
+            "args": "demo-evaluation"
+        }
+    ]
+}

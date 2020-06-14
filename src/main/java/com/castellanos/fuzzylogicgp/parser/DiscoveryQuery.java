@@ -2,6 +2,7 @@ package com.castellanos.fuzzylogicgp.parser;
 
 import java.util.ArrayList;
 
+import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.google.gson.annotations.Expose;
 
 public class DiscoveryQuery extends Query {
@@ -30,7 +31,7 @@ public class DiscoveryQuery extends Query {
     @Expose
     protected int adj_num_iter;
     @Expose
-    protected ArrayList<DummGenerator> generators;
+    protected ArrayList<GeneratorNode> generators;
     public DiscoveryQuery(){
         setType(TaskType.DISCOVERY);
     }
@@ -98,7 +99,7 @@ public class DiscoveryQuery extends Query {
         this.adj_min_truth_value = adj_min_truth_value;
     }
 
-    public float getAdj_num_iter() {
+    public int getAdj_num_iter() {
         return adj_num_iter;
     }
 
@@ -106,11 +107,11 @@ public class DiscoveryQuery extends Query {
         this.adj_num_iter = adj_num_iter;
     }
 
-    public ArrayList<DummGenerator> getGenerators() {
+    public ArrayList<GeneratorNode> getGenerators() {
         return generators;
     }
 
-    public void setGenerators(ArrayList<DummGenerator> generators) {
+    public void setGenerators(ArrayList<GeneratorNode> generators) {
         this.generators = generators;
     }
 

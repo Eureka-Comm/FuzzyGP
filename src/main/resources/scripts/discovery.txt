@@ -1,0 +1,92 @@
+{
+  "depth": 2,
+  "num_pop": 50,
+  "num_iter": 100,
+  "num_result": 20,
+  "min_truth_value": 0.9,
+  "mut_percentage": 0.05,
+  "adj_num_pop": 100,
+  "adj_min_truth_value": 0.1,
+  "adj_num_iter": 1,
+  "generators": [
+    {
+      "label": "comodin",
+      "operators": [
+        "AND",
+        "OR",
+        "IMP",
+        "EQV",
+        "NOT"
+      ],
+      "variables": [
+        "citric_acid",
+        "volatile_acidity",
+        "fixed_acidity",
+        "free_sulfur_dioxide",
+        "sulphates",
+        "alcohol",
+        "residual_sugar",
+        "pH",
+        "total_sulfur_dioxide",
+        "quality",
+        "density",
+        "chlorides"
+      ]
+    }
+  ],
+  "type": "DISCOVERY",
+  "db_uri": "src/main/resources/datasets/tinto.csv",
+  "out_file": "result-discovery-prop.csv",
+  "states": [
+    {
+      "label": "citric_acid",
+      "colName": "citric_acid"
+    },
+    {
+      "label": "volatile_acidity",
+      "colName": "volatile_acidity"
+    },
+    {
+      "label": "fixed_acidity",
+      "colName": "fixed_acidity"
+    },
+    {
+      "label": "free_sulfur_dioxide",
+      "colName": "free_sulfur_dioxide"
+    },
+    {
+      "label": "sulphates",
+      "colName": "sulphates"
+    },
+    {
+      "label": "alcohol",
+      "colName": "alcohol"
+    },
+    {
+      "label": "residual_sugar",
+      "colName": "residual_sugar"
+    },
+    {
+      "label": "pH",
+      "colName": "pH"
+    },
+    {
+      "label": "total_sulfur_dioxide",
+      "colName": "total_sulfur_dioxide"
+    },
+    {
+      "label": "quality",
+      "colName": "quality"
+    },
+    {
+      "label": "density",
+      "colName": "density"
+    },
+    {
+      "label": "chlorides",
+      "colName": "chlorides"
+    }
+  ],
+  "logic": "GMBC",
+  "predicate": "(IMP \"comodin\" \"quality\")"
+}

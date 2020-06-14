@@ -13,6 +13,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
 public abstract class Query implements Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 775428116619993743L;
     @Expose
 
     protected TaskType type;

@@ -124,6 +124,7 @@ public class KDFLC {
         if (isToDiscovery) {
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
+                System.out.println("Iteration "+iteration+" of "+num_iter+" ...");
                 int offspring_size = population.length / 2;
                 if (offspring_size % 2 != 0) {
                     offspring_size++;
@@ -478,7 +479,7 @@ public class KDFLC {
         return new NodeTree[] { ac, bc };
     }
 
-    public void exportToCsv() throws IOException {
+    public void exportToCsv(String file) throws IOException {
         Table fuzzyData = Table.create();
         ArrayList<Double> v = new ArrayList<>();
         ArrayList<String> p = new ArrayList<>();
@@ -500,7 +501,7 @@ public class KDFLC {
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
         fuzzyData.addColumns(value, predicates, data);
-        fuzzyData.write().toFile(new File("result.csv"));
+        fuzzyData.write().toFile(new File(file));
     }
 
     public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
@@ -568,7 +569,7 @@ public class KDFLC {
 
         long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
         System.out.println("That took " + (duration / 1000000) + " milliseconds");
-        discovery.exportToCsv();
+        //discovery.exportToCsv();
     }
 
 }
