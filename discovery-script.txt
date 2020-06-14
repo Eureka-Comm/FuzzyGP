@@ -1,5 +1,26 @@
 {
-  "type": "EVALUATION",
+  "depth": 2,
+  "num_pop": 100,
+  "num_iter": 100,
+  "num_result": 15,
+  "min_truth_value": 0.9,
+  "mut_percentage": 0.5,
+  "adj_num_pop": 100,
+  "adj_min_truth_value": 0.1,
+  "adj_num_iter": 1,
+  "generators": [
+    {
+      "operators": [
+        "AND",
+        "OR",
+        "IMP",
+        "EQV",
+        "NOT"
+      ],
+      "label": "*"
+    }
+  ],
+  "type": "DISCOVERY",
   "db_uri": "src/main/resources/datasets/tinto.csv",
   "out_file": "result.out",
   "states": [
@@ -39,5 +60,5 @@
     }
   ],
   "logic": "GMBC",
-  "predicate": "(IMP (NOT \"fixed_acidity\") (AND \"alcohol\" \"quality\"))"
+  "predicate": "*"
 }

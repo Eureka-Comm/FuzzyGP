@@ -10,6 +10,8 @@ package com.castellanos.fuzzylogicgp.base;
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  *
@@ -21,8 +23,12 @@ public class StateNode extends Node {
      *
      */
     private static final long serialVersionUID = -196106920996217719L;
+    @Expose
     private String label;
+    @Expose
     private String colName;
+    @Expose
+    @SerializedName("f")
     private AMembershipFunction membershipFunction;
 
     public StateNode() {

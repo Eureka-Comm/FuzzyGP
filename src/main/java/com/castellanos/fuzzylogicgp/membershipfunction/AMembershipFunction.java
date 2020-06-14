@@ -7,6 +7,8 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+
 /**
  *
  * @author hp
@@ -18,6 +20,7 @@ public abstract class AMembershipFunction implements Cloneable , Serializable{
      */
     private static final long serialVersionUID = -9006368296289781684L;
     public AMembershipFunction(){}
+    @Expose
     public MembershipFunctionType type;
 
     public abstract boolean isValid();
@@ -35,4 +38,15 @@ public abstract class AMembershipFunction implements Cloneable , Serializable{
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+   
+    
 }

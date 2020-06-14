@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import com.google.gson.annotations.Expose;
 
 /**
  *
@@ -16,7 +17,9 @@ public class Sigmoid extends AMembershipFunction {
      *
      */
     private static final long serialVersionUID = 8054075265710944588L;
+    @Expose
     private double center;
+    @Expose
     private double beta;
 
     public Sigmoid( double center,  double beta) {
@@ -76,6 +79,34 @@ public class Sigmoid extends AMembershipFunction {
         /*s.setBeta(new BigDecimal(this.getBeta().toString()));
         s.setCenter(new BigDecimal(this.getCenter().toString()));*/
         return s;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(beta);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(center);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Sigmoid other = (Sigmoid) obj;
+        if (Double.doubleToLongBits(beta) != Double.doubleToLongBits(other.beta))
+            return false;
+        if (Double.doubleToLongBits(center) != Double.doubleToLongBits(other.center))
+            return false;
+        return true;
     }
 
 }

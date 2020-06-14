@@ -1,23 +1,39 @@
 package com.castellanos.fuzzylogicgp.parser;
 
-import java.util.Set;
+import java.util.ArrayList;
+
+import com.google.gson.annotations.Expose;
 
 public class DiscoveryQuery extends Query {
-    
+
     /**
      *
      */
     private static final long serialVersionUID = -5095255239602552073L;
-    protected Set<String> generators;
-    protected int depth;
-    protected int num_pop;
-    protected int num_iter;
-    protected int num_result;
-    protected float min_truth_value;
-    protected float mut_percentage;
-    protected int adj_num_pop;
-    protected int adj_min_truth_value;
 
+    @Expose
+    protected int depth;
+    @Expose
+    protected int num_pop;
+    @Expose
+    protected int num_iter;
+    @Expose
+    protected int num_result;
+    @Expose
+    protected float min_truth_value;
+    @Expose
+    protected float mut_percentage;
+    @Expose
+    protected int adj_num_pop;
+    @Expose
+    protected float adj_min_truth_value;
+    @Expose
+    protected int adj_num_iter;
+    @Expose
+    protected ArrayList<DummGenerator> generators;
+    public DiscoveryQuery(){
+        setType(TaskType.DISCOVERY);
+    }
     public int getDepth() {
         return depth;
     }
@@ -74,19 +90,88 @@ public class DiscoveryQuery extends Query {
         this.adj_num_pop = adj_num_pop;
     }
 
-    public int getAdj_min_truth_value() {
+    public float getAdj_min_truth_value() {
         return adj_min_truth_value;
     }
 
-    public void setAdj_min_truth_value(int adj_min_truth_value) {
+    public void setAdj_min_truth_value(float adj_min_truth_value) {
         this.adj_min_truth_value = adj_min_truth_value;
     }
-    public void setGenerators(Set<String> generators) {
-        this.generators = generators;
+
+    public float getAdj_num_iter() {
+        return adj_num_iter;
     }
-    public Set<String> getGenerators() {
+
+    public void setAdj_num_iter(int adj_num_iter) {
+        this.adj_num_iter = adj_num_iter;
+    }
+
+    public ArrayList<DummGenerator> getGenerators() {
         return generators;
     }
 
+    public void setGenerators(ArrayList<DummGenerator> generators) {
+        this.generators = generators;
+    }
+
+    @Override
+    public String toString() {
+        return "DiscoveryQuery [adj_min_truth_value=" + adj_min_truth_value + ", adj_num_iter=" + adj_num_iter
+                + ", adj_num_pop=" + adj_num_pop + ", depth=" + depth + ", generators=" + generators
+                + ", min_truth_value=" + min_truth_value + ", mut_percentage=" + mut_percentage + ", num_iter="
+                + num_iter + ", num_pop=" + num_pop + ", num_result=" + num_result + "]" + super.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + Float.floatToIntBits(adj_min_truth_value);
+        result = prime * result + adj_num_iter;
+        result = prime * result + adj_num_pop;
+        result = prime * result + depth;
+        result = prime * result + ((generators == null) ? 0 : generators.hashCode());
+        result = prime * result + Float.floatToIntBits(min_truth_value);
+        result = prime * result + Float.floatToIntBits(mut_percentage);
+        result = prime * result + num_iter;
+        result = prime * result + num_pop;
+        result = prime * result + num_result;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DiscoveryQuery other = (DiscoveryQuery) obj;
+        if (Float.floatToIntBits(adj_min_truth_value) != Float.floatToIntBits(other.adj_min_truth_value))
+            return false;
+        if (adj_num_iter != other.adj_num_iter)
+            return false;
+        if (adj_num_pop != other.adj_num_pop)
+            return false;
+        if (depth != other.depth)
+            return false;
+        if (generators == null) {
+            if (other.generators != null)
+                return false;
+        } else if (!generators.equals(other.generators))
+            return false;
+        if (Float.floatToIntBits(min_truth_value) != Float.floatToIntBits(other.min_truth_value))
+            return false;
+        if (Float.floatToIntBits(mut_percentage) != Float.floatToIntBits(other.mut_percentage))
+            return false;
+        if (num_iter != other.num_iter)
+            return false;
+        if (num_pop != other.num_pop)
+            return false;
+        if (num_result != other.num_result)
+            return false;
+        return true;
+    }
 
 }
