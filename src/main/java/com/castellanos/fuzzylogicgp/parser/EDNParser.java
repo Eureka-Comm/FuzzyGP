@@ -5,6 +5,8 @@
  */
 package com.castellanos.fuzzylogicgp.parser;
 
+import com.castellanos.fuzzylogicgp.base.GeneratorNode;
+import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
@@ -12,7 +14,11 @@ import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,55 +35,133 @@ import us.bpsm.edn.parser.Parsers;
 public class EDNParser {
 
     private Parseable pbr;
+    private File file;
 
     public EDNParser(String path) throws FileNotFoundException {
-        pbr = Parsers.newParseable(new FileReader(new File(path)));
+        file = new File(path);
+        pbr = Parsers.newParseable(new FileReader(file));
     }
 
-    public void parser() {
+    public Query parser() throws IOException {
         Parser p = Parsers.newParser(Parsers.defaultConfiguration());
         Map<?, ?> map = (Map<?, ?>) p.nextValue(pbr);
 
-        Keyword jobKey = Keyword.newKeyword("job"),
-                queryKey = Keyword.newKeyword("query"),
-                dbKey = Keyword.newKeyword("db-uri"),
-                dbOut = Keyword.newKeyword("out-file"),
-                statesKey = Keyword.newKeyword("states"),
-                logicKey = Keyword.newKeyword("logic"),
-                predicateKey = Keyword.newKeyword("predicate");
-
-        System.out.println(map.get(jobKey));
+        Keyword jobKey = Keyword.newKeyword("job"), queryKey = Keyword.newKeyword("query"),
+                dbKey = Keyword.newKeyword("db-uri"), dbOut = Keyword.newKeyword("out-file"),
+                statesKey = Keyword.newKeyword("states"), logicKey = Keyword.newKeyword("logic");
         Map<?, ?> queryMap = (Map<?, ?>) map.get(queryKey);
         String path = (String) queryMap.get(dbKey);
         String out = (String) queryMap.get(dbOut);
         List<StateNode> convertToState = convertToState((Collection) queryMap.get(statesKey));
-        System.out.println(convertToState);
         String logicSt = queryMap.get(logicKey).toString();
-        String pst = queryMap.get(predicateKey).toString();
-        System.out.println(queryMap.get(predicateKey).getClass());
+        switch (map.get(jobKey).toString()) {
+            case ":evaluation":
+                Query query = new EvaluationQuery();
+                query.setDb_uri(path);
+                query.setOut_file(out);
+                query.setStates(new ArrayList<>(convertToState));
+                query.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "")));
+                query.setPredicate(findPredicate());
+                return query;
+            case ":discovery":
 
+                DiscoveryQuery discoveryQuery = new DiscoveryQuery();
+                discoveryQuery.setDb_uri(path);
+                discoveryQuery.setOut_file(out);
+                discoveryQuery.setStates(new ArrayList<>(convertToState));
+                discoveryQuery.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "")));
+                discoveryQuery.setPredicate(findPredicate().replaceAll(":generator", "").replace("{", "").replace("}", "").trim());
+                discoveryQuery.setDepth(Integer.parseInt(queryMap.get(Keyword.newKeyword("depth")).toString().trim()));
+                discoveryQuery
+                        .setNum_iter(Integer.parseInt(queryMap.get(Keyword.newKeyword("num-iter")).toString().trim()));
+                discoveryQuery.setNum_result(
+                        Integer.parseInt(queryMap.get(Keyword.newKeyword("num-result")).toString().trim()));
+                discoveryQuery.setMin_truth_value(
+                        Float.parseFloat(queryMap.get(Keyword.newKeyword("min-truth-value")).toString().trim()));
+                discoveryQuery.setMut_percentage(
+                        Float.parseFloat(queryMap.get(Keyword.newKeyword("mut-percentage")).toString().trim()));
+                discoveryQuery.setAdj_num_pop(
+                        Integer.parseInt(queryMap.get(Keyword.newKeyword("adj-num-pop")).toString().trim()));
+                discoveryQuery.setAdj_num_iter(
+                        Integer.parseInt(queryMap.get(Keyword.newKeyword("adj-num-iter")).toString().trim()));
+                discoveryQuery.setAdj_min_truth_value(
+                        Float.parseFloat(queryMap.get(Keyword.newKeyword("adj-min-truth-value")).toString().trim()));
+                discoveryQuery
+                        .setGenerators(convertToGenerator((Map<?, ?>) queryMap.get(Keyword.newKeyword("generator")),convertToState));
+                return discoveryQuery;
+            default:
+                throw new IllegalArgumentException("Unsupported query.");
+        }
+    }
+
+    private ArrayList<GeneratorNode> convertToGenerator(Map<?, ?> gen, List<StateNode> stateNodes) {
+        ArrayList<GeneratorNode> lst = new ArrayList<>();
+        GeneratorNode geneNode = new GeneratorNode();
+        String[] opeStrings = gen.get(Keyword.newKeyword("operators")).toString().replace("[", "").replace("]", "")
+                .split(",");
+        NodeType[] oNodeTypes = new NodeType[opeStrings.length];
+        for (int i = 0; i < oNodeTypes.length; i++) {
+            oNodeTypes[i] = NodeType.valueOf(opeStrings[i].trim());
+        }
+        geneNode.setOperators(oNodeTypes);
+        String[] vars = gen.get(Keyword.newKeyword("variables")).toString().replace("[", "").replace("]", "")
+                .split(",");
+        geneNode.setVariables(Arrays.asList(vars));
+        String predicaString = gen.get(Keyword.newKeyword("predicate")).toString().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", "");
+        System.out.println(predicaString);
+        for (StateNode stateNode : stateNodes) {
+            if(predicaString.contains(stateNode.getLabel())){
+                predicaString = predicaString.replaceAll(stateNode.getLabel(), "");
+            }
+        }
+        for (NodeType type : new NodeType[]{NodeType.AND,NodeType.EQV,NodeType.NOT,NodeType.IMP,NodeType.OR}) {
+            if(predicaString.contains(type.toString())){
+                predicaString = predicaString.replaceAll(type.toString(), "");
+            }
+        }
+        geneNode.setLabel(predicaString.trim());
+        lst.add(geneNode);
+        return lst;
+    }
+
+    private String findPredicate() throws IOException {
+        List<String> readAllLines = Files.readAllLines(Paths.get(file.getAbsolutePath()));
+        Keyword predicateKey = Keyword.newKeyword("predicate");
+
+        for (String string : readAllLines) {
+            if (string.contains(predicateKey.toString())) {
+                return string.replace(predicateKey.toString(), "").trim();
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) throws IOException {
+        EDNParser edn = new EDNParser(
+                "/home/thinkpad/Dropbox/ITCM/servicio social/universe-cmd/universe-cmd for Mac OS X/examples/discovery.txt");
+        Query q = edn.parser();
+        System.out.println(q.getPredicate());
     }
 
     private List<StateNode> convertToState(Collection cstates) {
         List<StateNode> states = new ArrayList<>();
-        Keyword labelKey = Keyword.newKeyword("label"),
-                colNameKey = Keyword.newKeyword("colname"),
+        Keyword labelKey = Keyword.newKeyword("label"), colNameKey = Keyword.newKeyword("colname"),
                 fKey = Keyword.newKeyword("f");
         for (Iterator it = cstates.iterator(); it.hasNext();) {
             Map<?, ?> cstate = (Map<?, ?>) it.next();
-            //System.out.println(+" "+cstate.get(fKey));
+            // System.out.println(+" "+cstate.get(fKey));
             StateNode sn = new StateNode(cstate.get(labelKey).toString(), cstate.get(colNameKey).toString());
             String[] split = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "").split(",");
             switch (split[0]) {
                 case "sigmoid":
-                    sn.setMembershipFunction(new Sigmoid(split[1],split[2]));
+                    sn.setMembershipFunction(new Sigmoid(split[1], split[2]));
                     break;
                 case "-sigmoid":
-                    sn.setMembershipFunction(new NSigmoid(split[1],split[2]));
+                    sn.setMembershipFunction(new NSigmoid(split[1], split[2]));
                     break;
                 case "FPG":
-                    if(split.length>3)
-                    sn.setMembershipFunction(new FPG(split[1], split[2],split[3]));
+                    if (split.length > 3)
+                        sn.setMembershipFunction(new FPG(split[1], split[2], split[3]));
                     break;
                 default:
                     System.out.println(split[0]);

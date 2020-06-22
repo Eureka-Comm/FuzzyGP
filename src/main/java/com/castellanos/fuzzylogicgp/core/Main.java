@@ -1,7 +1,11 @@
 package com.castellanos.fuzzylogicgp.core;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,22 +20,38 @@ import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
 import com.castellanos.fuzzylogicgp.parser.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
+
+import afu.org.checkerframework.common.reflection.qual.GetClass;
+
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
 
 public class Main {
-    public static void main(String[] args) throws OperatorException, CloneNotSupportedException, IOException {
+    public static void main(String[] args)
+            throws OperatorException, CloneNotSupportedException, IOException, URISyntaxException {
         // evaluation();
         // discovery();
         System.out.println(Arrays.toString(args));
         if (args.length > 0 && !args[0].trim().equals("-h")) {
+            URL resource, dataset;
+            Query query;
             switch (args[0]) {
                 case "demo-evaluation":
                     System.out.println("Running demo evaluation");
-                    TaskFactory.execute(Query.fromJson(Paths.get("src/main/resources/scripts/evaluation.txt")));
+                    
+                    resource = ClassLoader.getSystemClassLoader().getResource("/scripts/evaluation.txt");
+                    System.out.println(new File(resource.getFile()).exists());
+                    query = Query.fromJson(Paths.get(resource.toURI()));
+                    dataset = ClassLoader.getSystemClassLoader().getResource("datasets/tinto.csv");
+                    query.setDb_uri(Paths.get(dataset.toURI()).toFile().getAbsolutePath());
+                    TaskFactory.execute(query);
                     break;
                 case "demo-discovery":
                     System.out.println("Running demo discovery");
-                    TaskFactory.execute(Query.fromJson(Paths.get("src/main/resources/scripts/discovery.txt")));
+                    resource = Thread.currentThread().getContextClassLoader().getResource("/scripts/discovery.txt");
+                    query = Query.fromJson(Paths.get(resource.toURI()));
+                    dataset = Thread.currentThread().getContextClassLoader().getResource("/datasets/tinto.csv");
+                    query.setDb_uri(Paths.get(dataset.toURI()).toFile().getAbsolutePath());
+                    TaskFactory.execute(query);
                     break;
                 default:
                     TaskFactory.execute(Query.fromJson(Paths.get(args[0].trim())));
