@@ -1,7 +1,6 @@
 package com.castellanos.fuzzylogicgp.parser;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,10 +8,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
-import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
-import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.core.EvaluatePredicate;
 import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
@@ -20,6 +17,8 @@ import com.castellanos.fuzzylogicgp.logic.AMBC;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
 
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.xlsx.XlsxReadOptions;
+import tech.tablesaw.io.xlsx.XlsxReader;
 
 public class TaskFactory {
     public static void execute(Query query) throws OperatorException, CloneNotSupportedException, IOException {
@@ -35,8 +34,8 @@ public class TaskFactory {
                 evaluator.exportToCsv();
                 if (((EvaluationQuery) query).isShowTree()) {
                     String stP = new File(query.getOut_file()).getParent();
-                    if(stP==null)
-                    stP="";
+                    if (stP == null)
+                        stP = "";
                     Path path = Paths.get(stP, "tree-" + System.currentTimeMillis() + ".json");
                     Files.write(path, p.toJson().getBytes(), StandardOpenOption.CREATE_NEW);
                 }
@@ -46,7 +45,15 @@ public class TaskFactory {
 
                 parserPredicate = new ParserPredicate(query.getPredicate(), query.getStates(),
                         discoveryQuery.getGenerators());
-                Table data = Table.read().file(new File(discoveryQuery.getDb_uri()));
+                Table data;
+                if (discoveryQuery.getDb_uri().contains(".csv")) {
+                    data = Table.read().file(new File(discoveryQuery.getDb_uri()));
+                } else {
+                    XlsxReader reader = new XlsxReader();
+                    XlsxReadOptions options = XlsxReadOptions.builder(discoveryQuery.getDb_uri()).build();
+                    data = reader.read(options);
+                }
+
                 KDFLC discovery = new KDFLC(parserPredicate, logic, discoveryQuery.getDepth(),
                         discoveryQuery.getNum_pop(), discoveryQuery.getNum_iter(), discoveryQuery.getNum_result(),
                         discoveryQuery.getMin_truth_value(), discoveryQuery.getMut_percentage(),

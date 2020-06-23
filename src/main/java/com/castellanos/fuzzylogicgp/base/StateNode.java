@@ -126,7 +126,9 @@ public class StateNode extends Node {
         state.setColName(colName);
         if (membershipFunction != null)
             state.setMembershipFunction((AMembershipFunction) this.getMembershipFunction().clone());
-
+        if(this.getByGenerator()!=null)
+            state.setByGenerator(this.getByGenerator());
+        state.setEditable(this.isEditable());
         return state;
     }
 }

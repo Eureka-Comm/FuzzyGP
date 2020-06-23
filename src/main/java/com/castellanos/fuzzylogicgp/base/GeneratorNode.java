@@ -64,10 +64,6 @@ public class GeneratorNode extends Node {
         this.variables = variables;
     }
 
-    @Override
-    public String toString() {
-        return this.label;
-    }
 
     @Override
     public int hashCode() {
@@ -101,6 +97,12 @@ public class GeneratorNode extends Node {
         } else if (!variables.equals(other.variables))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "GeneratorNode [label=" + label + ", operators=" + Arrays.toString(operators) + ", variables="
+                + variables + "]";
     }
 
 }

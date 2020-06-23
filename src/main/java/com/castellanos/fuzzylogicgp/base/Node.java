@@ -64,6 +64,10 @@ public abstract class Node implements Cloneable, Serializable {
     public Object clone() throws CloneNotSupportedException {
         Node node = null;
         node = (Node) super.clone();
+        if(byGenerator!=null){
+            node.setByGenerator(byGenerator);
+        }
+        node.setEditable(editable);
         return node;
     }
 

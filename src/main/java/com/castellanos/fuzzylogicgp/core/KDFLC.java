@@ -8,11 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
@@ -22,13 +18,11 @@ import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
-import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
-import tech.tablesaw.io.csv.CsvWriteOptions;
 
 /**
  * fuzzy compensatory logical knowledge discovery
@@ -260,7 +254,7 @@ public class KDFLC {
             StateNode s = null;
             try {
                 s = (StateNode) select.clone();
-
+                s.setByGenerator(gNode.getId());
                 s.setEditable(true);
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
@@ -349,6 +343,7 @@ public class KDFLC {
             StateNode s = null;
             try {
                 s = (StateNode) select.clone();
+                s.setByGenerator(gNode.getId());
                 s.setEditable(true);
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
@@ -405,7 +400,7 @@ public class KDFLC {
 
     private void mutation(NodeTree[] population) throws OperatorException, CloneNotSupportedException {
         for (int i = 0; i < population.length; i++) {
-            if (rand.nextDouble() < mut_percentage) {
+            if (rand.nextDouble() < mut_percentage) {                 
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
                 Node n = editableNode.get(rand.nextInt(editableNode.size()));
 
@@ -501,7 +496,8 @@ public class KDFLC {
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
         fuzzyData.addColumns(value, predicates, data);
-        fuzzyData.write().toFile(new File(file));
+        File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
+        fuzzyData.write().toFile(f);
     }
 
     public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {

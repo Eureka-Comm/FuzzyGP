@@ -70,8 +70,11 @@ public class EDNParser {
                 discoveryQuery.setOut_file(out);
                 discoveryQuery.setStates(new ArrayList<>(convertToState));
                 discoveryQuery.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "")));
-                discoveryQuery.setPredicate(findPredicate().replaceAll(":generator", "").replace("{", "").replace("}", "").trim());
+                discoveryQuery.setPredicate(
+                        findPredicate().replaceAll(":generator", "").replace("{", "").replace("}", "").trim());
                 discoveryQuery.setDepth(Integer.parseInt(queryMap.get(Keyword.newKeyword("depth")).toString().trim()));
+                discoveryQuery
+                        .setNum_pop(Integer.parseInt(queryMap.get(Keyword.newKeyword("num-pop")).toString().trim()));
                 discoveryQuery
                         .setNum_iter(Integer.parseInt(queryMap.get(Keyword.newKeyword("num-iter")).toString().trim()));
                 discoveryQuery.setNum_result(
@@ -86,8 +89,8 @@ public class EDNParser {
                         Integer.parseInt(queryMap.get(Keyword.newKeyword("adj-num-iter")).toString().trim()));
                 discoveryQuery.setAdj_min_truth_value(
                         Float.parseFloat(queryMap.get(Keyword.newKeyword("adj-min-truth-value")).toString().trim()));
-                discoveryQuery
-                        .setGenerators(convertToGenerator((Map<?, ?>) queryMap.get(Keyword.newKeyword("generator")),convertToState));
+                discoveryQuery.setGenerators(
+                        convertToGenerator((Map<?, ?>) queryMap.get(Keyword.newKeyword("generator")), convertToState));
                 return discoveryQuery;
             default:
                 throw new IllegalArgumentException("Unsupported query.");
@@ -106,16 +109,25 @@ public class EDNParser {
         geneNode.setOperators(oNodeTypes);
         String[] vars = gen.get(Keyword.newKeyword("variables")).toString().replace("[", "").replace("]", "")
                 .split(",");
-        geneNode.setVariables(Arrays.asList(vars));
-        String predicaString = gen.get(Keyword.newKeyword("predicate")).toString().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(",", "");
+        ArrayList<String> lstvar = new ArrayList<>();
+        for (String string : vars) {
+            for (StateNode stateNode : stateNodes) {
+                if(string.trim().equals(stateNode.getLabel().trim())){
+                    lstvar.add(stateNode.getLabel().trim());
+                }
+            }
+        }
+        geneNode.setVariables(lstvar);
+        String predicaString = gen.get(Keyword.newKeyword("predicate")).toString().replaceAll("\\[", "")
+                .replaceAll("\\]", "").replaceAll(",", "");
         System.out.println(predicaString);
         for (StateNode stateNode : stateNodes) {
-            if(predicaString.contains(stateNode.getLabel())){
+            if (predicaString.contains(stateNode.getLabel())) {
                 predicaString = predicaString.replaceAll(stateNode.getLabel(), "");
             }
         }
-        for (NodeType type : new NodeType[]{NodeType.AND,NodeType.EQV,NodeType.NOT,NodeType.IMP,NodeType.OR}) {
-            if(predicaString.contains(type.toString())){
+        for (NodeType type : new NodeType[] { NodeType.AND, NodeType.EQV, NodeType.NOT, NodeType.IMP, NodeType.OR }) {
+            if (predicaString.contains(type.toString())) {
                 predicaString = predicaString.replaceAll(type.toString(), "");
             }
         }
@@ -136,13 +148,6 @@ public class EDNParser {
         return null;
     }
 
-    public static void main(String[] args) throws IOException {
-        EDNParser edn = new EDNParser(
-                "/home/thinkpad/Dropbox/ITCM/servicio social/universe-cmd/universe-cmd for Mac OS X/examples/discovery.txt");
-        Query q = edn.parser();
-        System.out.println(q.getPredicate());
-    }
-
     private List<StateNode> convertToState(Collection cstates) {
         List<StateNode> states = new ArrayList<>();
         Keyword labelKey = Keyword.newKeyword("label"), colNameKey = Keyword.newKeyword("colname"),
@@ -150,9 +155,9 @@ public class EDNParser {
         for (Iterator it = cstates.iterator(); it.hasNext();) {
             Map<?, ?> cstate = (Map<?, ?>) it.next();
             // System.out.println(+" "+cstate.get(fKey));
-            StateNode sn = new StateNode(cstate.get(labelKey).toString(), cstate.get(colNameKey).toString());
+            StateNode sn = new StateNode(cstate.get(labelKey).toString().trim(), cstate.get(colNameKey).toString().trim());
             String[] split = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "").split(",");
-            switch (split[0]) {
+            switch (split[0].trim()) {
                 case "sigmoid":
                     sn.setMembershipFunction(new Sigmoid(split[1], split[2]));
                     break;
@@ -164,7 +169,7 @@ public class EDNParser {
                         sn.setMembershipFunction(new FPG(split[1], split[2], split[3]));
                     break;
                 default:
-                    System.out.println(split[0]);
+                    System.out.println("Unsupported : " + split[0]);
 
             }
             states.add(sn);

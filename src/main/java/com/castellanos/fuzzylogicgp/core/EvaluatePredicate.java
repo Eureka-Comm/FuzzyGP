@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,8 @@ import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
+import tech.tablesaw.io.xlsx.XlsxReadOptions;
+import tech.tablesaw.io.xlsx.XlsxReader;
 
 /**
  *
@@ -59,7 +62,13 @@ public class EvaluatePredicate {
         this.p = p;
         this.logic = logic;
         try {
-            this.data = Table.read().csv(path);
+            if (path.contains(".csv")) {
+                data = Table.read().file(new File(path));
+            } else {
+                XlsxReader reader = new XlsxReader();
+                XlsxReadOptions options = XlsxReadOptions.builder(path).build();
+                data = reader.read(options);
+            }
         } catch (IOException ex) {
             Logger.getLogger(EvaluatePredicate.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -192,7 +201,7 @@ public class EvaluatePredicate {
         ArrayList<Node> nodes = NodeTree.getNodesByType(p, NodeType.STATE);
         for (Node v : nodes) {
             StateNode s = (StateNode) v;
-            if (!fuzzyData.columnNames().contains(s.getColName())) {
+            if (!fuzzyData.columnNames().contains(s.getLabel())) {
                 ColumnType type = data.column(s.getColName()).type();
 
                 DoubleColumn dc = DoubleColumn.create(s.getLabel());

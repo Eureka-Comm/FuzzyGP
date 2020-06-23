@@ -1,11 +1,8 @@
 package com.castellanos.fuzzylogicgp.core;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,6 +18,7 @@ import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
+import com.castellanos.fuzzylogicgp.parser.EDNParser;
 import com.castellanos.fuzzylogicgp.parser.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
@@ -49,7 +47,12 @@ public class Main {
                     TaskFactory.execute(query);
                     break;
                 default:
-                    query = Query.fromJson(Paths.get(args[0].trim()));
+                    if (args.length >= 2 && args[1].trim().equals("-format=edn")) {
+                        EDNParser ednParser = new EDNParser(args[0].trim());
+                        query = ednParser.parser();
+                    } else {
+                        query = Query.fromJson(Paths.get(args[0].trim()));
+                    }
                     TaskFactory.execute(query);
                     break;
             }
@@ -58,8 +61,9 @@ public class Main {
             System.out.println("Usage:");
             System.out.println("Load a job to process by its file path ");
             System.out.println("or check demo");
-            System.out.println("java App.jar demo-evaluation");
-            System.out.println("java App.jar demo-discovery");
+            System.out.println("\tjava App.jar demo-evaluation");
+            System.out.println("\tjava App.jar demo-discovery");
+            System.out.println("For EDN script support, use: -format=edn");
         }
 
     }
