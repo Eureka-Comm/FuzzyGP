@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -21,8 +25,6 @@ import com.castellanos.fuzzylogicgp.parser.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
 
-import afu.org.checkerframework.common.reflection.qual.GetClass;
-
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
 
 public class Main {
@@ -32,29 +34,23 @@ public class Main {
         // discovery();
         System.out.println(Arrays.toString(args));
         if (args.length > 0 && !args[0].trim().equals("-h")) {
-            URL resource, dataset;
             Query query;
             switch (args[0]) {
                 case "demo-evaluation":
                     System.out.println("Running demo evaluation");
-                    
-                    resource = ClassLoader.getSystemClassLoader().getResource("/scripts/evaluation.txt");
-                    System.out.println(new File(resource.getFile()).exists());
-                    query = Query.fromJson(Paths.get(resource.toURI()));
-                    dataset = ClassLoader.getSystemClassLoader().getResource("datasets/tinto.csv");
-                    query.setDb_uri(Paths.get(dataset.toURI()).toFile().getAbsolutePath());
+                    query = evaluation();
+                    demoToFile(query);
                     TaskFactory.execute(query);
                     break;
                 case "demo-discovery":
                     System.out.println("Running demo discovery");
-                    resource = Thread.currentThread().getContextClassLoader().getResource("/scripts/discovery.txt");
-                    query = Query.fromJson(Paths.get(resource.toURI()));
-                    dataset = Thread.currentThread().getContextClassLoader().getResource("/datasets/tinto.csv");
-                    query.setDb_uri(Paths.get(dataset.toURI()).toFile().getAbsolutePath());
+                    query = discovery();
+                    demoToFile(query);
                     TaskFactory.execute(query);
                     break;
                 default:
-                    TaskFactory.execute(Query.fromJson(Paths.get(args[0].trim())));
+                    query = Query.fromJson(Paths.get(args[0].trim()));
+                    TaskFactory.execute(query);
                     break;
             }
 
@@ -68,9 +64,20 @@ public class Main {
 
     }
 
-    private static void discovery() throws FileNotFoundException {
+    private static void demoToFile(Query query) throws IOException {
+        InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("datasets/tinto.csv");
+        Path path = Paths.get("dataset.csv");
+        Files.copy(resourceAsStream, path, StandardCopyOption.REPLACE_EXISTING);
+        query.setDb_uri(path.toFile().getAbsolutePath());
+        Path p = Paths.get("demo-script.txt");
+        if (p.toFile().exists())
+            p.toFile().delete();
+        Files.write(p, query.toJSON().getBytes(), StandardOpenOption.CREATE_NEW);
+
+    }
+
+    private static Query discovery() {
         DiscoveryQuery query = new DiscoveryQuery();
-        StateNode fa = new StateNode("quality", "quality");
 
         ArrayList<StateNode> states = new ArrayList<>();
         states.add(new StateNode("citric_acid", "citric_acid"));
@@ -114,25 +121,24 @@ public class Main {
         query.setNum_pop(50);
         query.setNum_result(20);
         query.setAdj_num_iter(1);
-
-        System.out.println(query);
-        System.out.println(query.toJSON());
+        return query;
 
     }
 
-    private static void evaluation() throws FileNotFoundException {
+    private static Query evaluation() {
 
         EvaluationQuery query = new EvaluationQuery();
         query.setDb_uri("src/main/resources/datasets/tinto.csv");
         query.setLogic(LogicType.GMBC);
         query.setOut_file("result-evaluation-prop.csv");
+        query.setShowTree(true);
         ArrayList<StateNode> states = new ArrayList<>();
         states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
         states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
         states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
         query.setStates(states);
         query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");
-        System.out.println(query.toJSON());
+        return query;
     }
 
 }

@@ -3,7 +3,10 @@ package com.castellanos.fuzzylogicgp.parser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
@@ -30,6 +33,13 @@ public class TaskFactory {
                 EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, query.getDb_uri(), query.getOut_file());
                 evaluator.evaluate();
                 evaluator.exportToCsv();
+                if (((EvaluationQuery) query).isShowTree()) {
+                    String stP = new File(query.getOut_file()).getParent();
+                    if(stP==null)
+                    stP="";
+                    Path path = Paths.get(stP, "tree-" + System.currentTimeMillis() + ".json");
+                    Files.write(path, p.toJson().getBytes(), StandardOpenOption.CREATE_NEW);
+                }
                 break;
             case DISCOVERY:
                 DiscoveryQuery discoveryQuery = (DiscoveryQuery) query;

@@ -1,6 +1,7 @@
 {
+  "showTree": true,
   "type": "EVALUATION",
-  "db_uri": "src/main/resources/datasets/tinto.csv",
+  "db_uri": "/home/thinkpad/Documents/FuzzyLogicGP/dataset.csv",
   "out_file": "result-evaluation-prop.csv",
   "states": [
     {
