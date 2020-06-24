@@ -1,37 +1,61 @@
 {
-  "showTree": true,
-  "type": "EVALUATION",
+  "depth": 2,
+  "num_pop": 100,
+  "num_iter": 100,
+  "num_result": 20,
+  "min_truth_value": 0.9,
+  "mut_percentage": 0.05,
+  "adj_num_pop": 10,
+  "adj_min_truth_value": 0.1,
+  "adj_num_iter": 2,
+  "generators": [
+    {
+      "label": "properties",
+      "operators": [
+        "AND",
+        "OR",
+        "NOT"
+      ],
+      "variables": [
+        "sepal lenght",
+        "sepal width",
+        "petal lenght",
+        "petal width"
+      ]
+    }
+  ],
+  "type": "DISCOVERY",
   "db_uri": "/home/thinkpad/Documents/FuzzyLogicGP/dataset.csv",
-  "out_file": "result-evaluation-prop.csv",
+  "out_file": "result-discovery-irs.csv",
   "states": [
     {
-      "label": "high alcohol",
-      "colName": "alcohol",
-      "f": {
-        "center": 11.65,
-        "beta": 9.0,
-        "type": "SIGMOID"
-      }
+      "label": "sepal lenght",
+      "colName": "sepal.length"
     },
     {
-      "label": "low pH",
-      "colName": "pH",
-      "f": {
-        "center": 3.375,
-        "beta": 2.93,
-        "type": "NSIGMOID"
-      }
+      "label": "sepal width",
+      "colName": "sepal.width"
     },
     {
-      "label": "high quality",
-      "colName": "quality",
+      "label": "petal lenght",
+      "colName": "petal.length"
+    },
+    {
+      "label": "petal width",
+      "colName": "petal.width"
+    },
+    {
+      "label": "class",
+      "colName": "variety",
       "f": {
-        "center": 5.5,
-        "beta": 4.0,
-        "type": "SIGMOID"
+        "values": {
+          "Setosa": 1.0
+        },
+        "notFoundValue": 0.0,
+        "type": "MAPNOMIAL"
       }
     }
   ],
   "logic": "GMBC",
-  "predicate": "(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")"
+  "predicate": "(IMP \"properties\" \"class\")"
 }

@@ -132,13 +132,6 @@ public class Main {
         query.setNum_pop(100);
         query.setNum_result(20);
         query.setAdj_num_iter(2);
-        try {
-            TaskFactory.execute(query);
-
-        } catch (OperatorException | CloneNotSupportedException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         return query;
 
     }
