@@ -13,18 +13,21 @@ import com.google.gson.annotations.Expose;
  *
  * @author hp
  */
-public abstract class AMembershipFunction implements Cloneable , Serializable{
+public abstract class AMembershipFunction implements Cloneable, Serializable {
 
     /**
      *
      */
     private static final long serialVersionUID = -9006368296289781684L;
-    public AMembershipFunction(){}
+
+    public AMembershipFunction() {
+    }
+
     @Expose
     public MembershipFunctionType type;
 
     public abstract boolean isValid();
-  
+
     public MembershipFunctionType getType() {
         return type;
     }
@@ -32,8 +35,11 @@ public abstract class AMembershipFunction implements Cloneable , Serializable{
     public void setType(MembershipFunctionType type) {
         this.type = type;
     }
-        
+
     public abstract double evaluate(double v);
+
+    public abstract double evaluate(String key);
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -47,6 +53,4 @@ public abstract class AMembershipFunction implements Cloneable , Serializable{
         return result;
     }
 
-   
-    
 }

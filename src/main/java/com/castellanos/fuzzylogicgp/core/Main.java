@@ -1,5 +1,6 @@
 package com.castellanos.fuzzylogicgp.core;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -15,6 +16,7 @@ import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
@@ -37,14 +39,17 @@ public class Main {
                 case "demo-evaluation":
                     System.out.println("Running demo evaluation");
                     query = evaluation();
-                    demoToFile(query);
-                    TaskFactory.execute(query);
+                    TaskFactory.execute(demoToFile(query));
                     break;
                 case "demo-discovery":
                     System.out.println("Running demo discovery");
                     query = discovery();
-                    demoToFile(query);
-                    TaskFactory.execute(query);
+                    TaskFactory.execute(demoToFile(query));
+                    break;
+                case "demo-iris":
+                    System.out.println("Running demo iris");
+                    query = irisQuery();
+                    TaskFactory.execute(demoToFile(query));
                     break;
                 default:
                     if (args.length >= 2 && args[1].trim().equals("-format=edn")) {
@@ -63,13 +68,14 @@ public class Main {
             System.out.println("or check demo");
             System.out.println("\tjava App.jar demo-evaluation");
             System.out.println("\tjava App.jar demo-discovery");
+            System.out.println("\tjava App.jar demo-iris");
             System.out.println("For EDN script support, use: -format=edn");
         }
 
     }
 
-    private static void demoToFile(Query query) throws IOException {
-        InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("datasets/tinto.csv");
+    private static Query demoToFile(Query query) throws IOException {
+        InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("datasets" +File.separator+query.getDb_uri());
         Path path = Paths.get("dataset.csv");
         Files.copy(resourceAsStream, path, StandardCopyOption.REPLACE_EXISTING);
         query.setDb_uri(path.toFile().getAbsolutePath());
@@ -77,7 +83,80 @@ public class Main {
         if (p.toFile().exists())
             p.toFile().delete();
         Files.write(p, query.toJSON().getBytes(), StandardOpenOption.CREATE_NEW);
+        return query;
 
+    }
+
+    private static Query irisQuery() {
+        DiscoveryQuery query = new DiscoveryQuery();
+
+        ArrayList<StateNode> states = new ArrayList<>();
+        states.add(new StateNode("sepal lenght", "sepal.length"));
+        states.add(new StateNode("sepal width", "sepal.width"));
+        states.add(new StateNode("petal lenght", "petal.length"));
+        states.add(new StateNode("petal width", "petal.width"));
+        StateNode variety = new StateNode("class", "variety");
+        MapNominal mapNominal = new MapNominal();
+        mapNominal.addParameter("Setosa", 1.0);
+        // mapNominal.addParameter("Versicolor", 0.33);
+        // mapNominal.addParameter("Virginica", 0.33);
+        variety.setMembershipFunction(mapNominal);
+        //
+
+        query.setStates(states);
+        query.setDb_uri("iris.csv");
+        String out_file = "result-discovery-irs.csv";
+        query.setOut_file(out_file);
+        query.setLogic(LogicType.GMBC);
+        String predicate = "(IMP \"properties\" \"class\")";
+        GeneratorNode generator = new GeneratorNode();
+        generator.setLabel("properties");
+        ArrayList<String> variables = new ArrayList<>();
+        for (StateNode stateNode : states) {
+            variables.add(stateNode.getLabel());
+        }
+        states.add(variety);
+
+        generator.setVariables(variables);
+        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT });
+        ArrayList<GeneratorNode> generators = new ArrayList<>();
+        generators.add(generator);
+        query.setGenerators(generators);
+        query.setPredicate(predicate);
+        query.setAdj_min_truth_value(0.1f);
+        query.setAdj_num_pop(10);
+        query.setDepth(2);
+        query.setMut_percentage(0.05f);
+        query.setNum_iter(100);
+        query.setMin_truth_value(0.9f);
+        query.setNum_pop(100);
+        query.setNum_result(20);
+        query.setAdj_num_iter(2);
+        try {
+            TaskFactory.execute(query);
+
+        } catch (OperatorException | CloneNotSupportedException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return query;
+
+    }
+
+    private static Query evaluation() {
+
+        EvaluationQuery query = new EvaluationQuery();
+        query.setDb_uri("tinto.csv");
+        query.setLogic(LogicType.GMBC);
+        query.setOut_file("result-evaluation-prop.csv");
+        query.setShowTree(true);
+        ArrayList<StateNode> states = new ArrayList<>();
+        states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
+        states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
+        states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
+        query.setStates(states);
+        query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");
+        return query;
     }
 
     private static Query discovery() {
@@ -98,8 +177,7 @@ public class Main {
         states.add(new StateNode("chlorides", "chlorides"));
 
         query.setStates(states);
-        String db_uri = "src/main/resources/datasets/tinto.csv";
-        query.setDb_uri(db_uri);
+        query.setDb_uri("tinto.csv");
         String out_file = "result-discovery-prop.csv";
         query.setOut_file(out_file);
         query.setLogic(LogicType.GMBC);
@@ -126,23 +204,5 @@ public class Main {
         query.setNum_result(20);
         query.setAdj_num_iter(1);
         return query;
-
     }
-
-    private static Query evaluation() {
-
-        EvaluationQuery query = new EvaluationQuery();
-        query.setDb_uri("src/main/resources/datasets/tinto.csv");
-        query.setLogic(LogicType.GMBC);
-        query.setOut_file("result-evaluation-prop.csv");
-        query.setShowTree(true);
-        ArrayList<StateNode> states = new ArrayList<>();
-        states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
-        states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
-        states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
-        query.setStates(states);
-        query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");
-        return query;
-    }
-
 }

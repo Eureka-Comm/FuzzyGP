@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Singleton;
@@ -24,6 +25,8 @@ public class MembershipFunctionSerializer implements JsonSerializer<AMembershipF
                 return context.serialize((Sigmoid) src);
             case SINGLETON:
                 return context.serialize((Singleton) src);
+            case MAPNOMIAL:
+                return context.serialize((MapNominal) src);
             default:
                 return null;
         }

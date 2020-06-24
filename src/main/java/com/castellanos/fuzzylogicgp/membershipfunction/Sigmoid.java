@@ -109,4 +109,9 @@ public class Sigmoid extends AMembershipFunction {
         return true;
     }
 
+    @Override
+    public double evaluate(String key) {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
+
 }

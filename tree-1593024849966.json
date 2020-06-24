@@ -15,7 +15,7 @@
                 "beta": 9.0,
                 "type": "SIGMOID"
               },
-              "id": "ff5353e4-13f4-44c6-be92-37bf5633ddbc",
+              "id": "005c46d8-1b2c-4e60-8593-740371a1e7ae",
               "type": "STATE",
               "editable": false
             },
@@ -27,17 +27,17 @@
                 "beta": 2.93,
                 "type": "NSIGMOID"
               },
-              "id": "e75ec630-1746-4032-8bc9-3379241d70ed",
+              "id": "a165cda3-51fb-4cb3-b3db-ec549eca8d48",
               "type": "STATE",
               "editable": false
             }
           ],
-          "id": "f73a22c4-18bf-4323-9e51-ed1fd566e202",
+          "id": "8321cf24-71f7-4774-ae6d-aa158127bb06",
           "type": "AND",
           "editable": false
         }
       ],
-      "id": "e7bcb488-428a-42f3-aa34-3d5386712ba1",
+      "id": "435927be-3cdb-4765-a8d6-1d75611c9339",
       "type": "NOT",
       "editable": false
     },
@@ -49,14 +49,14 @@
         "beta": 4.0,
         "type": "SIGMOID"
       },
-      "id": "d77eb49e-63e2-431c-890b-1f5e1158c82e",
+      "id": "f596b121-b774-4f9b-bbdf-ac733f3f3b2a",
       "type": "STATE",
       "editable": false
     }
   ],
-  "leftID": "e7bcb488-428a-42f3-aa34-3d5386712ba1",
-  "righID": "d77eb49e-63e2-431c-890b-1f5e1158c82e",
-  "id": "3ebce497-dc51-4077-a04a-f25e9cd3ea36",
+  "leftID": "435927be-3cdb-4765-a8d6-1d75611c9339",
+  "righID": "f596b121-b774-4f9b-bbdf-ac733f3f3b2a",
+  "id": "d2934977-9f74-4dfd-a924-4a3cd0e3a9e1",
   "type": "IMP",
   "editable": false
 }

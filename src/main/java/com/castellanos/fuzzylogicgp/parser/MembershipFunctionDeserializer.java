@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
@@ -28,6 +29,8 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<AMembers
                 return context.deserialize(json, Sigmoid.class);
             case SINGLETON:
                 return context.deserialize(json, Singleton.class);
+                case MAPNOMIAL:
+                return context.deserialize(json, MapNominal.class);
             default:
                 return null;
         }

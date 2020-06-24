@@ -21,6 +21,7 @@ import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
 import com.castellanos.fuzzylogicgp.logic.GMBC;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -170,12 +171,13 @@ public class EvaluatePredicate {
                 // return logic.not(fitValue(((NodeTree) p).getChildrens().get(0), index));
                 nodeTree = (NodeTree) node;
                 child = nodeTree.getChildrens();
-                nodeTree.setFitness(logic.not(fitValue(child.get(0), index)));            
+                nodeTree.setFitness(logic.not(fitValue(child.get(0), index)));
                 return nodeTree.getFitness();
             case IMP:
                 nodeTree = (NodeTree) node;
                 NodeTree imp = (NodeTree) node;
-                nodeTree.setFitness(logic.imp(fitValue(imp.findById(imp.getLeftID()), index),fitValue(imp.findById(imp.getRighID()), index)));
+                nodeTree.setFitness(logic.imp(fitValue(imp.findById(imp.getLeftID()), index),
+                        fitValue(imp.findById(imp.getRighID()), index)));
                 return nodeTree.getFitness();
             case EQV:
                 nodeTree = (NodeTree) node;
@@ -187,7 +189,7 @@ public class EvaluatePredicate {
                 return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
             // return new BigDecimal(fuzzyData.getString(index,
             // st.getLabel()),MathContext.DECIMAL64);
-           case OPERATOR:
+            case OPERATOR:
                 nodeTree = (NodeTree) node;
                 return fitValue(nodeTree.getChildrens().get(0), index);
             default:
@@ -208,7 +210,6 @@ public class EvaluatePredicate {
 
                 if (type == ColumnType.DOUBLE) {
                     Column<Double> column = (Column<Double>) data.column(s.getColName());
-
                     for (Double cell : column) {
                         dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
@@ -229,6 +230,15 @@ public class EvaluatePredicate {
                     Column<Long> column = (Column<Long>) data.column(s.getColName());
                     for (Long cell : column) {
                         dc.append(s.getMembershipFunction().evaluate((cell)));
+                    }
+                } else if (type == ColumnType.STRING) {
+                    Column<String> column = (Column<String>) data.column(s.getColName());
+                    if(!(s.getMembershipFunction() instanceof MapNominal)){
+                        System.out.println("wtf "+s);
+                    }
+                    for (String valueString : column) {
+                        Double value = s.getMembershipFunction().evaluate(valueString);                        
+                        dc.append(value );
                     }
 
                 } else {
@@ -253,7 +263,7 @@ public class EvaluatePredicate {
         FPG fpg = new FPG("9.132248919293149", "12.468564784808557", "0.24484459229131095");
         StateNode ca = new StateNode("fixed_acidity", "fixed_acidity", fpg);
         StateNode sa = new StateNode("alcohol", "alcohol");
-        sa.setMembershipFunction(new FPG("9.087011333223336", "8.575778989810821","0.3737520451234506"));
+        sa.setMembershipFunction(new FPG("9.087011333223336", "8.575778989810821", "0.3737520451234506"));
         // beta gamma m
         List<StateNode> states = new ArrayList<>();
         states.add(fa);
@@ -275,14 +285,14 @@ public class EvaluatePredicate {
         // System.out.println(imp);
         String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
         expression = "(NOT \"quality\" )";
-       /// expression = "(IMP (NOT \"fixed_acidity\") (AND \"alcohol\" \"quality\"))";
-       // expression = "(IMP (AND \"alcohol\" \"quality\") \"quality\")";
+        /// expression = "(IMP (NOT \"fixed_acidity\") (AND \"alcohol\" \"quality\"))";
+        // expression = "(IMP (AND \"alcohol\" \"quality\") \"quality\")";
         expression = " \"quality\"";
         expression = "(IMP \"alcohol\" \"quality\")";
 
         ParserPredicate parser = new ParserPredicate(expression, states, gs);
         NodeTree pp = parser.parser();
-       
+
         EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv",
                 "evaluation-nodetree.csv");
         long startTime = System.nanoTime();
@@ -294,8 +304,8 @@ public class EvaluatePredicate {
         System.out.println("That took " + (duration / 1000000) + " milliseconds");
         ep.resultPrint();
         System.out.println(pp);
-        //System.out.println(pp.toJson());
-        
+        // System.out.println(pp.toJson());
+
         // ep.exportToCsv();
         // System.out.println(ep.exportToJSON());
         // StateNode.parseState("{:label \"quality \" :colname \"quality\" :f [FPG

@@ -109,5 +109,10 @@ public class NSigmoid extends AMembershipFunction {
             return false;
         return true;
     }
+
+    @Override
+    public double evaluate(String key) {
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
     
 }

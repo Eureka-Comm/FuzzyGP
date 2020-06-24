@@ -231,7 +231,7 @@ public class GOMF {
                 for (FunctionWrap k : mf.getElements()) {
                     Node node = predicate.findById(k.getOwner());
                     if (node instanceof StateNode) {
-                        StateNode st = (StateNode) node;
+                        StateNode st = (StateNode) node;                        
                         try {
                             st.setMembershipFunction((AMembershipFunction) k.getFpg().clone());
                             NodeTree.replace(NodeTree.getNodeParent(predicate, k.getOwner()), st, st);
@@ -244,6 +244,8 @@ public class GOMF {
                 // mf.setFitness(evaluate(predicate));
                 EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
                 evaluator.setPredicate(predicate);
+              //  System.out.println(predicate.toJson());
+              //  System.out.println(predicate);
                 mf.setFitness(evaluator.evaluate());
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
@@ -292,7 +294,7 @@ public class GOMF {
         for (int i = 0; i < pop.size(); i++) {
             ChromosomePojo next = pop.get(i);
 
-            if (rand.nextFloat() < mut_percentage) {
+            if (rand.nextFloat() < mut_percentage && next.getElements().length >= 1) {
                 int index = (int) Math.floor(randomValue(0, next.getElements().length - 1).doubleValue());
                 int indexParam = (int) Math.floor(randomValue(0, 2).doubleValue());
                 // System.out.println("Element <" + i + ">mutated: " + index + " Param : " +
@@ -512,33 +514,5 @@ public class GOMF {
             return t.getFitness().compareTo(t1.getFitness());
         }
 
-    }
-
-    public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
-        Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
-        GOMF gomf = new GOMF(d, new GMBC(), 0.15, 100, 50, 1);
-        StateNode sa = new StateNode("alcohol", "alcohol");
-        StateNode sph = new StateNode("pH", "pH");
-        StateNode sq = new StateNode("quality", "quality");
-        StateNode sfa = new StateNode("fixed_acidity", "fixed_acidity");
-        List<StateNode> states = new ArrayList<>();
-        states.add(sa);
-        states.add(sph);
-        states.add(sq);
-        states.add(sfa);
-
-        GeneratorNode g = new GeneratorNode("*", new NodeType[] {}, new ArrayList<>());
-        List<GeneratorNode> gs = new ArrayList<>();
-        gs.add(g);
-        String expression = "(IMP (AND \"alcohol\" \"fixed_acidity\") \"quality\")";
-        long startTime = System.nanoTime();
-        ParserPredicate pp = new ParserPredicate(expression, states, gs);
-        NodeTree p = pp.parser();
-        gomf.optimize(p);
-        System.out.println(p + " " + p.getFitness());
-        long endTime = System.nanoTime();
-
-        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.println("That took " + (duration / 1000000) + " milliseconds");
     }
 }

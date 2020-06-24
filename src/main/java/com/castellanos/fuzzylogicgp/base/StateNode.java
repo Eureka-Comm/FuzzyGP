@@ -5,8 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
-
-
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -120,13 +118,13 @@ public class StateNode extends Node {
     @Override
     public Object clone() throws CloneNotSupportedException {
         StateNode state = new StateNode();
-        if(label!=null)
-        state.setLabel(label);
-        if(colName!=null)
-        state.setColName(colName);
-        if (membershipFunction != null)
+        if (this.getLabel() != null)
+            state.setLabel(label);
+        if (this.getColName() != null)
+            state.setColName(colName);
+        if (this.getMembershipFunction() != null)
             state.setMembershipFunction((AMembershipFunction) this.getMembershipFunction().clone());
-        if(this.getByGenerator()!=null)
+        if (this.getByGenerator() != null)
             state.setByGenerator(this.getByGenerator());
         state.setEditable(this.isEditable());
         return state;

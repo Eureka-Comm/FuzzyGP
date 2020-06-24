@@ -149,8 +149,7 @@ public class KDFLC {
                     }
                 }
                 Arrays.sort(population, Collections.reverseOrder());
-                System.out.println("Iteration " + iteration + " " + population[population.length - 1] + " "
-                        + population[population.length - 1].getFitness());
+                System.out.println("Iteration " + iteration + " ( " + resultList.size() + " ) ");
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                         resultList.add((NodeTree) population[i].clone());
@@ -188,7 +187,7 @@ public class KDFLC {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-            System.out.printf("ind %3d: %s\n", i, pop[i]);
+            //System.out.printf("ind %3d: %s\n", i, pop[i]);
         }
         return pop;
     }
