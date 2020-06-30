@@ -11,4 +11,5 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
  */
 public enum MembershipFunctionType {
     FPG, SIGMOID, NSIGMOID, SINGLETON, MAPNOMIAL;
+    
 }

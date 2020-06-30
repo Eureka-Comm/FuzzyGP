@@ -9,6 +9,7 @@ import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import java.io.File;
@@ -18,7 +19,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -112,7 +112,7 @@ public class EDNParser {
         ArrayList<String> lstvar = new ArrayList<>();
         for (String string : vars) {
             for (StateNode stateNode : stateNodes) {
-                if(string.trim().equals(stateNode.getLabel().trim())){
+                if (string.trim().equals(stateNode.getLabel().trim())) {
                     lstvar.add(stateNode.getLabel().trim());
                 }
             }
@@ -155,18 +155,30 @@ public class EDNParser {
         for (Iterator it = cstates.iterator(); it.hasNext();) {
             Map<?, ?> cstate = (Map<?, ?>) it.next();
             // System.out.println(+" "+cstate.get(fKey));
-            StateNode sn = new StateNode(cstate.get(labelKey).toString().trim(), cstate.get(colNameKey).toString().trim());
+            StateNode sn = new StateNode(cstate.get(labelKey).toString().trim(),
+                    cstate.get(colNameKey).toString().trim());
             String[] split = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "").split(",");
-            switch (split[0].trim()) {
+            switch (split[0].trim().toLowerCase()) {
                 case "sigmoid":
                     sn.setMembershipFunction(new Sigmoid(split[1], split[2]));
                     break;
                 case "-sigmoid":
                     sn.setMembershipFunction(new NSigmoid(split[1], split[2]));
                     break;
-                case "FPG":
+                case "fpg":
                     if (split.length > 3)
                         sn.setMembershipFunction(new FPG(split[1], split[2], split[3]));
+                    break;
+                case "map-nominal":
+                    String fm = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "");
+                    String values[] = fm.substring(fm.indexOf("{"), fm.indexOf("}")).replaceAll("\"", "")
+                            .replace("{", "").replace("}", "").split(",");
+                    MapNominal map = new MapNominal();
+                    for (String string : values) {
+                        String k[] = string.trim().split(" ");
+                        map.addParameter(k[0], Double.parseDouble(k[1]));
+                    }
+                    map.setNotFoundValue(Double.parseDouble(fm.substring(fm.indexOf("")).replace("{", "").trim()));
                     break;
                 default:
                     System.out.println("Unsupported : " + split[0]);

@@ -29,7 +29,7 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<AMembers
                 return context.deserialize(json, Sigmoid.class);
             case SINGLETON:
                 return context.deserialize(json, Singleton.class);
-                case MAPNOMIAL:
+            case MAPNOMIAL:
                 return context.deserialize(json, MapNominal.class);
             default:
                 return null;

@@ -73,7 +73,12 @@ public class MapNominal extends AMembershipFunction {
 
     @Override
     public String toString() {
-        return "MapNominal [notFoundValue=" + notFoundValue + ", values=" + values + "]";
+        String st = "";
+        for (String kString : values.keySet()) {
+            st += "\"" + kString + "\" " + values.get(kString) + ",";
+        }
+        st = st.trim().substring(0, st.length() - 1);
+        return "[map-nominal {" + values + "} " + notFoundValue + "]";
     }
 
     public HashMap<String, Double> getValues() {
@@ -91,7 +96,8 @@ public class MapNominal extends AMembershipFunction {
 
     @Override
     public double evaluate(String key) {
-        //return (values.getOrDefault(key, notFoundValue) == notFoundValue) ? notFoundValue : 1.0;
+        // return (values.getOrDefault(key, notFoundValue) == notFoundValue) ?
+        // notFoundValue : 1.0;
         return values.getOrDefault(key, notFoundValue);
     }
 
