@@ -1,10 +1,9 @@
-package com.castellanos.fuzzylogicgp.core;
+package com.castellanos.fuzzylogicgp.base;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-import com.castellanos.fuzzylogicgp.base.NodeTree;
 
 public class TournamentSelection {
     private NodeTree[] pop;

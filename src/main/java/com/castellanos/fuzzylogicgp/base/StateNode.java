@@ -33,23 +33,6 @@ public class StateNode extends Node {
         setType(NodeType.STATE);
     }
 
-    public static StateNode parseState(String string) {
-        StateNode s = new StateNode();
-        String split[] = string.replace("{", "").replace("}", "").trim().split(":");
-        String label = null, colname = "";
-        for (String st : split) {
-            String sub[] = st.split(" ");
-            if (sub[0].contains("label")) {
-                label = sub[1].replaceAll("\"", "").trim();
-            } else if (sub[0].contains("colname")) {
-                colname = sub[1].replaceAll("\"", "").trim();
-            } else if (sub[0].contains("f")) {
-                System.out.println(st);
-            }
-        }
-        System.out.println(label + " " + colname);
-        return null;
-    }
 
     public StateNode(StateNode state) {
         this.label = state.getLabel();

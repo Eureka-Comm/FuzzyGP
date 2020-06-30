@@ -16,8 +16,8 @@ import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
+import com.castellanos.fuzzylogicgp.base.TournamentSelection;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
-import com.castellanos.fuzzylogicgp.logic.GMBC;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 
 import tech.tablesaw.api.DoubleColumn;
@@ -499,72 +499,5 @@ public class KDFLC {
         fuzzyData.write().toFile(f);
     }
 
-    public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
-        Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
-        StateNode sa = new StateNode("alcohol", "alcohol");
-        StateNode sph = new StateNode("pH", "pH");
-        StateNode sq = new StateNode("quality", "quality");
-        StateNode sfa = new StateNode("fixed_acidity", "fixed_acidity");
-        StateNode sugar = new StateNode("residual_sugar", "residual_sugar");
-        StateNode volatile_acidity = new StateNode("volatile_acidity", "volatile_acidity");
-        StateNode citric_acid = new StateNode("citric_acid", "citric_acid");
-        StateNode chlorides = new StateNode("chlorides", "chlorides");
-        StateNode free_sulfur_dioxide = new StateNode("free_sulfur_dioxide", "free_sulfur_dioxide");
-        StateNode total_sulfur_dioxide = new StateNode("total_sulfur_dioxide", "total_sulfur_dioxide");
-        StateNode density = new StateNode("density", "density");
-
-        List<StateNode> states = new ArrayList<>();
-        states.add(density);
-        states.add(volatile_acidity);
-        states.add(citric_acid);
-        states.add(chlorides);
-        states.add(free_sulfur_dioxide);
-        states.add(total_sulfur_dioxide);
-        states.add(sa);
-        states.add(sph);
-        states.add(sq);
-        states.add(sfa);
-        states.add(sugar);
-        List<String> vars = new ArrayList<>();
-        vars.add("alcohol");
-        vars.add("pH");
-        vars.add("fixed_acidity");
-        vars.add("sugar");
-        vars.add("density");
-        vars.add("total_sulfur_dioxide");
-        vars.add("chlorides");
-        vars.add("free_sulfur_dioxide");
-        vars.add("citric_acid");
-        vars.add("volatile_acidity");
-        // vars.add("quality");
-
-        GeneratorNode g = new GeneratorNode("*",
-                new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT, NodeType.IMP }, vars);
-        List<GeneratorNode> gs = new ArrayList<>();
-        gs.add(g);
-        String expression = "(NOT (AND \"*\" \"quality\") )";
-        expression = "(IMP  \"*\" \"quality\")";
-        //expression = "(NOT \"*\")";
-        // expression = "\"*\"";
-      //  expression = "(IMP \"alcohol\" \"quality\")";
-
-        ParserPredicate pp = new ParserPredicate(expression, states, gs);
-
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 50, 10, 0.9f, 0.15, 2, 1, 0.0, d);
-        // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
-        // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
-        /*
-         * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
-         * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
-         */
-        long startTime = System.nanoTime();
-        discovery.execute();
-
-        long endTime = System.nanoTime();
-
-        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.println("That took " + (duration / 1000000) + " milliseconds");
-        //discovery.exportToCsv();
-    }
-
+   
 }

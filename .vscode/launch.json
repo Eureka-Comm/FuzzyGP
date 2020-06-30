@@ -37,7 +37,7 @@
             "request": "launch",
             "mainClass": "com.castellanos.fuzzylogicgp.core.Main",
             "projectName": "FuzzyLogicGP",
-            "args": "demo-evaluation"
+            "args": "demo-iris"
         }
     ]
 }

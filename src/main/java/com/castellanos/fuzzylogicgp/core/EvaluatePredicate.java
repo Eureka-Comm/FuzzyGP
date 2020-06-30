@@ -12,17 +12,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
-import com.castellanos.fuzzylogicgp.logic.GMBC;
-import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
-import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -254,63 +250,5 @@ public class EvaluatePredicate {
         this.p = p;
     }
 
-    public static void main(String[] args) throws OperatorException, IOException, CloneNotSupportedException {
-        // gamma beta m
-
-        StateNode fa = new StateNode("quality", "quality");
-        fa.setMembershipFunction(new FPG("3.008904979613364", "4.911744699566296", "0.587451293429636"));
-
-        FPG fpg = new FPG("9.132248919293149", "12.468564784808557", "0.24484459229131095");
-        StateNode ca = new StateNode("fixed_acidity", "fixed_acidity", fpg);
-        StateNode sa = new StateNode("alcohol", "alcohol");
-        sa.setMembershipFunction(new FPG("9.087011333223336", "8.575778989810821", "0.3737520451234506"));
-        // beta gamma m
-        List<StateNode> states = new ArrayList<>();
-        states.add(fa);
-        states.add(ca);
-        states.add(sa);
-
-        GeneratorNode g = new GeneratorNode("comodin", new NodeType[] {}, new ArrayList<>());
-        List<GeneratorNode> gs = new ArrayList<>();
-        NodeTree imp = new NodeTree(NodeType.IMP);
-        imp.addChild(sa);
-        NodeTree and = new NodeTree(NodeType.AND);
-        NodeTree not = new NodeTree(NodeType.NOT);
-        not.addChild(ca);
-        and.addChild(not);
-        and.addChild(fa);
-        and.addChild(g);
-        imp.addChild(and);
-        // imp.addChild(new StateNode("label","colname"));
-        // System.out.println(imp);
-        String expression = "(IMP (AND \"high alcohol\" \"low pH\") \"high quality\")";
-        expression = "(NOT \"quality\" )";
-        /// expression = "(IMP (NOT \"fixed_acidity\") (AND \"alcohol\" \"quality\"))";
-        // expression = "(IMP (AND \"alcohol\" \"quality\") \"quality\")";
-        expression = " \"quality\"";
-        expression = "(IMP \"alcohol\" \"quality\")";
-
-        ParserPredicate parser = new ParserPredicate(expression, states, gs);
-        NodeTree pp = parser.parser();
-
-        EvaluatePredicate ep = new EvaluatePredicate(pp, new GMBC(), "src/main/resources/datasets/tinto.csv",
-                "evaluation-nodetree.csv");
-        long startTime = System.nanoTime();
-        Double evaluate = ep.evaluate();
-        System.out.println(evaluate);
-        long endTime = System.nanoTime();
-
-        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.println("That took " + (duration / 1000000) + " milliseconds");
-        ep.resultPrint();
-        System.out.println(pp);
-        // System.out.println(pp.toJson());
-
-        // ep.exportToCsv();
-        // System.out.println(ep.exportToJSON());
-        // StateNode.parseState("{:label \"quality \" :colname \"quality\" :f [FPG
-        // 3.39817096929029727192528298473916947841644287109375 7.34277098376588
-        // 0.74726864798339953654959799678181298077106475830078125]}");
-    }
-
+  
 }

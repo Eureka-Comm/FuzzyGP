@@ -5,7 +5,6 @@
  */
 package com.castellanos.fuzzylogicgp.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -13,19 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.ALogic;
-import com.castellanos.fuzzylogicgp.logic.GMBC;
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
-import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
@@ -52,7 +46,6 @@ public class GOMF {
     private final HashMap<String, Double[]> minPromMaxMapValues;
 
     private static final Random rand = new Random();
-    private final Gson print = new GsonBuilder().setPrettyPrinting().create();
     private final ChromosomeComparator chromosomeComparator = new ChromosomeComparator();
 
     public GOMF(Table data, ALogic logic, double mut_percentage, int adj_num_pop, int adj_iter,
@@ -451,14 +444,6 @@ public class GOMF {
 
         public String getOwner() {
             return owner;
-        }
-
-        public void setFpg(FPG fpg) {
-            this.fpg = fpg;
-        }
-
-        public void setOwner(String owner) {
-            this.owner = owner;
         }
 
         @Override
