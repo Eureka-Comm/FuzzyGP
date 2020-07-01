@@ -152,26 +152,33 @@ public class EvaluatePredicate {
     }
 
     private double fitValue(Node node, int index) throws OperatorException {
-        Double aux = 1.0;
         List<Node> child;
         NodeTree nodeTree;
+        ArrayList<Double> values;
         switch (node.getType()) {
             case AND:
                 nodeTree = (NodeTree) node;
                 child = nodeTree.getChildrens();
-                for (int i = 1; i < child.size(); i++) {
-                    aux *= (fitValue(child.get(i), index));
+                values = new ArrayList<>();
+                for (int i = 0; i < child.size(); i++) {
+                    values.add(fitValue(child.get(i), index));
                 }
-                nodeTree.setFitness(logic.and(aux, fitValue(child.get(0), index)));
+
+                nodeTree.setFitness(logic.and(values));
                 return nodeTree.getFitness();
             case OR:
                 nodeTree = (NodeTree) node;
                 child = nodeTree.getChildrens();
+                /*
+                 * for (int i = 0; i < child.size(); i++) { aux *= (1 - fitValue(child.get(i),
+                 * index)); // aux = aux.multiply(BigDecimal.ONE.subtract(fitValue(child.get(i),
+                 * index))); }
+                 */
+                values = new ArrayList<>();
                 for (int i = 0; i < child.size(); i++) {
-                    aux *= (1 - fitValue(child.get(i), index));
-                    // aux = aux.multiply(BigDecimal.ONE.subtract(fitValue(child.get(i), index)));
+                    values.add(fitValue(child.get(i), index));
                 }
-                nodeTree.setFitness(logic.or(aux, fitValue(child.get(0), index)));
+                nodeTree.setFitness(logic.or(values));
                 return nodeTree.getFitness();
             // return logic.or(aux, new BigDecimal(child.size()));
             case NOT:
@@ -240,12 +247,12 @@ public class EvaluatePredicate {
                     }
                 } else if (type == ColumnType.STRING) {
                     Column<String> column = (Column<String>) data.column(s.getColName());
-                    if(!(s.getMembershipFunction() instanceof MapNominal)){
-                        System.out.println("wtf "+s);
+                    if (!(s.getMembershipFunction() instanceof MapNominal)) {
+                        System.out.println("wtf " + s);
                     }
                     for (String valueString : column) {
-                        Double value = s.getMembershipFunction().evaluate(valueString);                        
-                        dc.append(value );
+                        Double value = s.getMembershipFunction().evaluate(valueString);
+                        dc.append(value);
                     }
 
                 } else {
@@ -261,5 +268,4 @@ public class EvaluatePredicate {
         this.p = p;
     }
 
-  
 }

@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,6 +52,18 @@ public class AMBC implements ALogic {
 
     @Override
     public double exist(List<Double> values) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public double or(ArrayList<Double> values) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public double and(ArrayList<Double> values) {
         // TODO Auto-generated method stub
         return 0;
     }
