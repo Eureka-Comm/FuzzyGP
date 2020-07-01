@@ -38,7 +38,9 @@ public abstract class AMembershipFunction implements Cloneable, Serializable {
 
     public abstract double evaluate(double v);
 
-    public abstract double evaluate(String key);
+    public  double evaluate(String key){
+        throw new UnsupportedOperationException("Not supported yet."); 
+    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {

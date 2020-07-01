@@ -151,9 +151,5 @@ public class FPG extends AMembershipFunction {
         return true;
     }
 
-    @Override
-    public double evaluate(String key) {
-        System.out.println(key);
-        throw new UnsupportedOperationException("Not supported yet."); 
-    }
+    
 }

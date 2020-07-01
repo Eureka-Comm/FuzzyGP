@@ -16,14 +16,27 @@ import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
+import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
+import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.SForm;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal;
+import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
+import com.castellanos.fuzzylogicgp.membershipfunction.ZForm;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
 import com.castellanos.fuzzylogicgp.parser.EDNParser;
 import com.castellanos.fuzzylogicgp.parser.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
+
+import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.plotly.Plot;
+import tech.tablesaw.plotly.components.Figure;
+import tech.tablesaw.plotly.components.Layout;
+import tech.tablesaw.plotly.traces.ScatterTrace;
+import tech.tablesaw.plotly.traces.Trace;
 
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
 
@@ -33,6 +46,7 @@ public class Main {
         // evaluation();
         // discovery();
         System.out.println(Arrays.toString(args));
+        
         if (args.length > 0 && !args[0].trim().equals("-h")) {
             Query query;
             switch (args[0]) {
@@ -72,6 +86,31 @@ public class Main {
             System.out.println("For EDN script support, use: -format=edn");
         }
 
+    }
+
+    private static void testMembershipFunction() {
+        DoubleColumn xColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < 10.0; i+=0.1) {
+            xColumn.append(i);
+        }
+    
+        //Triangular triangular = new Triangular(1.0,5.0,9.0);
+        AMembershipFunction mf = new Gaussian(5.0,2.0);
+        mf = new Triangular(1.0,5.0,9.0);
+        mf = new Trapezoidal(1.0, 5.0, 7.0, 8.0);
+        mf  = new SForm(1.0,8.0);//*
+        mf = new ZForm(2.0,8.0);
+        mf = new Sigmoid(5.0, 1.0);
+
+        DoubleColumn yColumn = DoubleColumn.create("y column");
+
+        for (Double valDouble : xColumn) {
+            yColumn.append(mf.evaluate(valDouble));
+        }
+        Layout layout = Layout.builder().title(mf.toString()).build();
+        Trace trace = ScatterTrace.builder(xColumn, yColumn).build();
+
+        Plot.show(new Figure(layout,trace), new File("membershipFunctionGrap.html"));
     }
 
     private static Query demoToFile(Query query) throws IOException {
