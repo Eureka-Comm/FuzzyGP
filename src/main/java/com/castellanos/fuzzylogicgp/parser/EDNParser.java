@@ -126,7 +126,7 @@ public class EDNParser {
         geneNode.setVariables(lstvar);
         String predicaString = gen.get(Keyword.newKeyword("predicate")).toString().replaceAll("\\[", "")
                 .replaceAll("\\]", "").replaceAll(",", "");
-        System.out.println(predicaString);
+        //System.out.println(predicaString);
         for (StateNode stateNode : stateNodes) {
             if (predicaString.contains(stateNode.getLabel())) {
                 predicaString = predicaString.replaceAll(stateNode.getLabel(), "");

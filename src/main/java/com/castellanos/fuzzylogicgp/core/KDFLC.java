@@ -433,9 +433,9 @@ public class KDFLC {
                         s.setColName(state.getColName());
                         s.setLabel(state.getLabel());
                         if (s.getMembershipFunction() != null) {
-                            s.setMembershipFunction(s.getMembershipFunction());
+                            s.setMembershipFunction(state.getMembershipFunction());
                         }
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s);
                         break;
                     default:
                         break;

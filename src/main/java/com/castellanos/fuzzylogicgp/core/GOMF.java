@@ -76,7 +76,13 @@ public class GOMF {
                 }
             }
         });
-        genetic();
+        if (sns.size() > 0) {
+            genetic();
+        } else {
+            EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
+            evaluator.setPredicate(p);
+            p.setFitness(evaluator.evaluate());
+        }
     }
 
     private void genetic() {
@@ -209,11 +215,7 @@ public class GOMF {
         return (rand.doubles(min, max + 1).findFirst().getAsDouble());
     }
 
-    public void optimize(Table data, NodeTree p) {
-        this.data = data;
-        this.predicatePattern = p;
-        genetic();
-    }
+
 
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
         // System.out.println(currentPop);
@@ -224,7 +226,7 @@ public class GOMF {
                 for (FunctionWrap k : mf.getElements()) {
                     Node node = predicate.findById(k.getOwner());
                     if (node instanceof StateNode) {
-                        StateNode st = (StateNode) node;                        
+                        StateNode st = (StateNode) node;
                         try {
                             st.setMembershipFunction((AMembershipFunction) k.getFpg().clone());
                             NodeTree.replace(NodeTree.getNodeParent(predicate, k.getOwner()), st, st);
@@ -237,8 +239,8 @@ public class GOMF {
                 // mf.setFitness(evaluate(predicate));
                 EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
                 evaluator.setPredicate(predicate);
-              //  System.out.println(predicate.toJson());
-              //  System.out.println(predicate);
+                // System.out.println(predicate.toJson());
+                // System.out.println(predicate);
                 mf.setFitness(evaluator.evaluate());
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
