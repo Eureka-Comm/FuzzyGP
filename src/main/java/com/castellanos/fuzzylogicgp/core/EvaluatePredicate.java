@@ -75,11 +75,22 @@ public class EvaluatePredicate {
         this.p = p;
         this.logic = logic;
         this.outPath = outPath;
-        try {
-            this.data = Table.read().csv(path);
-        } catch (IOException ex) {
-            Logger.getLogger(EvaluatePredicate.class.getName()).log(Level.SEVERE, null, ex);
+        if (path.contains(".csv")) {
+            try {
+                data = Table.read().file(new File(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            XlsxReader reader = new XlsxReader();
+            XlsxReadOptions options = XlsxReadOptions.builder(path).build();
+            try {
+                data = reader.read(options);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     public double evaluate() {
