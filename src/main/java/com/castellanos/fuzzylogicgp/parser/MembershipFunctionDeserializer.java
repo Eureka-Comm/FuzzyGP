@@ -4,11 +4,16 @@ import java.lang.reflect.Type;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.SForm;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Singleton;
+import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal;
+import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
+import com.castellanos.fuzzylogicgp.membershipfunction.ZForm;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -31,6 +36,17 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<AMembers
                 return context.deserialize(json, Singleton.class);
             case MAPNOMIAL:
                 return context.deserialize(json, MapNominal.class);
+            case GAUSSIAN:
+                return context.deserialize(json, Gaussian.class);
+            case SFORM:
+                return context.deserialize(json, SForm.class);
+            case ZFORM:
+                return context.deserialize(json, ZForm.class);
+            case TRAPEZOIDAL:
+                return context.deserialize(json, Trapezoidal.class);
+            case TRIANGULAR:
+                return context.deserialize(json, Triangular.class);
+
             default:
                 return null;
         }

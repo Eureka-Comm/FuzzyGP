@@ -9,9 +9,15 @@ import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.SForm;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal;
+import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
+import com.castellanos.fuzzylogicgp.membershipfunction.ZForm;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -180,6 +186,22 @@ public class EDNParser {
                     }
                     map.setNotFoundValue(Double.parseDouble(fm.substring(fm.indexOf("")).replace("{", "").trim()));
                     break;
+                case "trapezoidal":
+                    sn.setMembershipFunction(new Trapezoidal(split[1], split[2], split[3], split[4]));
+                    break;
+                case "triangular":
+                    sn.setMembershipFunction(new Triangular(split[1], split[2], split[3]));
+                    break;
+                case "gaussian":
+                    sn.setMembershipFunction(new Gaussian(split[1], split[2]));
+                    break;
+                case "sform":
+                    sn.setMembershipFunction(new SForm(split[1], split[2]));
+                    break;
+                case "zform":
+                    sn.setMembershipFunction(new ZForm(split[1], split[2]));
+                    break;
+
                 default:
                     System.out.println("Unsupported : " + split[0]);
 
