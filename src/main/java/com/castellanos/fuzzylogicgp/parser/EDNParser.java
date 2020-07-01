@@ -201,7 +201,6 @@ public class EDNParser {
                 case "zform":
                     sn.setMembershipFunction(new ZForm(split[1], split[2]));
                     break;
-
                 default:
                     System.out.println("Unsupported : " + split[0]);
 

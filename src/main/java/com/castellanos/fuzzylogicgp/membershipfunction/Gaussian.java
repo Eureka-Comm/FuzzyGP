@@ -2,6 +2,8 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
+
 public class Gaussian extends AMembershipFunction {
     /**
      *
@@ -34,7 +36,23 @@ public class Gaussian extends AMembershipFunction {
     public double evaluate(double v) {
         return Math.exp(-Math.pow(v-center, 2)/(2*Math.pow(deviation, 2)));
     }
+    @Override
+    public DoubleColumn yPoints() {
+        DoubleColumn yColumn = DoubleColumn.create("y column");
+        for (double i = 0; i < center*2; i+=0.01) {
+            yColumn.append(this.evaluate(i));
+        }
+        return yColumn;
+    }
 
+    @Override
+    public DoubleColumn xPoints() {
+        DoubleColumn yColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < center*2; i+=0.01) {
+            yColumn.append(i);
+        }
+        return yColumn;
+    }
     public Double getCenter() {
         return center;
     }

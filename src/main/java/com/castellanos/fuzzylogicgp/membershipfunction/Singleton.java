@@ -7,6 +7,8 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
+
 /**
  *
  * @author hp
@@ -77,6 +79,21 @@ public class Singleton extends AMembershipFunction {
     public Object clone() throws CloneNotSupportedException {
         return new Singleton(a);
     }
-
+    @Override
+    public DoubleColumn xPoints() {
+        DoubleColumn xColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < a*2; i+=0.1) {
+            xColumn.append(i);
+        }
+        return xColumn;
+    }
+    @Override
+    public DoubleColumn yPoints() {
+        DoubleColumn yColumn = DoubleColumn.create("y column");
+        for (double i = 0; i < a*2; i+=0.1) {
+            yColumn.append(this.evaluate(i));
+        }
+        return yColumn;
+    }
 
 }

@@ -2,6 +2,8 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
+
 /**
  * S-shaped membership function MathWorks-based implementation
  */
@@ -45,7 +47,22 @@ public class SForm extends AMembershipFunction {
 
         return 1;
     }
-
+    @Override
+    public DoubleColumn xPoints() {
+        DoubleColumn xColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < b*2; i+=0.01) {
+            xColumn.append(i);
+        }
+        return xColumn;
+    }
+    @Override
+    public DoubleColumn yPoints() {
+        DoubleColumn yColumn = DoubleColumn.create("y column");
+        for (double i = 0; i < b*2; i+=0.01) {
+            yColumn.append(this.evaluate(i));
+        }
+        return yColumn;
+    }
     @Override
     public String toString() {
         return String.format("[%s %f, %f]", this.type.toString(), this.a, this.b);

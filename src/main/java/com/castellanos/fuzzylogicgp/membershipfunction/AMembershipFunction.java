@@ -9,6 +9,9 @@ import java.io.Serializable;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.columns.Column;
+
 /**
  *
  * @author hp
@@ -41,7 +44,9 @@ public abstract class AMembershipFunction implements Cloneable, Serializable {
     public  double evaluate(String key){
         throw new UnsupportedOperationException("Not supported yet."); 
     }
+    public abstract Column yPoints();
 
+    public abstract Column xPoints();
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();

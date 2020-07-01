@@ -2,6 +2,8 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
+
 public class Trapezoidal extends AMembershipFunction {
     /**
      *
@@ -92,6 +94,24 @@ public class Trapezoidal extends AMembershipFunction {
     }
 
     @Override
+    public DoubleColumn xPoints() {
+        DoubleColumn xColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < b + d; i += 0.01) {
+            xColumn.append(i);
+        }
+        return xColumn;
+    }
+
+    @Override
+    public DoubleColumn yPoints() {
+        DoubleColumn yColumn = DoubleColumn.create("y column");
+        for (double i = 0; i < b + d; i += 0.01) {
+            yColumn.append(this.evaluate(i));
+        }
+        return yColumn;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -122,6 +142,7 @@ public class Trapezoidal extends AMembershipFunction {
             return false;
         return true;
     }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new Trapezoidal(a, b, c, d);

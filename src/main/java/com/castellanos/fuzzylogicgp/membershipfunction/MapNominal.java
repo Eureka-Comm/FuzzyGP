@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.columns.Column;
+
 public class MapNominal extends AMembershipFunction {
     /**
      *
@@ -109,5 +111,17 @@ public class MapNominal extends AMembershipFunction {
         if (getValues() != null)
             map.setValues(getValues());
         return map;
+    }
+
+    @Override
+    public Column yPoints() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Column xPoints() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

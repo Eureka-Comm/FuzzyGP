@@ -17,6 +17,7 @@ import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
+import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
@@ -46,8 +47,8 @@ public class Main {
         // evaluation();
         // discovery();
         System.out.println(Arrays.toString(args));
-        
-        if (args.length > 0 && !args[0].trim().equals("-h")) {
+                
+       if (args.length > 0 && !args[0].trim().equals("-h")) {
             Query query;
             switch (args[0]) {
                 case "demo-evaluation":
