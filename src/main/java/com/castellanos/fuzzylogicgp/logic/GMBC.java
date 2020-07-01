@@ -55,6 +55,7 @@ public class GMBC implements ALogic {
     }
     @Override
     public double and(ArrayList<Double> values) {
+        
         return Math.pow(values.stream().parallel().reduce(1.0, (a,b)->  a*b) ,1.0/values.size());
     }
     @Override
