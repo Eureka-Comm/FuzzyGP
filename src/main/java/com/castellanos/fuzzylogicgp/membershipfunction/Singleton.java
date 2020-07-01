@@ -73,6 +73,10 @@ public class Singleton extends AMembershipFunction {
             return false;
         return true;
     }
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Singleton(a);
+    }
 
 
 }

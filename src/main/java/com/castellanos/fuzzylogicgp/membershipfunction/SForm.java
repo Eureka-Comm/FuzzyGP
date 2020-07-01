@@ -97,4 +97,8 @@ public class SForm extends AMembershipFunction {
             return false;
         return true;
     }
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new SForm(a, b);
+    }
 }

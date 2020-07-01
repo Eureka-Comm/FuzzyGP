@@ -104,4 +104,8 @@ public class Triangular extends AMembershipFunction {
     public String toString() {
         return String.format("[%s %.3f, %.3f, %.3f]", this.type.toString(), this.a, this.b, this.c);
     }
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Triangular(a, b, c);
+    }
 }

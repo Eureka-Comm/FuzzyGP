@@ -9,7 +9,6 @@ import static java.lang.Math.pow;
 
 import com.google.gson.annotations.Expose;
 
-
 /**
  *
  * @author hp
@@ -34,13 +33,19 @@ public class FPG extends AMembershipFunction {
         this.setType(MembershipFunctionType.FPG);
     }
 
+    public FPG(Double beta, Double gamma, Double m) {
+        this.beta = beta;
+        this.gamma = gamma;
+        this.m = m;
+    }
+
     public FPG() {
         this.setType(MembershipFunctionType.FPG);
     }
 
     @Override
     public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -53,30 +58,31 @@ public class FPG extends AMembershipFunction {
         // BigDecimal sigm, sigmm, M;
 
         double sigm, sigmm, M;
-          sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m); 
-          sigmm = pow(1.0 - new Sigmoid(gamma, beta).evaluate(v), 1.0 - m); 
-          M = pow(m, m) * pow((1 - m), (1 -
-          m));
-          
-          return ((sigm * sigmm) / M);
-         
+        sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m);
+        sigmm = pow(1.0 - new Sigmoid(gamma, beta).evaluate(v), 1.0 - m);
+        M = pow(m, m) * pow((1 - m), (1 - m));
+
+        return ((sigm * sigmm) / M);
+
         /*
-        BigDecimal one = new BigDecimal("1", MathContext.DECIMAL128);
-        BigDecimal calc_sig = new Sigmoid(gamma, beta).evaluate(v);
-
-        // Apfloat apsigm = ApfloatMath.pow(new Apfloat(calc_sig),new Apfloat(m));
-        BigDecimal bgsigm = BigDecimalMath.pow(calc_sig, m, MathContext.DECIMAL128);
-
-        // Apfloat apsigmm = ApfloatMath.pow(new Apfloat(one.subtract(calc_sig)), new
-        // Apfloat(one.subtract(m)));
-        BigDecimal bgsigmm = BigDecimalMath.pow(one.subtract(calc_sig), one.subtract(m), MathContext.DECIMAL128);
-
-        // Apfloat M = ApfloatMath.pow(new Apfloat(m), new
-        // Apfloat(m)).multiply(ApfloatMath.pow(new Apfloat(one.subtract(m)), new
-        // Apfloat(one.subtract(m))));
-        BigDecimal bgM = BigDecimalMath.pow(m, m, MathContext.DECIMAL128)
-                .multiply(BigDecimalMath.pow(one.subtract(m), one.subtract(m), MathContext.DECIMAL128));
-        return bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);*/
+         * BigDecimal one = new BigDecimal("1", MathContext.DECIMAL128); BigDecimal
+         * calc_sig = new Sigmoid(gamma, beta).evaluate(v);
+         * 
+         * // Apfloat apsigm = ApfloatMath.pow(new Apfloat(calc_sig),new Apfloat(m));
+         * BigDecimal bgsigm = BigDecimalMath.pow(calc_sig, m, MathContext.DECIMAL128);
+         * 
+         * // Apfloat apsigmm = ApfloatMath.pow(new Apfloat(one.subtract(calc_sig)), new
+         * // Apfloat(one.subtract(m))); BigDecimal bgsigmm =
+         * BigDecimalMath.pow(one.subtract(calc_sig), one.subtract(m),
+         * MathContext.DECIMAL128);
+         * 
+         * // Apfloat M = ApfloatMath.pow(new Apfloat(m), new //
+         * Apfloat(m)).multiply(ApfloatMath.pow(new Apfloat(one.subtract(m)), new //
+         * Apfloat(one.subtract(m)))); BigDecimal bgM = BigDecimalMath.pow(m, m,
+         * MathContext.DECIMAL128) .multiply(BigDecimalMath.pow(one.subtract(m),
+         * one.subtract(m), MathContext.DECIMAL128)); return
+         * bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);
+         */
     }
 
     public Double getGamma() {
@@ -105,13 +111,7 @@ public class FPG extends AMembershipFunction {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        FPG fpg = (FPG) super.clone();
-        /*
-        fpg.setBeta(new BigDecimal(this.getBeta().toString()));
-        fpg.setGamma(new BigDecimal(this.getGamma().toString()));
-        fpg.setM(new BigDecimal(this.getM().toString()));
-        */
-        return fpg;
+        return new FPG(beta, gamma, m);
     }
 
     @Override
@@ -151,5 +151,4 @@ public class FPG extends AMembershipFunction {
         return true;
     }
 
-    
 }

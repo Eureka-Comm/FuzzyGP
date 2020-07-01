@@ -122,5 +122,8 @@ public class Trapezoidal extends AMembershipFunction {
             return false;
         return true;
     }
-
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Trapezoidal(a, b, c, d);
+    }
 }

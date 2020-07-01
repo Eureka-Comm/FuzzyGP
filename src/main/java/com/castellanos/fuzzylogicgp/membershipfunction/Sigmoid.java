@@ -75,10 +75,7 @@ public class Sigmoid extends AMembershipFunction {
     }
     @Override
     public Object clone() throws CloneNotSupportedException {
-        Sigmoid s = (Sigmoid) super.clone();
-        /*s.setBeta(new BigDecimal(this.getBeta().toString()));
-        s.setCenter(new BigDecimal(this.getCenter().toString()));*/
-        return s;
+        return new Sigmoid(center, beta);
     }
 
     @Override

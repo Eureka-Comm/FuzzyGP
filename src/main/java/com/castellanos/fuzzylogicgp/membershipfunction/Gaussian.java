@@ -86,6 +86,9 @@ public class Gaussian extends AMembershipFunction {
             return false;
         return true;
     }
-
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new Gaussian(center, deviation);
+    }
 
 }

@@ -95,5 +95,8 @@ public class ZForm extends AMembershipFunction {
             return false;
         return true;
     }
-
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ZForm(a, b);
+    }
 }
