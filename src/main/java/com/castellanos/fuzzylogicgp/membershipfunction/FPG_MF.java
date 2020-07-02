@@ -15,7 +15,7 @@ import tech.tablesaw.api.DoubleColumn;
  *
  * @author hp
  */
-public class FPG extends AMembershipFunction {
+public class FPG_MF extends MembershipFunction {
 
     /**
      *
@@ -28,20 +28,20 @@ public class FPG extends AMembershipFunction {
     @Expose
     private Double m;
 
-    public FPG(String beta, String gamma, String m) {
+    public FPG_MF(String beta, String gamma, String m) {
         this.gamma = Double.parseDouble(gamma);
         this.beta = Double.parseDouble(beta);
         this.m = Double.parseDouble(m);
         this.setType(MembershipFunctionType.FPG);
     }
 
-    public FPG(Double beta, Double gamma, Double m) {
+    public FPG_MF(Double beta, Double gamma, Double m) {
         this.beta = beta;
         this.gamma = gamma;
         this.m = m;
     }
 
-    public FPG() {
+    public FPG_MF() {
         this.setType(MembershipFunctionType.FPG);
     }
 
@@ -60,8 +60,8 @@ public class FPG extends AMembershipFunction {
         // BigDecimal sigm, sigmm, M;
 
         double sigm, sigmm, M;
-        sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m);
-        sigmm = pow(1.0 - new Sigmoid(gamma, beta).evaluate(v), 1.0 - m);
+        sigm = pow(new Sigmoid_MF(gamma, beta).evaluate(v), m);
+        sigmm = pow(1.0 - new Sigmoid_MF(gamma, beta).evaluate(v), 1.0 - m);
         M = pow(m, m) * pow((1 - m), (1 - m));
 
         return ((sigm * sigmm) / M);
@@ -113,7 +113,7 @@ public class FPG extends AMembershipFunction {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new FPG(beta, gamma, m);
+        return new FPG_MF(beta, gamma, m);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class FPG extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        FPG other = (FPG) obj;
+        FPG_MF other = (FPG_MF) obj;
         if (beta == null) {
             if (other.beta != null)
                 return false;

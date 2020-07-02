@@ -13,7 +13,7 @@ import tech.tablesaw.api.DoubleColumn;
  *
  * @author hp
  */
-public class Singleton extends AMembershipFunction {
+public class Singleton_MF extends MembershipFunction {
 
     /**
      *
@@ -22,7 +22,7 @@ public class Singleton extends AMembershipFunction {
     @Expose
     private double a;
 
-    public Singleton(double a) {
+    public Singleton_MF(double a) {
         this.a = a;
         this.setType(MembershipFunctionType.SINGLETON);
 
@@ -70,14 +70,14 @@ public class Singleton extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Singleton other = (Singleton) obj;
+        Singleton_MF other = (Singleton_MF) obj;
         if (Double.doubleToLongBits(a) != Double.doubleToLongBits(other.a))
             return false;
         return true;
     }
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Singleton(a);
+        return new Singleton_MF(a);
     }
     @Override
     public DoubleColumn xPoints() {

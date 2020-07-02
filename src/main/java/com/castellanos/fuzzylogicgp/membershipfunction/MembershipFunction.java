@@ -15,14 +15,14 @@ import tech.tablesaw.columns.Column;
  *
  * @author hp
  */
-public abstract class AMembershipFunction implements Cloneable, Serializable {
+public abstract class MembershipFunction implements Cloneable, Serializable {
 
     /**
      *
      */
     private static final long serialVersionUID = -9006368296289781684L;
 
-    public AMembershipFunction() {
+    public MembershipFunction() {
     }
 
     @Expose

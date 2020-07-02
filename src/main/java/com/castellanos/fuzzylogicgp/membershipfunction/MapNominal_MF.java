@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 
 import tech.tablesaw.columns.Column;
 
-public class MapNominal extends AMembershipFunction {
+public class MapNominal_MF extends MembershipFunction {
     /**
      *
      */
@@ -16,7 +16,7 @@ public class MapNominal extends AMembershipFunction {
     @Expose
     private Double notFoundValue = 0.0;
 
-    public MapNominal() {
+    public MapNominal_MF() {
         values = new HashMap<>();
         setType(MembershipFunctionType.MAPNOMIAL);
     }
@@ -59,7 +59,7 @@ public class MapNominal extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        MapNominal other = (MapNominal) obj;
+        MapNominal_MF other = (MapNominal_MF) obj;
         if (notFoundValue == null) {
             if (other.notFoundValue != null)
                 return false;
@@ -105,7 +105,7 @@ public class MapNominal extends AMembershipFunction {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        MapNominal map = new MapNominal();
+        MapNominal_MF map = new MapNominal_MF();
         if (notFoundValue != null)
             map.setNotFoundValue(notFoundValue);
         if (getValues() != null)

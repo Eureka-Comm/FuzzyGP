@@ -8,15 +8,15 @@ package com.castellanos.fuzzylogicgp.parser;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
-import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
-import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
-import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
-import com.castellanos.fuzzylogicgp.membershipfunction.SForm;
-import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
-import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal;
-import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
-import com.castellanos.fuzzylogicgp.membershipfunction.ZForm;
+import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Triangular_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.ZForm_MF;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -166,20 +166,20 @@ public class EDNParser {
             String[] split = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "").split(",");
             switch (split[0].trim().toLowerCase()) {
                 case "sigmoid":
-                    sn.setMembershipFunction(new Sigmoid(split[1], split[2]));
+                    sn.setMembershipFunction(new Sigmoid_MF(split[1], split[2]));
                     break;
                 case "-sigmoid":
-                    sn.setMembershipFunction(new NSigmoid(split[1], split[2]));
+                    sn.setMembershipFunction(new NSigmoid_MF(split[1], split[2]));
                     break;
                 case "fpg":
                     if (split.length > 3)
-                        sn.setMembershipFunction(new FPG(split[1], split[2], split[3]));
+                        sn.setMembershipFunction(new FPG_MF(split[1], split[2], split[3]));
                     break;
                 case "map-nominal":
                     String fm = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "");
                     String values[] = fm.substring(fm.indexOf("{"), fm.indexOf("}")).replaceAll("\"", "")
                             .replace("{", "").replace("}", "").split(",");
-                    MapNominal map = new MapNominal();
+                    MapNominal_MF map = new MapNominal_MF();
                     for (String string : values) {
                         String k[] = string.trim().split(" ");
                         map.addParameter(k[0], Double.parseDouble(k[1]));
@@ -187,19 +187,19 @@ public class EDNParser {
                     map.setNotFoundValue(Double.parseDouble(fm.substring(fm.indexOf("")).replace("{", "").trim()));
                     break;
                 case "trapezoidal":
-                    sn.setMembershipFunction(new Trapezoidal(split[1], split[2], split[3], split[4]));
+                    sn.setMembershipFunction(new Trapezoidal_MF(split[1], split[2], split[3], split[4]));
                     break;
                 case "triangular":
-                    sn.setMembershipFunction(new Triangular(split[1], split[2], split[3]));
+                    sn.setMembershipFunction(new Triangular_MF(split[1], split[2], split[3]));
                     break;
                 case "gaussian":
-                    sn.setMembershipFunction(new Gaussian(split[1], split[2]));
+                    sn.setMembershipFunction(new Gaussian_MF(split[1], split[2]));
                     break;
                 case "sform":
-                    sn.setMembershipFunction(new SForm(split[1], split[2]));
+                    sn.setMembershipFunction(new SForm_MF(split[1], split[2]));
                     break;
                 case "zform":
-                    sn.setMembershipFunction(new ZForm(split[1], split[2]));
+                    sn.setMembershipFunction(new ZForm_MF(split[1], split[2]));
                     break;
                 default:
                     System.out.println("Unsupported : " + split[0]);

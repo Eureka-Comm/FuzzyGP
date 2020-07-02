@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 
 import tech.tablesaw.api.DoubleColumn;
 
-public class Gaussian extends AMembershipFunction {
+public class Gaussian_MF extends MembershipFunction {
     /**
      *
      */
@@ -14,13 +14,13 @@ public class Gaussian extends AMembershipFunction {
     @Expose
     private Double deviation;
 
-    public Gaussian(Double center, Double deviation) {
+    public Gaussian_MF(Double center, Double deviation) {
         this.center = center;
         this.deviation = deviation;
         this.setType(MembershipFunctionType.GAUSSIAN);
     }
 
-    public Gaussian(String center, String deviation) {
+    public Gaussian_MF(String center, String deviation) {
         this.center = Double.parseDouble(center);
         this.deviation = Double.parseDouble(deviation);
         this.setType(MembershipFunctionType.GAUSSIAN);
@@ -91,7 +91,7 @@ public class Gaussian extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Gaussian other = (Gaussian) obj;
+        Gaussian_MF other = (Gaussian_MF) obj;
         if (center == null) {
             if (other.center != null)
                 return false;
@@ -106,7 +106,7 @@ public class Gaussian extends AMembershipFunction {
     }
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new Gaussian(center, deviation);
+        return new Gaussian_MF(center, deviation);
     }
 
 }

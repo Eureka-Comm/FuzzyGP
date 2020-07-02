@@ -13,59 +13,58 @@ import tech.tablesaw.api.DoubleColumn;
  *
  * @author hp
  */
-public class NSigmoid extends AMembershipFunction {
+public class Sigmoid_MF extends MembershipFunction {
 
     /**
      *
      */
-    private static final long serialVersionUID = -3118936100100373869L;
+    private static final long serialVersionUID = 8054075265710944588L;
     @Expose
     private double center;
     @Expose
     private double beta;
 
-    public NSigmoid(double center, double beta) {
+    public Sigmoid_MF( double center,  double beta) {
         this.center = center;
         this.beta = beta;
-        this.setType(MembershipFunctionType.NSIGMOID);
+        this.setType(MembershipFunctionType.SIGMOID);
     }
 
-    public NSigmoid(String center, String beta) {
-        this.center = Double.parseDouble(center);
+    public Sigmoid_MF( String center,  String beta) {
+        this.center = Double.parseDouble(center );
         this.beta = Double.parseDouble(beta);
-        this.setType(MembershipFunctionType.NSIGMOID);
+        this.setType(MembershipFunctionType.SIGMOID);
     }
 
     @Override
     public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-                                                                       // Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public String toString() {
-        return "nsigmoid " + this.center + ", " + this.beta;
+        return "sigmoid " + this.center + ", " + this.beta;
     }
 
     @Override
-    public double evaluate(double v) {
-        return (1-(1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center))))));
-
-        /*BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);
+    public double evaluate( double v) {
+       /* BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);
         BigDecimal lg01 = BigDecimalMath.log(new BigDecimal("0.01"), MathContext.DECIMAL128);
         BigDecimal one = new BigDecimal("1");
         BigDecimal vexp = BigDecimalMath
                 .exp(((((lg99.subtract(lg01)).divide(center.subtract(beta), MathContext.DECIMAL128)).negate())
                         .multiply(v.subtract(center))), MathContext.DECIMAL128);
 
-        return one.min(one.divide(one.add(vexp), MathContext.DECIMAL128));*/
+        return one.divide(one.add(vexp), MathContext.DECIMAL128);*/
+        return (1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center)))));
+
     }
 
     public double getCenter() {
         return center;
     }
 
-    public void setCenter(double center) {
+    public void setCenter( double center) {
         this.center = center;
     }
 
@@ -73,12 +72,12 @@ public class NSigmoid extends AMembershipFunction {
         return beta;
     }
 
-    public void setBeta(double beta) {
+    public void setBeta(final double beta) {
         this.beta = beta;
     }
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new NSigmoid(center, beta);
+        return new Sigmoid_MF(center, beta);
     }
 
     @Override
@@ -101,14 +100,13 @@ public class NSigmoid extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        NSigmoid other = (NSigmoid) obj;
+        Sigmoid_MF other = (Sigmoid_MF) obj;
         if (Double.doubleToLongBits(beta) != Double.doubleToLongBits(other.beta))
             return false;
         if (Double.doubleToLongBits(center) != Double.doubleToLongBits(other.center))
             return false;
         return true;
     }
-
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
@@ -125,5 +123,6 @@ public class NSigmoid extends AMembershipFunction {
         }
         return yColumn;
     }
-    
+
+
 }

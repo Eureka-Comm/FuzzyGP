@@ -18,7 +18,7 @@ import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.Logic;
-import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -247,7 +247,7 @@ public class EvaluatePredicate {
                     }
                 } else if (type == ColumnType.STRING) {
                     Column<String> column = (Column<String>) data.column(s.getColName());
-                    if (!(s.getMembershipFunction() instanceof MapNominal)) {
+                    if (!(s.getMembershipFunction() instanceof MapNominal_MF)) {
                         System.out.println("wtf " + s);
                     }
                     for (String valueString : column) {
