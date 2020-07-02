@@ -137,7 +137,8 @@ public class EDNParser {
                 predicaString = predicaString.replaceAll(type.toString(), "");
             }
         }
-        geneNode.setLabel(predicaString.trim());
+        String tmp[] =predicaString.trim().split(" ");        
+        geneNode.setLabel(tmp[0]);
         lst.add(geneNode);
         return lst;
     }
