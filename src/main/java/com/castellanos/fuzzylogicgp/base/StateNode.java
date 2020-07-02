@@ -13,8 +13,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
 import tech.tablesaw.plotly.Plot;
 import tech.tablesaw.plotly.components.Figure;
 import tech.tablesaw.plotly.components.Layout;
@@ -123,12 +121,9 @@ public class StateNode extends Node {
     }
 
     public void plot(String dirOutputString, String fileName) {
-        Column xColumn = membershipFunction.xPoints();
-        
-        Column yColumn = membershipFunction.yPoints();
 
         Layout layout = Layout.builder().title(label+"("+colName+"): "+membershipFunction.toString()).build();
-        Trace trace = ScatterTrace.builder(xColumn, yColumn).build();
+        Trace trace = ScatterTrace.builder(membershipFunction.xPoints(), membershipFunction.yPoints()).build();
 
         Plot.show(new Figure(layout, trace),
                 Paths.get(dirOutputString, ((fileName == null) ? label : fileName) + ".html").toFile());

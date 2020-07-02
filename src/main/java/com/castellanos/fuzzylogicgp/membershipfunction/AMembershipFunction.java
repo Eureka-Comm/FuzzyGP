@@ -9,7 +9,6 @@ import java.io.Serializable;
 
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.columns.Column;
 
 /**

@@ -3,6 +3,10 @@ package com.castellanos.fuzzylogicgp.logic;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Ying, Mingsheng. (2002). Implication operators in fuzzy logic. Fuzzy Systems, IEEE Transactions on. 10. 88 - 91. 10.1109/91.983282. 
+ */
 public class Zadeh_Logic implements Logic {
 
     @Override
