@@ -66,7 +66,7 @@ public class EDNParser {
                 query.setDb_uri(path);
                 query.setOut_file(out);
                 query.setStates(new ArrayList<>(convertToState));
-                query.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "")));
+                query.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "").toUpperCase()));
                 query.setPredicate(findPredicate());
                 return query;
             case ":discovery":

@@ -37,7 +37,7 @@
             "request": "launch",
             "mainClass": "com.castellanos.fuzzylogicgp.core.Main",
             "projectName": "FuzzyLogicGP",
-            "args": "'/home/thinkpad/Dropbox/ITCM/servicio social/universe-cmd/universe-cmd for Mac OS X/discovery.txt' -format=edn"
+            "args": "'/home/thinkpad/Dropbox/ITCM/servicio social/universe-cmd/universe-cmd for Mac OS X/discovery2.txt' -format=edn"
         }
     ]
 }

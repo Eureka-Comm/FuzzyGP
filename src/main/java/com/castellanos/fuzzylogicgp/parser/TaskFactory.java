@@ -13,6 +13,7 @@ import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.core.EvaluatePredicate;
 import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.Logic;
+import com.castellanos.fuzzylogicgp.logic.Zadeh_Logic;
 import com.castellanos.fuzzylogicgp.logic.AMBC_Logic;
 import com.castellanos.fuzzylogicgp.logic.GMBC_Logic;
 
@@ -73,6 +74,8 @@ public class TaskFactory {
                 return new AMBC_Logic();
             case GMBC:
                 return new GMBC_Logic();
+            case ZADEH:
+                return new Zadeh_Logic();
             default:
                 return null;
         }
