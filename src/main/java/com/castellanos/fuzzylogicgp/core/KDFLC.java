@@ -17,7 +17,7 @@ import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.base.TournamentSelection;
-import com.castellanos.fuzzylogicgp.logic.ALogic;
+import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 
 import tech.tablesaw.api.DoubleColumn;
@@ -35,7 +35,7 @@ public class KDFLC {
     private ParserPredicate parserPredicate;
     private NodeTree predicatePattern;
     private HashMap<String, List<StateNode>> statesByGenerators;
-    private ALogic logic;
+    private Logic logic;
     private int depth;
     private int num_pop;
     private int num_iter;
@@ -53,7 +53,7 @@ public class KDFLC {
     private Table data;
     private ArrayList<NodeTree> resultList;
 
-    public KDFLC(ParserPredicate pp, ALogic logic, int depth, int num_pop, int num_iter, int num_result,
+    public KDFLC(ParserPredicate pp, Logic logic, int depth, int num_pop, int num_iter, int num_result,
             double min_truth_value, double mut_percentage, int adj_num_pop, int adj_num_iter,
             double adj_min_truth_value, Table data) throws OperatorException, CloneNotSupportedException {
         this.parserPredicate = pp;

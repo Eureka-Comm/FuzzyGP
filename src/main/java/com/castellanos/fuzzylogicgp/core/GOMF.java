@@ -17,7 +17,7 @@ import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.logic.ALogic;
+import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 
@@ -33,7 +33,7 @@ import tech.tablesaw.columns.Column;
  */
 public class GOMF {
 
-    private final ALogic logic;
+    private final Logic logic;
     private final double mut_percentage;
     private final int adj_num_pop;
     private final int adj_iter;
@@ -48,7 +48,7 @@ public class GOMF {
     private static final Random rand = new Random();
     private final ChromosomeComparator chromosomeComparator = new ChromosomeComparator();
 
-    public GOMF(Table data, ALogic logic, double mut_percentage, int adj_num_pop, int adj_iter,
+    public GOMF(Table data, Logic logic, double mut_percentage, int adj_num_pop, int adj_iter,
             double adj_truth_value) {
         this.data = data;
         this.logic = logic;

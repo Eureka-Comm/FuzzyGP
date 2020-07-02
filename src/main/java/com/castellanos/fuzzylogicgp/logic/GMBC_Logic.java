@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author hp
  */
-public class GMBC implements ALogic {
+public class GMBC_Logic implements Logic {
 
     @Override
     public double not(double v1) {
@@ -61,7 +61,7 @@ public class GMBC implements ALogic {
     @Override
     public double or(double v1, double v2) {
         // return (1.0 - Math.pow(v1, 0.5));
-        // return BigDecimal.ONE.subtract( BigDecimalMath.pow(v1,
+        // return BigDecimal.ONE.subtract( BigDecimalMath.pow(v1,s
         // BigDecimal.ONE.divide(v2, MathContext.DECIMAL64), MathContext.DECIMAL64));
         return (1.0 - Math.pow((1 - v1) * (1 - v2), 0.5));
     }

@@ -12,9 +12,9 @@ import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.core.EvaluatePredicate;
 import com.castellanos.fuzzylogicgp.core.KDFLC;
-import com.castellanos.fuzzylogicgp.logic.ALogic;
-import com.castellanos.fuzzylogicgp.logic.AMBC;
-import com.castellanos.fuzzylogicgp.logic.GMBC;
+import com.castellanos.fuzzylogicgp.logic.Logic;
+import com.castellanos.fuzzylogicgp.logic.AMBC_Logic;
+import com.castellanos.fuzzylogicgp.logic.GMBC_Logic;
 
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
@@ -24,7 +24,7 @@ public class TaskFactory {
     public static void execute(Query query) throws OperatorException, CloneNotSupportedException, IOException {
         ParserPredicate parserPredicate;
         NodeTree p;
-        ALogic logic = getLogic(query);
+        Logic logic = getLogic(query);
         switch (query.getType()) {
             case EVALUATION:
                 parserPredicate = new ParserPredicate(query.getPredicate(), query.getStates(), new ArrayList<>());
@@ -67,12 +67,12 @@ public class TaskFactory {
         }
     }
 
-    private static ALogic getLogic(Query query) {
+    private static Logic getLogic(Query query) {
         switch (query.getLogic()) {
             case AMBC:
-                return new AMBC();
+                return new AMBC_Logic();
             case GMBC:
-                return new GMBC();
+                return new GMBC_Logic();
             default:
                 return null;
         }

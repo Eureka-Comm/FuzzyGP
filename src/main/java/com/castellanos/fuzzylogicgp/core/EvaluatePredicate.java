@@ -17,7 +17,7 @@ import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.logic.ALogic;
+import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,24 +38,24 @@ import tech.tablesaw.io.xlsx.XlsxReader;
 public class EvaluatePredicate {
 
     private NodeTree p;
-    private ALogic logic;
+    private Logic logic;
     private Table data;
     private Table fuzzyData;
     private DoubleColumn resultColumn;
     private String outPath;
 
-    public EvaluatePredicate(ALogic logic, Table data) {
+    public EvaluatePredicate(Logic logic, Table data) {
         this.logic = logic;
         this.data = data;
     }
 
-    public EvaluatePredicate(NodeTree p, ALogic logic, Table data) {
+    public EvaluatePredicate(NodeTree p, Logic logic, Table data) {
         this.p = p;
         this.logic = logic;
         this.data = data;
     }
 
-    public EvaluatePredicate(NodeTree p, ALogic logic, String path) {
+    public EvaluatePredicate(NodeTree p, Logic logic, String path) {
         this.p = p;
         this.logic = logic;
         try {
@@ -71,7 +71,7 @@ public class EvaluatePredicate {
         }
     }
 
-    public EvaluatePredicate(NodeTree p, ALogic logic, String path, String outPath) {
+    public EvaluatePredicate(NodeTree p, Logic logic, String path, String outPath) {
         this.p = p;
         this.logic = logic;
         this.outPath = outPath;

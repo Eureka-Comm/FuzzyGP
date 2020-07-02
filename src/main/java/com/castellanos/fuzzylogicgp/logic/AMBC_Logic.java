@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author hp
  */
-public class AMBC implements ALogic {
+public class AMBC_Logic implements Logic {
 
     @Override
     public double not(double v1) {
