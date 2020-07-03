@@ -27,6 +27,9 @@ Current algorithms:
   * GA for predicate Discovery.
 
 Input datasets in CSV and XLSX format supported.
+
 Input query in JSON and EDN format.
+
 Export data result in CSV format only (In the evaluation query you can see a json representation of the evaluated predicate).
+
 Plot of membership function (current deploy in html).
