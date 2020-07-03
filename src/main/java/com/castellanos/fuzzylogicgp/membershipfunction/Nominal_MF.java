@@ -32,11 +32,6 @@ public class Nominal_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
-        throw new UnsupportedOperationException("[" + this.type + "] : " + v);
-    }
-
-    @Override
     public double evaluate(String key) {
         if (key.equals(this.key)) {
             return value;

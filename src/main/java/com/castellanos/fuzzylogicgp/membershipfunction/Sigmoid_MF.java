@@ -37,11 +37,6 @@ public class Sigmoid_MF extends MembershipFunction {
     }
 
     @Override
-    public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public String toString() {
         return "sigmoid " + this.center + ", " + this.beta;
     }

@@ -28,7 +28,9 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
     @Expose
     public MembershipFunctionType type;
 
-    public abstract boolean isValid();
+    public boolean isValid(){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
 
     public MembershipFunctionType getType() {
         return type;
@@ -38,10 +40,12 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
         this.type = type;
     }
 
-    public abstract double evaluate(double v);
+    public double evaluate(double v){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
 
     public  double evaluate(String key){
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
     }
     public abstract Column yPoints();
 

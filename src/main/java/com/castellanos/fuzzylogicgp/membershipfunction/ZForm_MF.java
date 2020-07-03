@@ -30,12 +30,6 @@ public class ZForm_MF extends MembershipFunction {
     }
 
     @Override
-    public boolean isValid() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public double evaluate(double v) {
         if (v <= a)
             return 1.0;

@@ -26,11 +26,6 @@ public class Gaussian_MF extends MembershipFunction {
         this.setType(MembershipFunctionType.GAUSSIAN);
     }
 
-    @Override
-    public boolean isValid() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
     @Override
     public double evaluate(double v) {

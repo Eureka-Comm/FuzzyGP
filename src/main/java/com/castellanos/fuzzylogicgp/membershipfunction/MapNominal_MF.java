@@ -20,11 +20,7 @@ public class MapNominal_MF extends MembershipFunction {
         values = new HashMap<>();
         setType(MembershipFunctionType.MAPNOMIAL);
     }
-
-    @Override
-    public boolean isValid() {
-        return false;
-    }
+    
 
     public void setNotFoundValue(Double notFoundValue) {
         this.notFoundValue = notFoundValue;

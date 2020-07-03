@@ -45,10 +45,6 @@ public class FPG_MF extends MembershipFunction {
         this.setType(MembershipFunctionType.FPG);
     }
 
-    @Override
-    public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public String toString() {

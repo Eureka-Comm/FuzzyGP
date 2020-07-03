@@ -35,12 +35,6 @@ public class Trapezoidal_MF extends MembershipFunction {
     }
 
     @Override
-    public boolean isValid() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public double evaluate(double v) {
         return Math.max(Math.min(Math.min((v - a) / (b - a), (d - v) / (d - c)), 1), 0);
     }
