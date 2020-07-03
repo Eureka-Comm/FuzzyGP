@@ -229,7 +229,7 @@ public class GOMF {
                         StateNode st = (StateNode) node;
                         try {
                             st.setMembershipFunction((MembershipFunction) k.getFpg().clone());
-                            NodeTree.replace(NodeTree.getNodeParent(predicate, k.getOwner()), st, st);
+                            NodeTree.replace(NodeTree.getNodeParent(predicate, k.getOwner()), st, st,false);
                         } catch (CloneNotSupportedException | OperatorException e) {
                             e.printStackTrace();
                         }

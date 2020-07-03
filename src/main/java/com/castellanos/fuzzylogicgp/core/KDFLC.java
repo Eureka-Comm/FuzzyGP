@@ -100,7 +100,7 @@ public class KDFLC {
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
         for (int i = 0; i < population.length; i++) {
             gomf.optimize(population[i]);
-            //System.out.println(i+" "+population[i]+" "+population[i].getFitness());
+            // System.out.println(i+" "+population[i]+" "+population[i].getFitness());
         }
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
@@ -119,7 +119,7 @@ public class KDFLC {
         if (isToDiscovery) {
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
-                System.out.println("Iteration "+iteration+" of "+num_iter+" ...");
+                System.out.println("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
                 int offspring_size = population.length / 2;
                 if (offspring_size % 2 != 0) {
                     offspring_size++;
@@ -147,15 +147,15 @@ public class KDFLC {
                 for (int i = 0; i < offspring.length; i++) {
                     for (int j = lastFound; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
-                            //System.out.println(offspring[i].getFitness());
+                            // System.out.println(offspring[i].getFitness());
                             population[j] = (NodeTree) offspring[i].clone();
-                            lastFound= j +1;
+                            lastFound = j + 1;
                             break;
                         }
                     }
                 }
                 Arrays.sort(population, Collections.reverseOrder());
-                System.out.println("Iteration " + iteration + " ( " + resultList.size() + " ) ");
+
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                         resultList.add((NodeTree) population[i].clone());
@@ -193,7 +193,7 @@ public class KDFLC {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-            //System.out.printf("ind %3d: %s\n", i, pop[i]);
+            // System.out.printf("ind %3d: %s\n", i, pop[i]);
         }
         return pop;
     }
@@ -227,15 +227,17 @@ public class KDFLC {
 
     private void complete_tree(NodeTree p, GeneratorNode gNode, Node father, int arity, int currentDepth)
             throws OperatorException {
+
         boolean isToReplace = false;
-        if (father == null) {
+        if (father == null && !(p.getType().equals(NodeType.OPERATOR))) {
             NodeTree find = NodeTree.getNodeParent(p, gNode.getId());
             if (find != null) {
                 father = find;
                 isToReplace = true;
             }
         }
-        if (currentDepth >= depth) {
+
+        if (currentDepth >= depth && !isToReplace) {
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
             if (size >= 2 && father != null) {
@@ -265,11 +267,8 @@ public class KDFLC {
                 e.printStackTrace();
             }
             // s.setFather(father.getId());
-            if (isToReplace) {
-                NodeTree.replace(((NodeTree) father), gNode, s);
-            } else {
-                ((NodeTree) father).addChild(s);
-            }
+            ((NodeTree) father).addChild(s);
+
         } else {
 
             arity = rand.nextInt(gNode.getVariables().size() / 2);
@@ -304,9 +303,13 @@ public class KDFLC {
             newFather.setEditable(true);
             newFather.setByGenerator(gNode.getId());
 
-            if (isToReplace)
-                NodeTree.replace(p, gNode, newFather);
-            else
+            if (father == null || isToReplace) {
+                NodeTree.replace(p, gNode, newFather, !isToReplace);
+                if (!isToReplace) {
+                    newFather = p;
+                }
+
+            } else
                 ((NodeTree) father).addChild(newFather);
             for (int i = 0; i < arity; i++)
                 complete_tree(p, gNode, newFather, arity, currentDepth + 1);
@@ -315,14 +318,16 @@ public class KDFLC {
 
     private void growTree(NodeTree p, GeneratorNode gNode, Node father, int arity, int currentDepth)
             throws OperatorException {
+
         boolean isToReplace = false;
-        if (father == null) {
+        if (father == null && !p.getType().equals(NodeType.OPERATOR)) {
             NodeTree find = NodeTree.getNodeParent(p, gNode.getId());
             if (find != null) {
                 father = find;
                 isToReplace = true;
             }
         }
+
         if ((currentDepth >= depth || rand.nextDouble() < 0.65) && (father != null && currentDepth != 0)) {
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
@@ -353,13 +358,12 @@ public class KDFLC {
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
-            // s.setFather(father.getId());
-
             if (isToReplace) {
-                NodeTree.replace(((NodeTree) father), gNode, s);
+                NodeTree.replace(p, gNode, s, !isToReplace);
             } else {
                 ((NodeTree) father).addChild(s);
             }
+
         } else {
 
             arity = rand.nextInt(gNode.getVariables().size() / 2);
@@ -393,10 +397,13 @@ public class KDFLC {
             }
             newFather.setEditable(true);
             newFather.setByGenerator(gNode.getId());
+            if (father == null || isToReplace) {
+                NodeTree.replace(p, gNode, newFather, !isToReplace);
+                if (!isToReplace) {
+                    newFather = p;
+                }
 
-            if (isToReplace)
-                NodeTree.replace(p, gNode, newFather);
-            else
+            } else
                 ((NodeTree) father).addChild(newFather);
             for (int i = 0; i < arity; i++)
                 growTree(p, gNode, newFather, arity, currentDepth + 1);
@@ -405,7 +412,7 @@ public class KDFLC {
 
     private void mutation(NodeTree[] population) throws OperatorException, CloneNotSupportedException {
         for (int i = 0; i < population.length; i++) {
-            if (rand.nextDouble() < mut_percentage) {                 
+            if (rand.nextDouble() < mut_percentage) {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
                 Node n = editableNode.get(rand.nextInt(editableNode.size()));
 
@@ -418,19 +425,19 @@ public class KDFLC {
                 switch (n.getType()) {
                     case OR:
                         clon.setType(NodeType.AND);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case AND:
                         clon.setType(NodeType.OR);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case IMP:
                         clon.setType(NodeType.EQV);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case EQV:
                         clon.setType(NodeType.IMP);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case STATE:
                         List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
@@ -441,7 +448,7 @@ public class KDFLC {
                         if (s.getMembershipFunction() != null) {
                             s.setMembershipFunction(state.getMembershipFunction());
                         }
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s, false);
                         break;
                     default:
                         break;
@@ -465,16 +472,16 @@ public class KDFLC {
             cand_b = b_editable.get(rand.nextInt(b_editable.size()));
             nivel_b = NodeTree.dfs(bc, cand_b);
         } while (nivel_b > nivel);
-        NodeTree.replace(NodeTree.getNodeParent(ac, cand.getId()), cand, (Node) cand_b.clone());
+        NodeTree.replace(NodeTree.getNodeParent(ac, cand.getId()), cand, (Node) cand_b.clone(), false);
 
         if (nivel <= nivel_b) {
-            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone());
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone(), false);
         } else {
             do {
                 cand = a_editable.get(rand.nextInt(a_editable.size()));
                 nivel = NodeTree.dfs(ac, cand);
             } while (nivel > nivel_b);
-            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone());
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone(), false);
         }
         return new NodeTree[] { ac, bc };
     }
@@ -505,5 +512,4 @@ public class KDFLC {
         fuzzyData.write().toFile(f);
     }
 
-   
 }

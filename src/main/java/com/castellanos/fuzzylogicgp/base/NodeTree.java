@@ -288,7 +288,17 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         return -1;
     }
 
-    public static void replace(NodeTree nodeTree, Node toReplace, Node newNode) throws OperatorException {
+    public static void replace(NodeTree nodeTree, Node toReplace, Node newNode, boolean isUpdateRoot) throws OperatorException {
+       
+        if(isUpdateRoot){
+            nodeTree.setType(newNode.getType());
+            nodeTree.setEditable(newNode.isEditable());
+            if(toReplace instanceof GeneratorNode){
+                nodeTree.setByGenerator(toReplace.getId());
+            }
+            nodeTree.getChildrens().clear();
+            return;
+        }
         int pos = -1;
         for (int i = 0; i < nodeTree.getChildrens().size(); i++) {
             if (nodeTree.getChildrens().get(i).getId().equals(toReplace.getId())) {
