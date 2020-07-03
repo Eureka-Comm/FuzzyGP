@@ -56,6 +56,17 @@ public class KDFLC {
     public KDFLC(ParserPredicate pp, Logic logic, int depth, int num_pop, int num_iter, int num_result,
             double min_truth_value, double mut_percentage, int adj_num_pop, int adj_num_iter,
             double adj_min_truth_value, Table data) throws OperatorException, CloneNotSupportedException {
+
+        if (depth <=1)
+            throw new IllegalArgumentException("Depth must be >= 2.");
+        if (min_truth_value < 0.0 || min_truth_value > 1.0)
+            throw new IllegalArgumentException("Min truth value must be in [0,1].");
+
+        if (mut_percentage < 0.0 || mut_percentage > 1.0)
+            throw new IllegalArgumentException("Mut percentage must be in [0,1].");
+
+        if (adj_min_truth_value < 0.0 || adj_min_truth_value > 1.0)
+            throw new IllegalArgumentException("Adj min truth value must be in [0,1].");
         this.parserPredicate = pp;
         this.predicatePattern = pp.parser();
         this.logic = logic;
