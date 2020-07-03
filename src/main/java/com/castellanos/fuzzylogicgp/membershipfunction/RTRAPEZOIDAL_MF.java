@@ -29,10 +29,10 @@ public class RTRAPEZOIDAL_MF extends MembershipFunction {
     @Override
     public double evaluate(double v) {
         if (v < a)
-            return 0;
+            return 1.0;
         if (a <= v && v <= b)
-            return (v - a) / (b - a);
-        return 1.0;
+            return 1- (v - a) / (b - a);
+        return 0.0;
     }
 
     @Override

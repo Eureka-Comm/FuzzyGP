@@ -43,7 +43,7 @@ public class PSEUDOEXP_MF extends MembershipFunction {
     public Column yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("x column");
         for (double i = 0; i < center*deviation; i+=0.01) {
-            yColumn.append(i);
+            yColumn.append(this.evaluate(i));
         }
         return yColumn;
     }

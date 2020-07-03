@@ -15,7 +15,7 @@ public class LGAMMA_MF extends MembershipFunction {
     @Expose
     private Double b;
 
-    public LGAMMA_MF(Double a, Double b) {
+    public LGAMMA_MF(double a, double b) {
         this.a = a;
         this.b = b;
         this.setType(MembershipFunctionType.LGAMMA);

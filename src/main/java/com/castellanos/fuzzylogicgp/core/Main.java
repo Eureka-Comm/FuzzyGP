@@ -18,11 +18,17 @@ import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.GAMMA_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LGAMMA_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Singleton_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Triangular_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.ZForm_MF;
@@ -33,11 +39,6 @@ import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
 
 import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.plotly.Plot;
-import tech.tablesaw.plotly.components.Figure;
-import tech.tablesaw.plotly.components.Layout;
-import tech.tablesaw.plotly.traces.ScatterTrace;
-import tech.tablesaw.plotly.traces.Trace;
 
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
 
@@ -47,7 +48,6 @@ public class Main {
         // evaluation();
         // discovery();
         System.out.println(Arrays.toString(args));
-        testMembershipFunction();
        if (args.length > 0 && !args[0].trim().equals("-h")) {
             Query query;
             switch (args[0]) {
@@ -89,11 +89,7 @@ public class Main {
 
     }
 
-    private static void testMembershipFunction() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < 10.0; i+=0.1) {
-            xColumn.append(i);
-        }
+    private static void testMembershipFunction() {       
     
         //Triangular triangular = new Triangular(1.0,5.0,9.0);
         MembershipFunction mf = new Gaussian_MF(5.0,2.0);
@@ -103,8 +99,16 @@ public class Main {
         mf = new ZForm_MF(2.0,8.0);
         mf = new Sigmoid_MF(5.0, 1.0);
         mf = new FPG_MF(9.23, 12.30, 0.5);
+        mf = new PSEUDOEXP_MF(5.0, 2.0);
+        mf = new LTRAPEZOIDAL_MF(3.0, 7.0);
+        mf = new RTRAPEZOIDAL_MF(3.0, 7.0);
+        mf = new Singleton_MF(5);
+        mf = new GAMMA_MF(4, 3);
+        mf = new LGAMMA_MF(4, 3);
+
+
        StateNode state= new StateNode("high quality", "quality", mf);
-       state.plot("/home/thinkpad/Documents/FuzzyLogicGP", "membershipFunctionGrap.html");
+       state.plot("/home/thinkpad/Documents/FuzzyLogicGP", "membershipFunctionGrap");
     }
 
     private static Query demoToFile(Query query) throws IOException {

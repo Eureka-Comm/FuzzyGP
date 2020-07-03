@@ -22,10 +22,7 @@ public class Singleton_MF extends MembershipFunction {
     @Expose
     private double a;
 
-    public Singleton_MF(double a) {
-        if (a > 1.0 || a < 0.0) {
-            throw new IllegalArgumentException("a must be in [0,1]");
-        }
+    public Singleton_MF(double a) {        
         this.a = a;
         this.setType(MembershipFunctionType.SINGLETON);
 
@@ -35,10 +32,7 @@ public class Singleton_MF extends MembershipFunction {
         return a;
     }
 
-    public void setA(double a) {
-        if (a > 1.0 || a < 0.0) {
-            throw new IllegalArgumentException("a must be in [0,1]");
-        }
+    public void setA(double a) {        
         this.a = a;
     }
 
