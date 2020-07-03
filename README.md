@@ -11,6 +11,11 @@ Membership Functions:
   * Singleton
   * Triangular
   * Trapezoidal
+  * LTrapezoidal
+  * RTrapezoidal
+  * Gamma
+  * LGamma
+  * Pseudo-exp
   * SForm
   * ZForm
   * FPG
