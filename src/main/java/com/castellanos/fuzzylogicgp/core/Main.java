@@ -47,7 +47,7 @@ public class Main {
         // evaluation();
         // discovery();
         System.out.println(Arrays.toString(args));
-                
+        testMembershipFunction();
        if (args.length > 0 && !args[0].trim().equals("-h")) {
             Query query;
             switch (args[0]) {
@@ -102,16 +102,9 @@ public class Main {
         mf  = new SForm_MF(1.0,8.0);//*
         mf = new ZForm_MF(2.0,8.0);
         mf = new Sigmoid_MF(5.0, 1.0);
-
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-
-        for (Double valDouble : xColumn) {
-            yColumn.append(mf.evaluate(valDouble));
-        }
-        Layout layout = Layout.builder().title(mf.toString()).build();
-        Trace trace = ScatterTrace.builder(xColumn, yColumn).build();
-
-        Plot.show(new Figure(layout,trace), new File("membershipFunctionGrap.html"));
+        mf = new FPG_MF(9.23, 12.30, 0.5);
+       StateNode state= new StateNode("high quality", "quality", mf);
+       state.plot("/home/thinkpad/Documents/FuzzyLogicGP", "membershipFunctionGrap.html");
     }
 
     private static Query demoToFile(Query query) throws IOException {

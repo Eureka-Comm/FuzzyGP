@@ -99,7 +99,7 @@ public class Singleton_MF extends MembershipFunction {
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
         for (double i = 0; i < a * 2; i += 0.1) {
-            yColumn.append(this.evaluate(i));
+            yColumn.append(1.0);
         }
         return yColumn;
     }

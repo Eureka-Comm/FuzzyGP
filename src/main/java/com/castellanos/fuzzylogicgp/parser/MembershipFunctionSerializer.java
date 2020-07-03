@@ -4,10 +4,15 @@ import java.lang.reflect.Type;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.GAMMA_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LGAMMA_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Nominal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Singleton_MF;
@@ -43,8 +48,18 @@ public class MembershipFunctionSerializer implements JsonSerializer<MembershipFu
                 return context.serialize((Trapezoidal_MF) src);
             case TRIANGULAR:
                 return context.serialize((Triangular_MF) src);
-                case NOMINAL:
-                return context.serialize((Nominal_MF)src);
+            case NOMINAL:
+                return context.serialize((Nominal_MF) src);
+            case GAMMA:
+                return context.serialize((GAMMA_MF) src);
+            case LGAMMA:
+                return context.serialize((LGAMMA_MF) src);
+            case LTRAPEZOIDAL:
+                return context.serialize((LTRAPEZOIDAL_MF) src);
+            case RTRAPEZOIDAL:
+                return context.serialize((RTRAPEZOIDAL_MF) src);
+            case PSEUDOEXP:
+                return context.serialize((PSEUDOEXP_MF) src);
             default:
                 return null;
         }

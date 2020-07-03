@@ -9,9 +9,14 @@ import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.GAMMA_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LGAMMA_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal_MF;
@@ -66,7 +71,8 @@ public class EDNParser {
                 query.setDb_uri(path);
                 query.setOut_file(out);
                 query.setStates(new ArrayList<>(convertToState));
-                query.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "").toUpperCase()));
+                query.setLogic(
+                        LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "").toUpperCase()));
                 query.setPredicate(findPredicate());
                 return query;
             case ":discovery":
@@ -126,7 +132,7 @@ public class EDNParser {
         geneNode.setVariables(lstvar);
         String predicaString = gen.get(Keyword.newKeyword("predicate")).toString().replaceAll("\\[", "")
                 .replaceAll("\\]", "").replaceAll(",", "");
-        //System.out.println(predicaString);
+        // System.out.println(predicaString);
         for (StateNode stateNode : stateNodes) {
             if (predicaString.contains(stateNode.getLabel())) {
                 predicaString = predicaString.replaceAll(stateNode.getLabel(), "");
@@ -137,7 +143,7 @@ public class EDNParser {
                 predicaString = predicaString.replaceAll(type.toString(), "");
             }
         }
-        String tmp[] =predicaString.trim().split(" ");        
+        String tmp[] = predicaString.trim().split(" ");
         geneNode.setLabel(tmp[0]);
         lst.add(geneNode);
         return lst;
@@ -201,6 +207,21 @@ public class EDNParser {
                     break;
                 case "zform":
                     sn.setMembershipFunction(new ZForm_MF(split[1], split[2]));
+                    break;
+                case "lgamma":
+                    sn.setMembershipFunction(new LGAMMA_MF(split[1], split[2]));
+                    break;
+                case "gamma":
+                    sn.setMembershipFunction(new GAMMA_MF(split[1], split[2]));
+                    break;
+                case "ltrapezoidal":
+                    sn.setMembershipFunction(new LTRAPEZOIDAL_MF(split[1], split[2]));
+                    break;
+                case "rtrapezoidal":
+                    sn.setMembershipFunction(new RTRAPEZOIDAL_MF(split[1], split[2]));
+                    break;
+                case "pseudo-exp":
+                    sn.setMembershipFunction(new PSEUDOEXP_MF(split[1], split[2]));
                     break;
                 default:
                     System.out.println("Unsupported : " + split[0]);

@@ -4,11 +4,16 @@ import java.lang.reflect.Type;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.GAMMA_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LGAMMA_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Nominal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Singleton_MF;
@@ -48,7 +53,17 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<Membersh
             case TRIANGULAR:
                 return context.deserialize(json, Triangular_MF.class);
             case NOMINAL:
-            return context.deserialize(json, Nominal_MF.class);
+                return context.deserialize(json, Nominal_MF.class);
+            case GAMMA:
+                return context.deserialize(json, GAMMA_MF.class);
+            case LGAMMA:
+                return context.deserialize(json, LGAMMA_MF.class);
+            case LTRAPEZOIDAL:
+                return context.deserialize(json, LTRAPEZOIDAL_MF.class);
+            case RTRAPEZOIDAL:
+                return context.deserialize(json, RTRAPEZOIDAL_MF.class);
+            case PSEUDOEXP:
+                return context.deserialize(json, PSEUDOEXP_MF.class);
             default:
                 return null;
         }
