@@ -19,7 +19,7 @@ Membership Functions:
 
 Supported query types:
   * Predicate Evaluation
-  * Predicate Discovery 
+  * Predicate Discovery (you can use multiple generators to substitute variables in the guide predicate).
 
 Current algorithms:
   * For predicate evaluation.
