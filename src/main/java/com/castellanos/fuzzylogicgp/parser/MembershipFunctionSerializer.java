@@ -7,6 +7,7 @@ import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Nominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.Singleton_MF;
@@ -42,6 +43,8 @@ public class MembershipFunctionSerializer implements JsonSerializer<MembershipFu
                 return context.serialize((Trapezoidal_MF) src);
             case TRIANGULAR:
                 return context.serialize((Triangular_MF) src);
+                case NOMINAL:
+                return context.serialize((Nominal_MF)src);
             default:
                 return null;
         }
