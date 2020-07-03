@@ -211,7 +211,7 @@ public class KDFLC {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
                 try {
-                    if (rand.nextDouble() < 0.5)
+                    if (rand.nextDouble() < 0.4)
                         complete_tree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
                     else
                         growTree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
@@ -270,8 +270,9 @@ public class KDFLC {
             ((NodeTree) father).addChild(s);
 
         } else {
-
-            arity = rand.nextInt(gNode.getVariables().size() / 2);
+            int max = gNode.getVariables().size();
+            max = (int) (((float) max / 2 >= 2) ? (float) max / 2 : max);
+            arity = rand.nextInt(max);
             if (arity < 2) {
                 arity = 2;
             }
@@ -307,6 +308,7 @@ public class KDFLC {
                 NodeTree.replace(p, gNode, newFather, !isToReplace);
                 if (!isToReplace) {
                     newFather = p;
+                    // currentDepth=-1;
                 }
 
             } else
@@ -365,8 +367,9 @@ public class KDFLC {
             }
 
         } else {
-
-            arity = rand.nextInt(gNode.getVariables().size() / 2);
+            int max = gNode.getVariables().size();
+            max = (int) (((float) max / 2 >= 2) ? (float) max / 2 : max);
+            arity = rand.nextInt(max);
             if (arity < 2) {
                 arity = 2;
             }
@@ -401,6 +404,7 @@ public class KDFLC {
                 NodeTree.replace(p, gNode, newFather, !isToReplace);
                 if (!isToReplace) {
                     newFather = p;
+                    // currentDepth=-1;
                 }
 
             } else
