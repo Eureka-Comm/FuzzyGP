@@ -24,6 +24,7 @@ import com.castellanos.fuzzylogicgp.membershipfunction.LGAMMA_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Nominal_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
@@ -38,8 +39,6 @@ import com.castellanos.fuzzylogicgp.parser.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
 
-import tech.tablesaw.api.DoubleColumn;
-
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
 
 public class Main {
@@ -48,7 +47,7 @@ public class Main {
         // evaluation();
         // discovery();
         System.out.println(Arrays.toString(args));
-       if (args.length > 0 && !args[0].trim().equals("-h")) {
+        if (args.length > 0 && !args[0].trim().equals("-h")) {
             Query query;
             switch (args[0]) {
                 case "demo-evaluation":
@@ -67,13 +66,34 @@ public class Main {
                     TaskFactory.execute(demoToFile(query));
                     break;
                 default:
-                    if (args.length >= 2 && args[1].trim().equals("-format=edn")) {
+                    boolean formatEdn = false;
+                    ArrayList<String> statesToPlot = new ArrayList<>();
+                    boolean noRun = false;
+                    for (int i = 0; i < args.length; i++) {
+                        if (args[i].equals("-format=edn"))
+                            formatEdn = true;
+                        if(args[i].equals("-plot")){
+                            for (int j = i; j < args.length; j++) {
+                                if(!args[i].equals("-N"))
+                                statesToPlot.add(args[j].trim());
+                            }
+                        }
+                        if(args[i].equals("-N")){
+                            noRun =true;
+                        }
+                    }
+                    if (formatEdn) {
                         EDNParser ednParser = new EDNParser(args[0].trim());
                         query = ednParser.parser();
                     } else {
                         query = Query.fromJson(Paths.get(args[0].trim()));
                     }
+                    if(!noRun)
                     TaskFactory.execute(query);
+
+                    if (statesToPlot.size()>0) {                        
+                        TaskFactory.plotting(query, statesToPlot);
+                    }
                     break;
             }
 
@@ -85,18 +105,21 @@ public class Main {
             System.out.println("\tjava App.jar demo-discovery");
             System.out.println("\tjava App.jar demo-iris");
             System.out.println("For EDN script support, use: -format=edn");
+            System.out.println("For Plot states use: -plot \'label\'...");
+            System.out.println("Plot opens your local browser, only Evaluation Query script.To not run the task, add the -N option.");
+
         }
 
     }
 
-    private static void testMembershipFunction() {       
-    
-        //Triangular triangular = new Triangular(1.0,5.0,9.0);
-        MembershipFunction mf = new Gaussian_MF(5.0,2.0);
-        mf = new Triangular_MF(1.0,5.0,9.0);
+    private static void testMembershipFunction() {
+
+        // Triangular triangular = new Triangular(1.0,5.0,9.0);
+        MembershipFunction mf = new Gaussian_MF(5.0, 2.0);
+        mf = new Triangular_MF(1.0, 5.0, 9.0);
         mf = new Trapezoidal_MF(1.0, 5.0, 7.0, 8.0);
-        mf  = new SForm_MF(1.0,8.0);//*
-        mf = new ZForm_MF(2.0,8.0);
+        mf = new SForm_MF(1.0, 8.0);// *
+        mf = new ZForm_MF(2.0, 8.0);
         mf = new Sigmoid_MF(5.0, 1.0);
         mf = new FPG_MF(9.23, 12.30, 0.5);
         mf = new PSEUDOEXP_MF(5.0, 2.0);
@@ -106,13 +129,13 @@ public class Main {
         mf = new GAMMA_MF(4, 3);
         mf = new LGAMMA_MF(4, 3);
 
-
-       StateNode state= new StateNode("high quality", "quality", mf);
-       state.plot("/home/thinkpad/Documents/FuzzyLogicGP", "membershipFunctionGrap");
+        StateNode state = new StateNode("high quality", "quality", mf);
+        state.plot("/home/thinkpad/Documents/FuzzyLogicGP", "membershipFunctionGrap");
     }
 
     private static Query demoToFile(Query query) throws IOException {
-        InputStream resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream("datasets" +File.separator+query.getDb_uri());
+        InputStream resourceAsStream = ClassLoader.getSystemClassLoader()
+                .getResourceAsStream("datasets" + File.separator + query.getDb_uri());
         Path path = Paths.get("dataset.csv");
         Files.copy(resourceAsStream, path, StandardCopyOption.REPLACE_EXISTING);
         query.setDb_uri(path.toFile().getAbsolutePath());
@@ -133,11 +156,12 @@ public class Main {
         states.add(new StateNode("petal lenght", "petal.length"));
         states.add(new StateNode("petal width", "petal.width"));
         StateNode variety = new StateNode("class", "variety");
-        MapNominal_MF mapNominal = new MapNominal_MF();
-        mapNominal.addParameter("Setosa", 1.0);
+        // MapNominal_MF mapNominal = new MapNominal_MF();
+        // mapNominal.addParameter("Setosa", 1.0);
         // mapNominal.addParameter("Versicolor", 0.33);
         // mapNominal.addParameter("Virginica", 0.33);
-        variety.setMembershipFunction(mapNominal);
+        Nominal_MF nominal_MF = new Nominal_MF("Setosa", 1.0);
+        variety.setMembershipFunction(nominal_MF);
         //
 
         query.setStates(states);
@@ -164,8 +188,8 @@ public class Main {
         query.setAdj_num_pop(10);
         query.setDepth(2);
         query.setMut_percentage(0.05f);
-        query.setNum_iter(100);
-        query.setMin_truth_value(0.9f);
+        query.setNum_iter(20);
+        query.setMin_truth_value(0.95f);
         query.setNum_pop(100);
         query.setNum_result(20);
         query.setAdj_num_iter(2);
@@ -225,14 +249,14 @@ public class Main {
         query.setGenerators(generators);
         query.setPredicate(predicate);
         query.setAdj_min_truth_value(0.1f);
-        query.setAdj_num_pop(100);
+        query.setAdj_num_pop(10);
         query.setDepth(2);
         query.setMut_percentage(0.05f);
-        query.setNum_iter(100);
-        query.setMin_truth_value(0.9f);
-        query.setNum_pop(50);
+        query.setNum_iter(20);
+        query.setMin_truth_value(0.95f);
+        query.setNum_pop(100);
         query.setNum_result(20);
-        query.setAdj_num_iter(1);
+        query.setAdj_num_iter(2);
         return query;
     }
 }

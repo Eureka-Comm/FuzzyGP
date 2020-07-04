@@ -5,6 +5,7 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.io.File;
 import java.nio.file.Paths;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
@@ -122,11 +123,13 @@ public class StateNode extends Node {
 
     public void plot(String dirOutputString, String fileName) {
 
-        Layout layout = Layout.builder().title(label+"("+colName+"): "+membershipFunction.toString()).build();
+        Layout layout = Layout.builder().title(label + "(" + colName + "): " + membershipFunction.toString()).build();
         Trace trace = ScatterTrace.builder(membershipFunction.xPoints(), membershipFunction.yPoints()).build();
-
-        Plot.show(new Figure(layout, trace),
-                Paths.get(dirOutputString, ((fileName == null) ? label : fileName) + ".html").toFile());
+        if (dirOutputString != null)
+            Plot.show(new Figure(layout, trace),
+                    Paths.get(dirOutputString, ((fileName == null) ? label : fileName) + ".html").toFile());
+        else
+            Plot.show(new Figure(layout, trace), new File((fileName == null) ? label : fileName + ".html"));
 
     }
 }

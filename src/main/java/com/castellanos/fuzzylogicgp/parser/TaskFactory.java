@@ -2,6 +2,9 @@ package com.castellanos.fuzzylogicgp.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +13,7 @@ import java.util.ArrayList;
 
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
+import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.core.EvaluatePredicate;
 import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.Logic;
@@ -78,6 +82,32 @@ public class TaskFactory {
                 return new Zadeh_Logic();
             default:
                 return null;
+        }
+    }
+
+    public static void plotting(Query query, ArrayList<String> labels)
+            throws OperatorException, CloneNotSupportedException, URISyntaxException, UnsupportedEncodingException {
+        System.out.println("Plotting states...");
+        ParserPredicate parserPredicate;
+        NodeTree p;
+
+        switch (query.getType()) {
+            case EVALUATION:
+                parserPredicate = new ParserPredicate(query.getPredicate(), query.getStates(), new ArrayList<>());
+                p = parserPredicate.parser();
+                String dir = new File(TaskFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                        .getParent();
+                for (StateNode stateNode : query.getStates()) {
+                    for (String string : labels) {
+                        if (stateNode.getLabel().equals(string)) {
+                            stateNode.plot(null, null);
+                            break;
+                        }
+                    }
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported query.");
         }
     }
 
