@@ -38,7 +38,7 @@
                   <archive>
                     <manifest>
                       <addClasspath>true</addClasspath>
-                      <mainClass>com.castellanos.fuzzylogicgp.core.Main</mainClass>
+                      <mainClass>com.castellanos.fuzzylogicgp.cli.Main</mainClass>
                     </manifest>
                   </archive>
                   <descriptorRefs>
@@ -78,19 +78,18 @@
             <artifactId>tablesaw-json</artifactId>
             <version>0.34.2</version>
         </dependency>
-        <!-- https://github.com/eobermuhlner/big-math#bigdecimalmath -->
-        <dependency>
-            <groupId>ch.obermuhlner</groupId>
-            <artifactId>big-math</artifactId>
-            <version>2.3.0</version>
-        </dependency>
         <!-- java edn -->
         <dependency>
             <groupId>us.bpsm</groupId>
             <artifactId>edn-java</artifactId>
             <version>0.5.0</version>
         </dependency>
-       
+        <!-- Picocli -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.3.2</version>
+          </dependency>
     </dependencies>
     <reporting>                                                                              
         <plugins>                                                                            

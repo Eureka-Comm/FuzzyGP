@@ -1,4 +1,4 @@
-package com.castellanos.fuzzylogicgp.core;
+package com.castellanos.fuzzylogicgp.cli;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,78 +39,91 @@ import com.castellanos.fuzzylogicgp.parser.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
 
-import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
+import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
+import static java.lang.System.out;
+
+@Command(name = "FLJF", description = "@|bold Demonstrating FLJF |@", headerHeading = "@|bold,underline Demonstration Usage|@:%n%n")
 public class Main {
+
+    @Option(names = { "-f", "--file" }, description = "Path and name of file")
+    private String fileName;
+
+    @Option(names = { "-h", "--help" }, description = "Display help/usage.", help = true)
+    private boolean help;
+
+    @Option(names = { "-p", "--plot" }, description = "Plot linguistic states, Evaluation script is requiered.")
+    private ArrayList<String> plot;
+
+    @Option(names = { "--evaluation-demo" }, description = "Run a evaluation demo.")
+    private boolean evaluationDemo;
+    @Option(names = { "--discovery-demo" }, description = "Run a discovery demo.")
+    private boolean discoveryDemo;
+    @Option(names = { "--EDN" }, description = "Supported EDN script.")
+    private boolean formatEdn;
+    @Option(names = { "--N" }, description = "No run task.")
+    private boolean executeTask;
+
     public static void main(String[] args)
             throws OperatorException, CloneNotSupportedException, IOException, URISyntaxException {
-        // evaluation();
-        // discovery();
-        System.out.println(Arrays.toString(args));
-        if (args.length > 0 && !args[0].trim().equals("-h")) {
-            Query query;
-            switch (args[0]) {
-                case "demo-evaluation":
-                    System.out.println("Running demo evaluation");
-                    query = evaluation();
-                    TaskFactory.execute(demoToFile(query));
-                    break;
-                case "demo-discovery":
-                    System.out.println("Running demo discovery");
-                    query = discovery();
-                    TaskFactory.execute(demoToFile(query));
-                    break;
-                case "demo-iris":
-                    System.out.println("Running demo iris");
-                    query = irisQuery();
-                    TaskFactory.execute(demoToFile(query));
-                    break;
-                default:
-                    boolean formatEdn = false;
-                    ArrayList<String> statesToPlot = new ArrayList<>();
-                    boolean noRun = false;
-                    for (int i = 0; i < args.length; i++) {
-                        if (args[i].equals("-format=edn"))
-                            formatEdn = true;
-                        if(args[i].equals("-plot")){
-                            for (int j = i; j < args.length; j++) {
-                                if(!args[i].equals("-N"))
-                                statesToPlot.add(args[j].trim());
-                            }
-                        }
-                        if(args[i].equals("-N")){
-                            noRun =true;
-                        }
-                    }
-                    if (formatEdn) {
-                        EDNParser ednParser = new EDNParser(args[0].trim());
-                        query = ednParser.parser();
-                    } else {
-                        query = Query.fromJson(Paths.get(args[0].trim()));
-                    }
-                    if(!noRun)
+        final Main main = CommandLine.populateCommand(new Main(), args);
+        if (main.help) {
+            CommandLine.usage(main, out, CommandLine.Help.Ansi.AUTO);
+        } else {
+            Query query = null;
+            if (main.fileName != null) {
+
+                if (main.formatEdn) {
+                    EDNParser ednParser = new EDNParser(main.fileName);
+                    query = ednParser.parser();
+                } else {
+                    query = Query.fromJson(Paths.get(main.fileName));
+                }
+                if (!main.executeTask)
                     TaskFactory.execute(query);
 
-                    if (statesToPlot.size()>0) {                        
-                        TaskFactory.plotting(query, statesToPlot);
-                    }
-                    break;
+                if (main.plot != null && main.plot.size() > 0) {
+                    TaskFactory.plotting(query, main.plot);
+                }
+            }
+            if (main.evaluationDemo) {
+                out.println("Running demo evaluation");
+                query = evaluation();
+                TaskFactory.execute(demoToFile(query));
+
+                if (main.plot != null && main.plot.size() > 0) {
+                    TaskFactory.plotting(query, main.plot);
+                }
+            } else if (main.discoveryDemo) {
+                out.println("Running demo discovery");
+                query = discovery();
+                TaskFactory.execute(demoToFile(query));
             }
 
-        } else {
-            System.out.println("Usage:");
-            System.out.println("Load a job to process by its file path ");
-            System.out.println("or check demo");
-            System.out.println("\tjava App.jar demo-evaluation");
-            System.out.println("\tjava App.jar demo-discovery");
-            System.out.println("\tjava App.jar demo-iris");
-            System.out.println("For EDN script support, use: -format=edn");
-            System.out.println("For Plot states use: -plot \'label\'...");
-            System.out.println("Plot opens your local browser, only Evaluation Query script.To not run the task, add the -N option.");
-
         }
-
     }
+    /*
+     * public static void main(String[] args) throws OperatorException,
+     * CloneNotSupportedException, IOException, URISyntaxException { //
+     * evaluation(); // discovery(); System.out.println(Arrays.toString(args)); if
+     * (args.length > 0 && !args[0].trim().equals("-h")) {
+     * 
+     * } else { System.out.println("Usage:");
+     * System.out.println("Load a job to process by its file path ");
+     * System.out.println("or check demo");
+     * System.out.println("\tjava App.jar demo-evaluation");
+     * System.out.println("\tjava App.jar demo-discovery");
+     * System.out.println("\tjava App.jar demo-iris");
+     * System.out.println("For EDN script support, use: -format=edn");
+     * System.out.println("For Plot states use: -plot \'label\'..."); System.out.
+     * println("Plot opens your local browser, only Evaluation Query script.To not run the task, add the -N option."
+     * );
+     * 
+     * } }
+     */
 
     private static void testMembershipFunction() {
 
