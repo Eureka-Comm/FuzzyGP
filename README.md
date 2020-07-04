@@ -1,4 +1,6 @@
 # Fuzzy Logic Java Framework
+This framework is developed in Java version 14.
+
 Logics:
   * Zadeh
   * AMBC
