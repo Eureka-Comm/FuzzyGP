@@ -101,10 +101,6 @@ public class StateNode extends Node {
         }
     }
 
-    public String toJson() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this);
-    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {

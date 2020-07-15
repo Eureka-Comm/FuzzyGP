@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.google.gson.annotations.Expose;
 
-import afu.org.checkerframework.checker.units.qual.min;
 
 public class DiscoveryQuery extends Query {
 

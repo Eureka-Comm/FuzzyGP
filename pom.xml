@@ -58,25 +58,25 @@
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-core</artifactId>
-            <version>0.34.2</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-excel -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-excel</artifactId>
-            <version>0.34.2</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-jsplot -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-jsplot</artifactId>
-            <version>0.34.2</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-json -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-json</artifactId>
-            <version>0.34.2</version>
+            <version>LATEST</version>
         </dependency>
         <!-- java edn -->
         <dependency>

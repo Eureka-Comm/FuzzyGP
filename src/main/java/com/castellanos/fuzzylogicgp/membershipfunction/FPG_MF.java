@@ -39,6 +39,7 @@ public class FPG_MF extends MembershipFunction {
         this.beta = beta;
         this.gamma = gamma;
         this.m = m;
+        this.setType(MembershipFunctionType.FPG);
     }
 
     public FPG_MF() {

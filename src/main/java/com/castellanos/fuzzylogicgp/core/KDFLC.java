@@ -18,11 +18,18 @@ import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.base.TournamentSelection;
 import com.castellanos.fuzzylogicgp.logic.Logic;
+import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
+import com.castellanos.fuzzylogicgp.parser.MembershipFunctionSerializer;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.Destination;
+import tech.tablesaw.io.csv.CsvWriteOptions;
+import tech.tablesaw.io.json.*;
 
 /**
  * fuzzy compensatory logical knowledge discovery
@@ -506,24 +513,34 @@ public class KDFLC {
         ArrayList<Double> v = new ArrayList<>();
         ArrayList<String> p = new ArrayList<>();
         ArrayList<String> d = new ArrayList<>();
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
+        builder.excludeFieldsWithoutExposeAnnotation();
+        //builder.setPrettyPrinting();
+        Gson print = builder.create();
+        
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
-            p.add("'" + resultList.get(i).toString() + "'");
+            p.add( resultList.get(i).toString() );
             ArrayList<String> st = new ArrayList<>();
             for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
                 if (node instanceof StateNode) {
                     StateNode s = (StateNode) node;
-                    st.add(s.toString());
+                    st.add(print.toJson(s));
                 }
             }
-            d.add("'" + st.toString() + "'");
+            d.add( st.toString() );
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
 
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
         fuzzyData.addColumns(value, predicates, data);
+        
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
+        JsonWriter jsonWriter = new JsonWriter();
+        JsonWriteOptions options = JsonWriteOptions.builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
+        jsonWriter.write(fuzzyData, options);
         fuzzyData.write().toFile(f);
     }
 
