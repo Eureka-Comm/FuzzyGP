@@ -252,10 +252,7 @@ public class EvaluatePredicate {
                         dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
                 } else if (type == ColumnType.STRING) {
-                    Column<String> column = (Column<String>) data.column(s.getColName());
-                    if (!(s.getMembershipFunction() instanceof MapNominal_MF)) {
-                        System.out.println("wtf " + s);
-                    }
+                    Column<String> column = (Column<String>) data.column(s.getColName());                    
                     for (String valueString : column) {
                         Double value = s.getMembershipFunction().evaluate(valueString);
                         dc.append(value);
