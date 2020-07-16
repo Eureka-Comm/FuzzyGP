@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Main",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.cli.Main",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -35,9 +42,9 @@
             "type": "java",
             "name": "Debug (Launch)-Main<FuzzyLogicGP>",
             "request": "launch",
-            "mainClass": "com.castellanos.fuzzylogicgp.core.Main",
+            "mainClass": "com.castellanos.fuzzylogicgp.cli.Main",
             "projectName": "FuzzyLogicGP",
-            "args": "demo-evaluation"
+            "args": "-h"
         }
     ]
 }

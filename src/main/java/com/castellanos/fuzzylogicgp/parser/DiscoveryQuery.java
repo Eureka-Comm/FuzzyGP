@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.google.gson.annotations.Expose;
 
+
 public class DiscoveryQuery extends Query {
 
     /**
@@ -32,14 +33,18 @@ public class DiscoveryQuery extends Query {
     protected int adj_num_iter;
     @Expose
     protected ArrayList<GeneratorNode> generators;
-    public DiscoveryQuery(){
+
+    public DiscoveryQuery() {
         setType(TaskType.DISCOVERY);
     }
+
     public int getDepth() {
         return depth;
     }
 
     public void setDepth(int depth) {
+        if (depth <=1)
+            throw new IllegalArgumentException("Depth must be >= 2.");
         this.depth = depth;
     }
 
@@ -72,6 +77,8 @@ public class DiscoveryQuery extends Query {
     }
 
     public void setMin_truth_value(float min_truth_value) {
+        if (min_truth_value < 0.0 || min_truth_value > 1.0)
+            throw new IllegalArgumentException("Min truth value must be in [0,1].");
         this.min_truth_value = min_truth_value;
     }
 
@@ -80,6 +87,8 @@ public class DiscoveryQuery extends Query {
     }
 
     public void setMut_percentage(float mut_percentage) {
+        if (mut_percentage < 0.0 || mut_percentage > 1.0)
+            throw new IllegalArgumentException("Mut percentage must be in [0,1].");
         this.mut_percentage = mut_percentage;
     }
 
@@ -96,6 +105,9 @@ public class DiscoveryQuery extends Query {
     }
 
     public void setAdj_min_truth_value(float adj_min_truth_value) {
+        if (adj_min_truth_value < 0.0 || adj_min_truth_value > 1.0)
+            throw new IllegalArgumentException("Adj min truth value must be in [0,1].");
+
         this.adj_min_truth_value = adj_min_truth_value;
     }
 

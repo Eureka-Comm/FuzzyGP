@@ -9,12 +9,13 @@ import static java.lang.Math.pow;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
 
 /**
  *
  * @author hp
  */
-public class FPG extends AMembershipFunction {
+public class FPG_MF extends MembershipFunction {
 
     /**
      *
@@ -27,21 +28,24 @@ public class FPG extends AMembershipFunction {
     @Expose
     private Double m;
 
-    public FPG(String beta, String gamma, String m) {
+    public FPG_MF(String beta, String gamma, String m) {
         this.gamma = Double.parseDouble(gamma);
         this.beta = Double.parseDouble(beta);
         this.m = Double.parseDouble(m);
         this.setType(MembershipFunctionType.FPG);
     }
 
-    public FPG() {
+    public FPG_MF(Double beta, Double gamma, Double m) {
+        this.beta = beta;
+        this.gamma = gamma;
+        this.m = m;
         this.setType(MembershipFunctionType.FPG);
     }
 
-    @Override
-    public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public FPG_MF() {
+        this.setType(MembershipFunctionType.FPG);
     }
+
 
     @Override
     public String toString() {
@@ -53,30 +57,31 @@ public class FPG extends AMembershipFunction {
         // BigDecimal sigm, sigmm, M;
 
         double sigm, sigmm, M;
-          sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m); 
-          sigmm = pow(1.0 - new Sigmoid(gamma, beta).evaluate(v), 1.0 - m); 
-          M = pow(m, m) * pow((1 - m), (1 -
-          m));
-          
-          return ((sigm * sigmm) / M);
-         
+        sigm = pow(new Sigmoid_MF(gamma, beta).evaluate(v), m);
+        sigmm = pow(1.0 - new Sigmoid_MF(gamma, beta).evaluate(v), 1.0 - m);
+        M = pow(m, m) * pow((1 - m), (1 - m));
+
+        return ((sigm * sigmm) / M);
+
         /*
-        BigDecimal one = new BigDecimal("1", MathContext.DECIMAL128);
-        BigDecimal calc_sig = new Sigmoid(gamma, beta).evaluate(v);
-
-        // Apfloat apsigm = ApfloatMath.pow(new Apfloat(calc_sig),new Apfloat(m));
-        BigDecimal bgsigm = BigDecimalMath.pow(calc_sig, m, MathContext.DECIMAL128);
-
-        // Apfloat apsigmm = ApfloatMath.pow(new Apfloat(one.subtract(calc_sig)), new
-        // Apfloat(one.subtract(m)));
-        BigDecimal bgsigmm = BigDecimalMath.pow(one.subtract(calc_sig), one.subtract(m), MathContext.DECIMAL128);
-
-        // Apfloat M = ApfloatMath.pow(new Apfloat(m), new
-        // Apfloat(m)).multiply(ApfloatMath.pow(new Apfloat(one.subtract(m)), new
-        // Apfloat(one.subtract(m))));
-        BigDecimal bgM = BigDecimalMath.pow(m, m, MathContext.DECIMAL128)
-                .multiply(BigDecimalMath.pow(one.subtract(m), one.subtract(m), MathContext.DECIMAL128));
-        return bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);*/
+         * BigDecimal one = new BigDecimal("1", MathContext.DECIMAL128); BigDecimal
+         * calc_sig = new Sigmoid(gamma, beta).evaluate(v);
+         * 
+         * // Apfloat apsigm = ApfloatMath.pow(new Apfloat(calc_sig),new Apfloat(m));
+         * BigDecimal bgsigm = BigDecimalMath.pow(calc_sig, m, MathContext.DECIMAL128);
+         * 
+         * // Apfloat apsigmm = ApfloatMath.pow(new Apfloat(one.subtract(calc_sig)), new
+         * // Apfloat(one.subtract(m))); BigDecimal bgsigmm =
+         * BigDecimalMath.pow(one.subtract(calc_sig), one.subtract(m),
+         * MathContext.DECIMAL128);
+         * 
+         * // Apfloat M = ApfloatMath.pow(new Apfloat(m), new //
+         * Apfloat(m)).multiply(ApfloatMath.pow(new Apfloat(one.subtract(m)), new //
+         * Apfloat(one.subtract(m)))); BigDecimal bgM = BigDecimalMath.pow(m, m,
+         * MathContext.DECIMAL128) .multiply(BigDecimalMath.pow(one.subtract(m),
+         * one.subtract(m), MathContext.DECIMAL128)); return
+         * bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);
+         */
     }
 
     public Double getGamma() {
@@ -105,13 +110,7 @@ public class FPG extends AMembershipFunction {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        FPG fpg = (FPG) super.clone();
-        /*
-        fpg.setBeta(new BigDecimal(this.getBeta().toString()));
-        fpg.setGamma(new BigDecimal(this.getGamma().toString()));
-        fpg.setM(new BigDecimal(this.getM().toString()));
-        */
-        return fpg;
+        return new FPG_MF(beta, gamma, m);
     }
 
     @Override
@@ -132,7 +131,7 @@ public class FPG extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        FPG other = (FPG) obj;
+        FPG_MF other = (FPG_MF) obj;
         if (beta == null) {
             if (other.beta != null)
                 return false;
@@ -150,10 +149,20 @@ public class FPG extends AMembershipFunction {
             return false;
         return true;
     }
-
     @Override
-    public double evaluate(String key) {
-        System.out.println(key);
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public DoubleColumn xPoints() {
+        DoubleColumn xColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < beta*2; i+=0.01) {
+            xColumn.append(i);
+        }
+        return xColumn;
+    }
+    @Override
+    public DoubleColumn yPoints() {
+        DoubleColumn yColumn = DoubleColumn.create("y column");
+        for (double i = 0; i < beta*2; i+=0.01) {
+            yColumn.append(this.evaluate(i));
+        }
+        return yColumn;
     }
 }

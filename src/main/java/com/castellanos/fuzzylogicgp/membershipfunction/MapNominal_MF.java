@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import com.google.gson.annotations.Expose;
 
-public class MapNominal extends AMembershipFunction {
+import tech.tablesaw.columns.Column;
+
+public class MapNominal_MF extends MembershipFunction {
     /**
      *
      */
@@ -14,15 +16,11 @@ public class MapNominal extends AMembershipFunction {
     @Expose
     private Double notFoundValue = 0.0;
 
-    public MapNominal() {
+    public MapNominal_MF() {
         values = new HashMap<>();
         setType(MembershipFunctionType.MAPNOMIAL);
     }
-
-    @Override
-    public boolean isValid() {
-        return false;
-    }
+    
 
     public void setNotFoundValue(Double notFoundValue) {
         this.notFoundValue = notFoundValue;
@@ -33,6 +31,9 @@ public class MapNominal extends AMembershipFunction {
     }
 
     public Double addParameter(String key, Double value) {
+        if(value<0.0 || value>1.0){
+            throw new IllegalArgumentException("Value must be in [0,1].");
+        }
         return this.values.put(key, value);
     }
 
@@ -57,7 +58,7 @@ public class MapNominal extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        MapNominal other = (MapNominal) obj;
+        MapNominal_MF other = (MapNominal_MF) obj;
         if (notFoundValue == null) {
             if (other.notFoundValue != null)
                 return false;
@@ -73,7 +74,12 @@ public class MapNominal extends AMembershipFunction {
 
     @Override
     public String toString() {
-        return "MapNominal [notFoundValue=" + notFoundValue + ", values=" + values + "]";
+        String st = "";
+        for (String kString : values.keySet()) {
+            st += "\"" + kString + "\" " + values.get(kString) + ",";
+        }
+        st = st.trim().substring(0, st.length() - 1);
+        return "[map-nominal {" + values + "} " + notFoundValue + "]";
     }
 
     public HashMap<String, Double> getValues() {
@@ -91,17 +97,30 @@ public class MapNominal extends AMembershipFunction {
 
     @Override
     public double evaluate(String key) {
-        //return (values.getOrDefault(key, notFoundValue) == notFoundValue) ? notFoundValue : 1.0;
+        // return (values.getOrDefault(key, notFoundValue) == notFoundValue) ?
+        // notFoundValue : 1.0;
         return values.getOrDefault(key, notFoundValue);
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        MapNominal map = new MapNominal();
+        MapNominal_MF map = new MapNominal_MF();
         if (notFoundValue != null)
             map.setNotFoundValue(notFoundValue);
         if (getValues() != null)
             map.setValues(getValues());
         return map;
+    }
+
+    @Override
+    public Column yPoints() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Column xPoints() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

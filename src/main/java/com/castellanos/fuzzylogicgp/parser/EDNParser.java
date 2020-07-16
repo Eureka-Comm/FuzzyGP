@@ -8,9 +8,21 @@ package com.castellanos.fuzzylogicgp.parser;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
-import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
-import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.GAMMA_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LGAMMA_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Triangular_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.ZForm_MF;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -18,7 +30,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -60,7 +71,8 @@ public class EDNParser {
                 query.setDb_uri(path);
                 query.setOut_file(out);
                 query.setStates(new ArrayList<>(convertToState));
-                query.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "")));
+                query.setLogic(
+                        LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "").toUpperCase()));
                 query.setPredicate(findPredicate());
                 return query;
             case ":discovery":
@@ -112,7 +124,7 @@ public class EDNParser {
         ArrayList<String> lstvar = new ArrayList<>();
         for (String string : vars) {
             for (StateNode stateNode : stateNodes) {
-                if(string.trim().equals(stateNode.getLabel().trim())){
+                if (string.trim().equals(stateNode.getLabel().trim())) {
                     lstvar.add(stateNode.getLabel().trim());
                 }
             }
@@ -120,7 +132,7 @@ public class EDNParser {
         geneNode.setVariables(lstvar);
         String predicaString = gen.get(Keyword.newKeyword("predicate")).toString().replaceAll("\\[", "")
                 .replaceAll("\\]", "").replaceAll(",", "");
-        System.out.println(predicaString);
+        // System.out.println(predicaString);
         for (StateNode stateNode : stateNodes) {
             if (predicaString.contains(stateNode.getLabel())) {
                 predicaString = predicaString.replaceAll(stateNode.getLabel(), "");
@@ -131,7 +143,8 @@ public class EDNParser {
                 predicaString = predicaString.replaceAll(type.toString(), "");
             }
         }
-        geneNode.setLabel(predicaString.trim());
+        String tmp[] = predicaString.trim().split(" ");
+        geneNode.setLabel(tmp[0]);
         lst.add(geneNode);
         return lst;
     }
@@ -155,18 +168,60 @@ public class EDNParser {
         for (Iterator it = cstates.iterator(); it.hasNext();) {
             Map<?, ?> cstate = (Map<?, ?>) it.next();
             // System.out.println(+" "+cstate.get(fKey));
-            StateNode sn = new StateNode(cstate.get(labelKey).toString().trim(), cstate.get(colNameKey).toString().trim());
+            StateNode sn = new StateNode(cstate.get(labelKey).toString().trim(),
+                    cstate.get(colNameKey).toString().trim());
             String[] split = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "").split(",");
-            switch (split[0].trim()) {
+            switch (split[0].trim().toLowerCase()) {
                 case "sigmoid":
-                    sn.setMembershipFunction(new Sigmoid(split[1], split[2]));
+                    sn.setMembershipFunction(new Sigmoid_MF(split[1], split[2]));
                     break;
                 case "-sigmoid":
-                    sn.setMembershipFunction(new NSigmoid(split[1], split[2]));
+                    sn.setMembershipFunction(new NSigmoid_MF(split[1], split[2]));
                     break;
-                case "FPG":
+                case "fpg":
                     if (split.length > 3)
-                        sn.setMembershipFunction(new FPG(split[1], split[2], split[3]));
+                        sn.setMembershipFunction(new FPG_MF(split[1], split[2], split[3]));
+                    break;
+                case "map-nominal":
+                    String fm = cstate.get(fKey).toString().replaceAll("\\[", "").replaceAll("]", "");
+                    String values[] = fm.substring(fm.indexOf("{"), fm.indexOf("}")).replaceAll("\"", "")
+                            .replace("{", "").replace("}", "").split(",");
+                    MapNominal_MF map = new MapNominal_MF();
+                    for (String string : values) {
+                        String k[] = string.trim().split(" ");
+                        map.addParameter(k[0], Double.parseDouble(k[1]));
+                    }
+                    map.setNotFoundValue(Double.parseDouble(fm.substring(fm.indexOf("")).replace("{", "").trim()));
+                    break;
+                case "trapezoidal":
+                    sn.setMembershipFunction(new Trapezoidal_MF(split[1], split[2], split[3], split[4]));
+                    break;
+                case "triangular":
+                    sn.setMembershipFunction(new Triangular_MF(split[1], split[2], split[3]));
+                    break;
+                case "gaussian":
+                    sn.setMembershipFunction(new Gaussian_MF(split[1], split[2]));
+                    break;
+                case "sform":
+                    sn.setMembershipFunction(new SForm_MF(split[1], split[2]));
+                    break;
+                case "zform":
+                    sn.setMembershipFunction(new ZForm_MF(split[1], split[2]));
+                    break;
+                case "lgamma":
+                    sn.setMembershipFunction(new LGAMMA_MF(split[1], split[2]));
+                    break;
+                case "gamma":
+                    sn.setMembershipFunction(new GAMMA_MF(split[1], split[2]));
+                    break;
+                case "ltrapezoidal":
+                    sn.setMembershipFunction(new LTRAPEZOIDAL_MF(split[1], split[2]));
+                    break;
+                case "rtrapezoidal":
+                    sn.setMembershipFunction(new RTRAPEZOIDAL_MF(split[1], split[2]));
+                    break;
+                case "pseudo-exp":
+                    sn.setMembershipFunction(new PSEUDOEXP_MF(split[1], split[2]));
                     break;
                 default:
                     System.out.println("Unsupported : " + split[0]);

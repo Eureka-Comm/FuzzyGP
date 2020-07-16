@@ -7,11 +7,13 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
+
 /**
  *
  * @author hp
  */
-public class Singleton extends AMembershipFunction {
+public class Singleton_MF extends MembershipFunction {
 
     /**
      *
@@ -20,7 +22,7 @@ public class Singleton extends AMembershipFunction {
     @Expose
     private double a;
 
-    public Singleton(double a) {
+    public Singleton_MF(double a) {        
         this.a = a;
         this.setType(MembershipFunctionType.SINGLETON);
 
@@ -30,13 +32,13 @@ public class Singleton extends AMembershipFunction {
         return a;
     }
 
-    public void setA(double a) {
+    public void setA(double a) {        
         this.a = a;
     }
 
     @Override
     public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return !(a > 1.0 || a < 0.0);
     }
 
     @Override
@@ -46,8 +48,7 @@ public class Singleton extends AMembershipFunction {
 
     @Override
     public double evaluate(double v) {
-        return ( a == v)? 1.0 : 0.0;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (a == v) ? 1.0 : 0.0;
     }
 
     @Override
@@ -68,15 +69,33 @@ public class Singleton extends AMembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Singleton other = (Singleton) obj;
+        Singleton_MF other = (Singleton_MF) obj;
         if (Double.doubleToLongBits(a) != Double.doubleToLongBits(other.a))
             return false;
         return true;
     }
 
     @Override
-    public double evaluate(String key) {
-        throw new UnsupportedOperationException("Not supported yet."); 
+    public Object clone() throws CloneNotSupportedException {
+        return new Singleton_MF(a);
+    }
+
+    @Override
+    public DoubleColumn xPoints() {
+        DoubleColumn xColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < a * 2; i += 0.1) {
+            xColumn.append(i);
+        }
+        return xColumn;
+    }
+
+    @Override
+    public DoubleColumn yPoints() {
+        DoubleColumn yColumn = DoubleColumn.create("y column");
+        for (double i = 0; i < a * 2; i += 0.1) {
+            yColumn.append(1.0);
+        }
+        return yColumn;
     }
 
 }

@@ -16,13 +16,20 @@ import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.logic.ALogic;
-import com.castellanos.fuzzylogicgp.logic.GMBC;
+import com.castellanos.fuzzylogicgp.base.TournamentSelection;
+import com.castellanos.fuzzylogicgp.logic.Logic;
+import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
+import com.castellanos.fuzzylogicgp.parser.MembershipFunctionSerializer;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.Destination;
+import tech.tablesaw.io.csv.CsvWriteOptions;
+import tech.tablesaw.io.json.*;
 
 /**
  * fuzzy compensatory logical knowledge discovery
@@ -35,7 +42,7 @@ public class KDFLC {
     private ParserPredicate parserPredicate;
     private NodeTree predicatePattern;
     private HashMap<String, List<StateNode>> statesByGenerators;
-    private ALogic logic;
+    private Logic logic;
     private int depth;
     private int num_pop;
     private int num_iter;
@@ -53,9 +60,20 @@ public class KDFLC {
     private Table data;
     private ArrayList<NodeTree> resultList;
 
-    public KDFLC(ParserPredicate pp, ALogic logic, int depth, int num_pop, int num_iter, int num_result,
+    public KDFLC(ParserPredicate pp, Logic logic, int depth, int num_pop, int num_iter, int num_result,
             double min_truth_value, double mut_percentage, int adj_num_pop, int adj_num_iter,
             double adj_min_truth_value, Table data) throws OperatorException, CloneNotSupportedException {
+
+        if (depth <=1)
+            throw new IllegalArgumentException("Depth must be >= 2.");
+        if (min_truth_value < 0.0 || min_truth_value > 1.0)
+            throw new IllegalArgumentException("Min truth value must be in [0,1].");
+
+        if (mut_percentage < 0.0 || mut_percentage > 1.0)
+            throw new IllegalArgumentException("Mut percentage must be in [0,1].");
+
+        if (adj_min_truth_value < 0.0 || adj_min_truth_value > 1.0)
+            throw new IllegalArgumentException("Adj min truth value must be in [0,1].");
         this.parserPredicate = pp;
         this.predicatePattern = pp.parser();
         this.logic = logic;
@@ -100,6 +118,7 @@ public class KDFLC {
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
         for (int i = 0; i < population.length; i++) {
             gomf.optimize(population[i]);
+            // System.out.println(i+" "+population[i]+" "+population[i].getFitness());
         }
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
@@ -118,7 +137,7 @@ public class KDFLC {
         if (isToDiscovery) {
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
-                System.out.println("Iteration "+iteration+" of "+num_iter+" ...");
+                System.out.println("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
                 int offspring_size = population.length / 2;
                 if (offspring_size % 2 != 0) {
                     offspring_size++;
@@ -140,16 +159,21 @@ public class KDFLC {
                 for (int i = 0; i < offspring.length; i++) {
                     gomf.optimize(offspring[i]);
                 }
+                Arrays.sort(offspring);
+
+                int lastFound = 0;
                 for (int i = 0; i < offspring.length; i++) {
-                    for (int j = 0; j < population.length; j++) {
+                    for (int j = lastFound; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
+                            // System.out.println(offspring[i].getFitness());
                             population[j] = (NodeTree) offspring[i].clone();
+                            lastFound = j + 1;
                             break;
                         }
                     }
                 }
                 Arrays.sort(population, Collections.reverseOrder());
-                System.out.println("Iteration " + iteration + " ( " + resultList.size() + " ) ");
+
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                         resultList.add((NodeTree) population[i].clone());
@@ -187,7 +211,7 @@ public class KDFLC {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             pop[i] = createRandomInd();
-            //System.out.printf("ind %3d: %s\n", i, pop[i]);
+            // System.out.printf("ind %3d: %s\n", i, pop[i]);
         }
         return pop;
     }
@@ -205,7 +229,7 @@ public class KDFLC {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
                 try {
-                    if (rand.nextDouble() < 0.5)
+                    if (rand.nextDouble() < 0.4)
                         complete_tree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
                     else
                         growTree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
@@ -221,15 +245,17 @@ public class KDFLC {
 
     private void complete_tree(NodeTree p, GeneratorNode gNode, Node father, int arity, int currentDepth)
             throws OperatorException {
+
         boolean isToReplace = false;
-        if (father == null) {
+        if (father == null && !(p.getType().equals(NodeType.OPERATOR))) {
             NodeTree find = NodeTree.getNodeParent(p, gNode.getId());
             if (find != null) {
                 father = find;
                 isToReplace = true;
             }
         }
-        if (currentDepth >= depth) {
+
+        if (currentDepth >= depth && !isToReplace) {
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
             if (size >= 2 && father != null) {
@@ -259,14 +285,12 @@ public class KDFLC {
                 e.printStackTrace();
             }
             // s.setFather(father.getId());
-            if (isToReplace) {
-                NodeTree.replace(((NodeTree) father), gNode, s);
-            } else {
-                ((NodeTree) father).addChild(s);
-            }
-        } else {
+            ((NodeTree) father).addChild(s);
 
-            arity = rand.nextInt(gNode.getVariables().size() / 2);
+        } else {
+            int max = gNode.getVariables().size();
+            max = (int) (((float) max / 2 >= 2) ? (float) max / 2 : max);
+            arity = rand.nextInt(max);
             if (arity < 2) {
                 arity = 2;
             }
@@ -298,9 +322,14 @@ public class KDFLC {
             newFather.setEditable(true);
             newFather.setByGenerator(gNode.getId());
 
-            if (isToReplace)
-                NodeTree.replace(p, gNode, newFather);
-            else
+            if (father == null || isToReplace) {
+                NodeTree.replace(p, gNode, newFather, !isToReplace);
+                if (!isToReplace) {
+                    newFather = p;
+                    // currentDepth=-1;
+                }
+
+            } else
                 ((NodeTree) father).addChild(newFather);
             for (int i = 0; i < arity; i++)
                 complete_tree(p, gNode, newFather, arity, currentDepth + 1);
@@ -309,14 +338,16 @@ public class KDFLC {
 
     private void growTree(NodeTree p, GeneratorNode gNode, Node father, int arity, int currentDepth)
             throws OperatorException {
+
         boolean isToReplace = false;
-        if (father == null) {
+        if (father == null && !p.getType().equals(NodeType.OPERATOR)) {
             NodeTree find = NodeTree.getNodeParent(p, gNode.getId());
             if (find != null) {
                 father = find;
                 isToReplace = true;
             }
         }
+
         if ((currentDepth >= depth || rand.nextDouble() < 0.65) && (father != null && currentDepth != 0)) {
             int size = statesByGenerators.get(gNode.getId()).size();
             StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
@@ -347,16 +378,16 @@ public class KDFLC {
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
-            // s.setFather(father.getId());
-
             if (isToReplace) {
-                NodeTree.replace(((NodeTree) father), gNode, s);
+                NodeTree.replace(p, gNode, s, !isToReplace);
             } else {
                 ((NodeTree) father).addChild(s);
             }
-        } else {
 
-            arity = rand.nextInt(gNode.getVariables().size() / 2);
+        } else {
+            int max = gNode.getVariables().size();
+            max = (int) (((float) max / 2 >= 2) ? (float) max / 2 : max);
+            arity = rand.nextInt(max);
             if (arity < 2) {
                 arity = 2;
             }
@@ -387,10 +418,14 @@ public class KDFLC {
             }
             newFather.setEditable(true);
             newFather.setByGenerator(gNode.getId());
+            if (father == null || isToReplace) {
+                NodeTree.replace(p, gNode, newFather, !isToReplace);
+                if (!isToReplace) {
+                    newFather = p;
+                    // currentDepth=-1;
+                }
 
-            if (isToReplace)
-                NodeTree.replace(p, gNode, newFather);
-            else
+            } else
                 ((NodeTree) father).addChild(newFather);
             for (int i = 0; i < arity; i++)
                 growTree(p, gNode, newFather, arity, currentDepth + 1);
@@ -399,7 +434,7 @@ public class KDFLC {
 
     private void mutation(NodeTree[] population) throws OperatorException, CloneNotSupportedException {
         for (int i = 0; i < population.length; i++) {
-            if (rand.nextDouble() < mut_percentage) {                 
+            if (rand.nextDouble() < mut_percentage) {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
                 Node n = editableNode.get(rand.nextInt(editableNode.size()));
 
@@ -412,19 +447,19 @@ public class KDFLC {
                 switch (n.getType()) {
                     case OR:
                         clon.setType(NodeType.AND);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case AND:
                         clon.setType(NodeType.OR);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case IMP:
                         clon.setType(NodeType.EQV);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case EQV:
                         clon.setType(NodeType.IMP);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
                         break;
                     case STATE:
                         List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
@@ -433,9 +468,9 @@ public class KDFLC {
                         s.setColName(state.getColName());
                         s.setLabel(state.getLabel());
                         if (s.getMembershipFunction() != null) {
-                            s.setMembershipFunction(s.getMembershipFunction());
+                            s.setMembershipFunction(state.getMembershipFunction());
                         }
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon);
+                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s, false);
                         break;
                     default:
                         break;
@@ -459,16 +494,16 @@ public class KDFLC {
             cand_b = b_editable.get(rand.nextInt(b_editable.size()));
             nivel_b = NodeTree.dfs(bc, cand_b);
         } while (nivel_b > nivel);
-        NodeTree.replace(NodeTree.getNodeParent(ac, cand.getId()), cand, (Node) cand_b.clone());
+        NodeTree.replace(NodeTree.getNodeParent(ac, cand.getId()), cand, (Node) cand_b.clone(), false);
 
         if (nivel <= nivel_b) {
-            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone());
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone(), false);
         } else {
             do {
                 cand = a_editable.get(rand.nextInt(a_editable.size()));
                 nivel = NodeTree.dfs(ac, cand);
             } while (nivel > nivel_b);
-            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone());
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone(), false);
         }
         return new NodeTree[] { ac, bc };
     }
@@ -478,93 +513,35 @@ public class KDFLC {
         ArrayList<Double> v = new ArrayList<>();
         ArrayList<String> p = new ArrayList<>();
         ArrayList<String> d = new ArrayList<>();
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
+        builder.excludeFieldsWithoutExposeAnnotation();
+        //builder.setPrettyPrinting();
+        Gson print = builder.create();
+        
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
-            p.add("'" + resultList.get(i).toString() + "'");
+            p.add( resultList.get(i).toString() );
             ArrayList<String> st = new ArrayList<>();
             for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
                 if (node instanceof StateNode) {
                     StateNode s = (StateNode) node;
-                    st.add(s.toString());
+                    st.add(print.toJson(s));
                 }
             }
-            d.add("'" + st.toString() + "'");
+            d.add( st.toString() );
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
 
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
         fuzzyData.addColumns(value, predicates, data);
+        
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
+        JsonWriter jsonWriter = new JsonWriter();
+        JsonWriteOptions options = JsonWriteOptions.builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
+        jsonWriter.write(fuzzyData, options);
         fuzzyData.write().toFile(f);
-    }
-
-    public static void main(String[] args) throws IOException, OperatorException, CloneNotSupportedException {
-        Table d = Table.read().csv("src/main/resources/datasets/tinto.csv");
-        StateNode sa = new StateNode("alcohol", "alcohol");
-        StateNode sph = new StateNode("pH", "pH");
-        StateNode sq = new StateNode("quality", "quality");
-        StateNode sfa = new StateNode("fixed_acidity", "fixed_acidity");
-        StateNode sugar = new StateNode("residual_sugar", "residual_sugar");
-        StateNode volatile_acidity = new StateNode("volatile_acidity", "volatile_acidity");
-        StateNode citric_acid = new StateNode("citric_acid", "citric_acid");
-        StateNode chlorides = new StateNode("chlorides", "chlorides");
-        StateNode free_sulfur_dioxide = new StateNode("free_sulfur_dioxide", "free_sulfur_dioxide");
-        StateNode total_sulfur_dioxide = new StateNode("total_sulfur_dioxide", "total_sulfur_dioxide");
-        StateNode density = new StateNode("density", "density");
-
-        List<StateNode> states = new ArrayList<>();
-        states.add(density);
-        states.add(volatile_acidity);
-        states.add(citric_acid);
-        states.add(chlorides);
-        states.add(free_sulfur_dioxide);
-        states.add(total_sulfur_dioxide);
-        states.add(sa);
-        states.add(sph);
-        states.add(sq);
-        states.add(sfa);
-        states.add(sugar);
-        List<String> vars = new ArrayList<>();
-        vars.add("alcohol");
-        vars.add("pH");
-        vars.add("fixed_acidity");
-        vars.add("sugar");
-        vars.add("density");
-        vars.add("total_sulfur_dioxide");
-        vars.add("chlorides");
-        vars.add("free_sulfur_dioxide");
-        vars.add("citric_acid");
-        vars.add("volatile_acidity");
-        // vars.add("quality");
-
-        GeneratorNode g = new GeneratorNode("*",
-                new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT, NodeType.IMP }, vars);
-        List<GeneratorNode> gs = new ArrayList<>();
-        gs.add(g);
-        String expression = "(NOT (AND \"*\" \"quality\") )";
-        expression = "(IMP  \"*\" \"quality\")";
-        //expression = "(NOT \"*\")";
-        // expression = "\"*\"";
-      //  expression = "(IMP \"alcohol\" \"quality\")";
-
-        ParserPredicate pp = new ParserPredicate(expression, states, gs);
-
-        KDFLC discovery = new KDFLC(pp, new GMBC(), 2, 100, 50, 10, 0.9f, 0.15, 2, 1, 0.0, d);
-        // new KDFLC(pp, logic, depth, num_pop, num_iter, num_result, min_truth_value,
-        // mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value, data)
-        /*
-         * Predicate p = pp.parser(); p.getNodes().forEach((k,v)->{
-         * System.out.println(v+", father = "+v.getFather()+" , level: "+p.dfs(v)); });
-         */
-        long startTime = System.nanoTime();
-        discovery.execute();
-
-        long endTime = System.nanoTime();
-
-        long duration = (endTime - startTime); // divide by 1000000 to get milliseconds.
-        System.out.println("That took " + (duration / 1000000) + " milliseconds");
-        //discovery.exportToCsv();
     }
 
 }

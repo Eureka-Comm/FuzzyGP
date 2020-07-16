@@ -10,5 +10,6 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
  * @author hp
  */
 public enum MembershipFunctionType {
-    FPG, SIGMOID, NSIGMOID, SINGLETON, MAPNOMIAL;
+    FPG, SIGMOID, NSIGMOID, SINGLETON, MAPNOMIAL, TRIANGULAR, TRAPEZOIDAL,RTRAPEZOIDAL,LTRAPEZOIDAL,GAMMA,LGAMMA,PSEUDOEXP, GAUSSIAN, ZFORM, SFORM, NOMINAL;
+    
 }

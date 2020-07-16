@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.membershipfunction.AMembershipFunction;
+import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
@@ -136,7 +136,7 @@ public abstract class Query implements Serializable {
 
     public String toJSON() {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(AMembershipFunction.class, new MembershipFunctionSerializer());
+        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         builder.registerTypeAdapter(Query.class, new QuerySerializer());
         builder.excludeFieldsWithoutExposeAnnotation();
         builder.setPrettyPrinting();
@@ -148,7 +148,7 @@ public abstract class Query implements Serializable {
         if (path == null)
             return null;
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(AMembershipFunction.class, new MembershipFunctionDeserializer());
+        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionDeserializer());
         builder.registerTypeAdapter(Query.class, new QueryDeserializer());
         Gson read = builder.create();
         FileReader fileReader = new FileReader(path.toFile());

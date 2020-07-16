@@ -7,8 +7,8 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>14</maven.compiler.source>
+        <maven.compiler.target>14</maven.compiler.target>
     </properties>
     <build>
         <plugins>
@@ -38,7 +38,7 @@
                   <archive>
                     <manifest>
                       <addClasspath>true</addClasspath>
-                      <mainClass>com.castellanos.fuzzylogicgp.core.Main</mainClass>
+                      <mainClass>com.castellanos.fuzzylogicgp.cli.Main</mainClass>
                     </manifest>
                   </archive>
                   <descriptorRefs>
@@ -58,31 +58,25 @@
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-core</artifactId>
-            <version>0.34.2</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-excel -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-excel</artifactId>
-            <version>0.34.2</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-jsplot -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-jsplot</artifactId>
-            <version>0.34.2</version>
+            <version>LATEST</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-json -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-json</artifactId>
-            <version>0.34.2</version>
-        </dependency>
-        <!-- https://github.com/eobermuhlner/big-math#bigdecimalmath -->
-        <dependency>
-            <groupId>ch.obermuhlner</groupId>
-            <artifactId>big-math</artifactId>
-            <version>2.3.0</version>
+            <version>LATEST</version>
         </dependency>
         <!-- java edn -->
         <dependency>
@@ -90,7 +84,12 @@
             <artifactId>edn-java</artifactId>
             <version>0.5.0</version>
         </dependency>
-       
+        <!-- Picocli -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.3.2</version>
+          </dependency>
     </dependencies>
     <reporting>                                                                              
         <plugins>                                                                            

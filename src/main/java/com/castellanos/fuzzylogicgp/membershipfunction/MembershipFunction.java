@@ -9,24 +9,28 @@ import java.io.Serializable;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.columns.Column;
+
 /**
  *
  * @author hp
  */
-public abstract class AMembershipFunction implements Cloneable, Serializable {
+public abstract class MembershipFunction implements Cloneable, Serializable {
 
     /**
      *
      */
     private static final long serialVersionUID = -9006368296289781684L;
 
-    public AMembershipFunction() {
+    public MembershipFunction() {
     }
 
     @Expose
     public MembershipFunctionType type;
 
-    public abstract boolean isValid();
+    public boolean isValid(){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
 
     public MembershipFunctionType getType() {
         return type;
@@ -36,10 +40,16 @@ public abstract class AMembershipFunction implements Cloneable, Serializable {
         this.type = type;
     }
 
-    public abstract double evaluate(double v);
+    public double evaluate(double v){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
 
-    public abstract double evaluate(String key);
+    public  double evaluate(String key){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
+    public abstract Column yPoints();
 
+    public abstract Column xPoints();
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
