@@ -62,6 +62,9 @@ public class Main {
     private boolean evaluationDemo;
     @Option(names = { "--discovery-demo" }, description = "Run a discovery demo.")
     private boolean discoveryDemo;
+
+    @Option(names = { "--iris" }, description = "Run a discovery demo with iris dataset.")
+    private boolean irisDemo;
     @Option(names = { "--EDN" }, description = "Supported EDN script.")
     private boolean formatEdn;
     @Option(names = { "--N" }, description = "No run task.")
@@ -100,6 +103,10 @@ public class Main {
             } else if (main.discoveryDemo) {
                 out.println("Running demo discovery");
                 query = discovery();
+                TaskFactory.execute(demoToFile(query));
+            }else if(main.irisDemo){
+                out.println("Running irs demo");
+                query = irisQuery();
                 TaskFactory.execute(demoToFile(query));
             }
 
