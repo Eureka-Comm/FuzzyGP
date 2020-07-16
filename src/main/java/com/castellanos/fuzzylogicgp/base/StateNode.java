@@ -9,8 +9,6 @@ import java.io.File;
 import java.nio.file.Paths;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
