@@ -27,6 +27,9 @@ import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
+import tech.tablesaw.io.Destination;
+import tech.tablesaw.io.json.JsonWriteOptions;
+import tech.tablesaw.io.json.JsonWriter;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReader;
 
@@ -124,9 +127,12 @@ public class EvaluatePredicate {
         fuzzyData.write().csv(outPath);
     }
 
-    public String exportToJSON() {
-        Gson print = new GsonBuilder().setPrettyPrinting().create();
-        return print.toJson(fuzzyData);
+    public void exportToJSON(String file) throws IOException {
+        File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
+        JsonWriter jsonWriter = new JsonWriter();
+        JsonWriteOptions options = JsonWriteOptions.builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
+        jsonWriter.write(fuzzyData, options);
+        fuzzyData.write().toFile(f);
     }
 
     public void exportToCsv(String outPath) throws IOException {
@@ -267,5 +273,20 @@ public class EvaluatePredicate {
     public void setPredicate(NodeTree p) {
         this.p = p;
     }
+    /**
+     * 
+     * @return fuzzy data table of the evaluated predicate
+     */
+    public Table getFuzzyData() {
+        return fuzzyData;
+    }
+    /**
+     * 
+     * @return the evaluated predicated
+     */
+    public NodeTree getPredicate() {
+        return p;
+    }
+    
 
 }
