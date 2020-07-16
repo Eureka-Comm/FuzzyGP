@@ -104,7 +104,7 @@ public class Main {
                 out.println("Running demo discovery");
                 query = discovery();
                 TaskFactory.execute(demoToFile(query));
-            }else if(main.irisDemo){
+            } else if (main.irisDemo) {
                 out.println("Running irs demo");
                 query = irisQuery();
                 TaskFactory.execute(demoToFile(query));
@@ -156,13 +156,10 @@ public class Main {
         states.add(new StateNode("sepal width", "sepal.width"));
         states.add(new StateNode("petal lenght", "petal.length"));
         states.add(new StateNode("petal width", "petal.width"));
-        StateNode variety = new StateNode("class", "variety");
-        // MapNominal_MF mapNominal = new MapNominal_MF();
-        // mapNominal.addParameter("Setosa", 1.0);
-        // mapNominal.addParameter("Versicolor", 0.33);
-        // mapNominal.addParameter("Virginica", 0.33);
-        Nominal_MF nominal_MF = new Nominal_MF("Setosa", 1.0);
-        variety.setMembershipFunction(nominal_MF);
+        StateNode Setosa = new StateNode("Setosa", "variety", new Nominal_MF("Setosa", 1.0));
+        StateNode Versicolor = new StateNode("Versicolor", "variety", new Nominal_MF("Versicolor", 1.0));
+        StateNode Virginica = new StateNode("Virginica", "variety", new Nominal_MF("Virginica", 1.0));
+
         //
 
         query.setStates(states);
@@ -170,29 +167,40 @@ public class Main {
         String out_file = "result-discovery-irs.csv";
         query.setOut_file(out_file);
         query.setLogic(LogicType.GMBC);
-        String predicate = "(IMP \"properties\" \"class\")";
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("properties");
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
             variables.add(stateNode.getLabel());
         }
-        states.add(variety);
-
         generator.setVariables(variables);
         generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT });
+
+        states.add(Setosa);
+        states.add(Versicolor);
+        states.add(Virginica);
+        ArrayList<String> vrs = new ArrayList<>();
+        vrs.add(Setosa.getLabel());
+        vrs.add(Versicolor.getLabel());
+        vrs.add(Virginica.getLabel());
+        GeneratorNode classG = new GeneratorNode("class", new NodeType[]{NodeType.NOT}, vrs);
+        
         ArrayList<GeneratorNode> generators = new ArrayList<>();
         generators.add(generator);
+        generators.add(classG);
+
+        String predicate = "(EQV \"properties\" \"class\")";
+
         query.setGenerators(generators);
         query.setPredicate(predicate);
         query.setAdj_min_truth_value(0.1f);
         query.setAdj_num_pop(10);
         query.setDepth(2);
         query.setMut_percentage(0.05f);
-        query.setNum_iter(20);
+        query.setNum_iter(30);
         query.setMin_truth_value(0.95f);
         query.setNum_pop(100);
-        query.setNum_result(20);
+        query.setNum_result(25);
         query.setAdj_num_iter(2);
         return query;
 
