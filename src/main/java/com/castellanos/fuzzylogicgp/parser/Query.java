@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import com.castellanos.fuzzylogicgp.base.StateNode;
+import com.castellanos.fuzzylogicgp.logic.LogicType;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

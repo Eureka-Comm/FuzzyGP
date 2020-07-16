@@ -1,4 +1,4 @@
-package com.castellanos.fuzzylogicgp.parser;
+package com.castellanos.fuzzylogicgp.logic;
 
 public enum LogicType {
     GMBC, AMBC, ZADEH;

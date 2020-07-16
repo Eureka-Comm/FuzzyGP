@@ -112,25 +112,6 @@ public class Main {
 
         }
     }
-    /*
-     * public static void main(String[] args) throws OperatorException,
-     * CloneNotSupportedException, IOException, URISyntaxException { //
-     * evaluation(); // discovery(); System.out.println(Arrays.toString(args)); if
-     * (args.length > 0 && !args[0].trim().equals("-h")) {
-     * 
-     * } else { System.out.println("Usage:");
-     * System.out.println("Load a job to process by its file path ");
-     * System.out.println("or check demo");
-     * System.out.println("\tjava App.jar demo-evaluation");
-     * System.out.println("\tjava App.jar demo-discovery");
-     * System.out.println("\tjava App.jar demo-iris");
-     * System.out.println("For EDN script support, use: -format=edn");
-     * System.out.println("For Plot states use: -plot \'label\'..."); System.out.
-     * println("Plot opens your local browser, only Evaluation Query script.To not run the task, add the -N option."
-     * );
-     * 
-     * } }
-     */
 
     private static void testMembershipFunction() {
 
