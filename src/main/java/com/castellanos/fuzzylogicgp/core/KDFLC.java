@@ -60,11 +60,13 @@ public class KDFLC {
     private Table data;
     private ArrayList<NodeTree> resultList;
 
+    private Table fuzzyData;
+
     public KDFLC(ParserPredicate pp, Logic logic, int depth, int num_pop, int num_iter, int num_result,
             double min_truth_value, double mut_percentage, int adj_num_pop, int adj_num_iter,
             double adj_min_truth_value, Table data) throws OperatorException, CloneNotSupportedException {
 
-        if (depth <=1)
+        if (depth <= 1)
             throw new IllegalArgumentException("Depth must be >= 2.");
         if (min_truth_value < 0.0 || min_truth_value > 1.0)
             throw new IllegalArgumentException("Min truth value must be in [0,1].");
@@ -508,20 +510,29 @@ public class KDFLC {
         return new NodeTree[] { ac, bc };
     }
 
-    public void exportToCsv(String file) throws IOException {
-        Table fuzzyData = Table.create();
+    public void exportToJSon(String file) throws IOException {
+        outPutData();
+        File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
+        JsonWriter jsonWriter = new JsonWriter();
+        JsonWriteOptions options = JsonWriteOptions
+                .builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
+        jsonWriter.write(fuzzyData, options);
+    }
+
+    private void outPutData() {
+        fuzzyData = Table.create();
         ArrayList<Double> v = new ArrayList<>();
         ArrayList<String> p = new ArrayList<>();
         ArrayList<String> d = new ArrayList<>();
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         builder.excludeFieldsWithoutExposeAnnotation();
-        //builder.setPrettyPrinting();
+        // builder.setPrettyPrinting();
         Gson print = builder.create();
-        
+
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
-            p.add( resultList.get(i).toString() );
+            p.add(resultList.get(i).toString());
             ArrayList<String> st = new ArrayList<>();
             for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
                 if (node instanceof StateNode) {
@@ -529,19 +540,27 @@ public class KDFLC {
                     st.add(print.toJson(s));
                 }
             }
-            d.add( st.toString() );
+            d.add(st.toString());
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
 
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
         fuzzyData.addColumns(value, predicates, data);
-        
+    }
+
+    public void exportToCsv(String file) throws IOException {
+        outPutData();
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
-        JsonWriter jsonWriter = new JsonWriter();
-        JsonWriteOptions options = JsonWriteOptions.builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
-        jsonWriter.write(fuzzyData, options);
         fuzzyData.write().toFile(f);
+    }
+
+    /**
+     * 
+     * @return discovered predicate list
+     */
+    public ArrayList<NodeTree> getResultList() {
+        return resultList;
     }
 
 }
