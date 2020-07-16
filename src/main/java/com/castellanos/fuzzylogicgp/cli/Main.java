@@ -35,7 +35,7 @@ import com.castellanos.fuzzylogicgp.membershipfunction.Triangular_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.ZForm_MF;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
 import com.castellanos.fuzzylogicgp.parser.EDNParser;
-import com.castellanos.fuzzylogicgp.parser.LogicType;
+import com.castellanos.fuzzylogicgp.logic.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 import com.castellanos.fuzzylogicgp.parser.TaskFactory;
 
