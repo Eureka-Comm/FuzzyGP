@@ -40,7 +40,7 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
         this.type = type;
     }
 
-    public double evaluate(double v){
+    public double evaluate(Number v){
         throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
     }
 

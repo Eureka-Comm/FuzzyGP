@@ -53,7 +53,7 @@ public class FPG_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number v) {
         // BigDecimal sigm, sigmm, M;
 
         double sigm, sigmm, M;
