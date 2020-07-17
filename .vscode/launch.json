@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - ACF_Logics",
+            "request": "launch",
+            "mainClass": "com.castellanos.fuzzylogicgp.logic.ACF_Logics",
+            "projectName": "FuzzyLogicGP"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Main",
             "request": "launch",
             "mainClass": "com.castellanos.fuzzylogicgp.cli.Main",
