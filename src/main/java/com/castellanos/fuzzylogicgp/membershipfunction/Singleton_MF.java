@@ -47,8 +47,8 @@ public class Singleton_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
-        return (a == v) ? 1.0 : 0.0;
+    public double evaluate(Number v) {
+        return (a == v.doubleValue()) ? 1.0 : 0.0;
     }
 
     @Override

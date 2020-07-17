@@ -28,7 +28,8 @@ public class LGAMMA_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         if( v <=a)
         return 0.0;
         return (b*Math.pow(v-a, 2)/(1+b*Math.pow(v-a, 2)));

@@ -27,7 +27,8 @@ public class RTRAPEZOIDAL_MF extends MembershipFunction {
         this.setType(MembershipFunctionType.RTRAPEZOIDAL);
     }
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         if (v < a)
             return 1.0;
         if (a <= v && v <= b)

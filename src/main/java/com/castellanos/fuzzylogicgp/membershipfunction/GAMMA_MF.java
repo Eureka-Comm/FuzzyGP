@@ -28,7 +28,8 @@ public class GAMMA_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         if (v <= a)
             return 0.0;
         return (1.0 - Math.exp(-b * Math.pow(v - a, 2)));

@@ -42,7 +42,8 @@ public class NSigmoid_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         return (1-(1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center))))));
 
         /*BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);

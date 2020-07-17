@@ -28,7 +28,8 @@ public class Gaussian_MF extends MembershipFunction {
 
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         return Math.exp(-Math.pow(v-center, 2)/(2*Math.pow(deviation, 2)));
     }
     @Override

@@ -91,7 +91,7 @@ public class MapNominal_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number v) {
         throw new NullPointerException("Key is required.");
     }
 

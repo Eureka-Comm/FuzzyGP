@@ -42,7 +42,8 @@ public class Sigmoid_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate( double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
        /* BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);
         BigDecimal lg01 = BigDecimalMath.log(new BigDecimal("0.01"), MathContext.DECIMAL128);
         BigDecimal one = new BigDecimal("1");

@@ -28,7 +28,8 @@ public class PSEUDOEXP_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         return 1.0 / (1.0 + deviation * Math.pow(v - center, 2));
     }
     @Override

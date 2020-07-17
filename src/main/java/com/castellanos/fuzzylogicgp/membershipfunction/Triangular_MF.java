@@ -30,9 +30,9 @@ public class Triangular_MF extends MembershipFunction {
         this.setType(MembershipFunctionType.TRIANGULAR);
     }
 
-
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         return Math.max(Math.min((v - a) / (b - a), (c - v) / (c - b)), 0);
     }
 
@@ -101,22 +101,25 @@ public class Triangular_MF extends MembershipFunction {
     public String toString() {
         return String.format("[%s %.3f, %.3f, %.3f]", this.type.toString(), this.a, this.b, this.c);
     }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new Triangular_MF(a, b, c);
     }
+
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b+c; i+=0.01) {
+        for (double i = 0; i < b + c; i += 0.01) {
             xColumn.append(i);
         }
         return xColumn;
     }
+
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b+c; i+=0.01) {
+        for (double i = 0; i < b + c; i += 0.01) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;

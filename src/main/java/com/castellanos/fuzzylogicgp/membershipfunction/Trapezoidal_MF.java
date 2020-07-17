@@ -35,7 +35,9 @@ public class Trapezoidal_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         return Math.max(Math.min(Math.min((v - a) / (b - a), (d - v) / (d - c)), 1), 0);
     }
 

@@ -28,7 +28,8 @@ public class LTRAPEZOIDAL_MF extends MembershipFunction {
     }
 
     @Override
-    public double evaluate(double v) {
+    public double evaluate(Number value) {
+        Double v = value.doubleValue();
         if (v < a)
             return 0;
         if (a <= v && v <= b)
