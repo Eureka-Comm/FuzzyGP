@@ -112,13 +112,13 @@ class MathOper{
     
 
 }
-public class ACF_Logics implements Logic {
+public class ACF_Logic implements Logic {
 
     private Integer L,m;
     private MathOper Mo = new MathOper();
-    public ACF_Logics(){}
+    public ACF_Logic(){}
     
-    public ACF_Logics(int L, int m){
+    public ACF_Logic(int L, int m){
         this.L = L;
         this.m = m;
     }
