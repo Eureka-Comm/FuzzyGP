@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.castellanos.fuzzylogicgp.base.FuzzyEvaluator;
 import com.castellanos.fuzzylogicgp.base.Node;
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
@@ -46,12 +45,10 @@ public class EvaluatePredicate {
     private Table fuzzyData;
     private DoubleColumn resultColumn;
     private String outPath;
-    private FuzzyEvaluator fuzzyEvaluator;
 
     public EvaluatePredicate(Logic logic, Table data) {
         this.logic = logic;
         this.data = data;
-        this.fuzzyEvaluator = new FuzzyEvaluator(this.logic);
     }
 
     public EvaluatePredicate(NodeTree p, Logic logic, Table data) {
@@ -63,7 +60,6 @@ public class EvaluatePredicate {
     public EvaluatePredicate(NodeTree p, Logic logic, String path) {
         this.p = p;
         this.logic = logic;
-        this.fuzzyEvaluator = new FuzzyEvaluator(this.logic);
         try {
             if (path.contains(".csv")) {
                 data = Table.read().file(new File(path));
@@ -81,7 +77,6 @@ public class EvaluatePredicate {
         this.p = p;
         this.logic = logic;
         this.outPath = outPath;
-        this.fuzzyEvaluator = new FuzzyEvaluator(this.logic);
         if (path.contains(".csv")) {
             try {
                 data = Table.read().file(new File(path));
@@ -235,31 +230,30 @@ public class EvaluatePredicate {
                 if (type == ColumnType.DOUBLE) {
                     Column<Double> column = (Column<Double>) data.column(s.getColName());
                     for (Double cell : column) {
-                       // dc.append(s.getMembershipFunction().evaluate((cell)));
-                       dc.append(fuzzyEvaluator.evaluate(s, cell));
+                       dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
 
                 } else if (type == ColumnType.FLOAT) {
                     Column<Float> column = (Column<Float>) data.column(s.getColName());
                     for (Float cell : column) {
-                        dc.append(fuzzyEvaluator.evaluate(s, cell));
+                        dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
 
                 } else if (type == ColumnType.INTEGER) {
                     Column<Integer> column = (Column<Integer>) data.column(s.getColName());
                     for (Integer cell : column) {
-                        dc.append(fuzzyEvaluator.evaluate(s, cell));
+                        dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
 
                 } else if (type == ColumnType.LONG) {
                     Column<Long> column = (Column<Long>) data.column(s.getColName());
                     for (Long cell : column) {
-                        dc.append(fuzzyEvaluator.evaluate(s, cell));
+                        dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
                 } else if (type == ColumnType.STRING) {
                     Column<String> column = (Column<String>) data.column(s.getColName());                    
                     for (String valueString : column) {
-                        dc.append(fuzzyEvaluator.evaluate(s, valueString));
+                        dc.append(s.getMembershipFunction().evaluate((valueString)));
                     }
 
                 } else {

@@ -7,8 +7,10 @@ import java.util.List;
 /**
  * Ying, Mingsheng. (2002). Implication operators in fuzzy logic. Fuzzy Systems, IEEE Transactions on. 10. 88 - 91. 10.1109/91.983282. 
  */
-public class Zadeh_Logic implements Logic {
-
+public class Zadeh_Logic extends Logic {
+    public Zadeh_Logic(){
+        super();
+    }
     @Override
     public double not(double v1) {
         return 1-v1;

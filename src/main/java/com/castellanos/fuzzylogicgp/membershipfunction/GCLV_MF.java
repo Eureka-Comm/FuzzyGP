@@ -1,6 +1,9 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import static java.lang.Math.pow;
+
+import com.castellanos.fuzzylogicgp.logic.ACF_Logic;
+import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.google.gson.annotations.Expose;
 
 import tech.tablesaw.columns.Column;
@@ -38,6 +41,18 @@ public class GCLV_MF extends MembershipFunction {
 
     public GCLV_MF() {
         this.setType(MembershipFunctionType.GCLV);
+    }
+    @Override
+    public double evaluate(Number v) {
+        ACF_Logic logic; 
+        for (Logic logic2 : Logic.getInstances()) {
+            if(logic2 instanceof ACF_Logic ){
+                logic = (ACF_Logic) logic2;
+                break;
+            }
+        }
+        
+        return super.evaluate(v);
     }
 
     public Integer getL(){

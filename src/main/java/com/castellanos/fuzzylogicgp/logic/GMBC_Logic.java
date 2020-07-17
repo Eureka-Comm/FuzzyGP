@@ -13,8 +13,10 @@ import java.util.List;
  *
  * @author hp
  */
-public class GMBC_Logic implements Logic {
-
+public class GMBC_Logic extends Logic {
+    public GMBC_Logic(){
+        super();
+    }
     @Override
     public double not(double v1) {
         // return BigDecimal.ONE.subtract(v1);
