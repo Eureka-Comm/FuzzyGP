@@ -117,6 +117,8 @@ public class EvaluatePredicate {
             ec.append("");
         }
         fuzzyData.addColumns(fa, ec, resultColumn);
+        System.out.println("ForAll: "+forAllValue);
+        System.out.println("Exist: "+ec.get(0));
         return forAllValue;
         // }
         // return BigDecimal.ONE.negate();
