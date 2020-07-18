@@ -50,6 +50,10 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
     public abstract Column yPoints();
 
     public abstract Column xPoints();
+
+    public Double deritavate(String partial_params){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
