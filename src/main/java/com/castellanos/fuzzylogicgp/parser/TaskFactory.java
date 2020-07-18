@@ -20,6 +20,7 @@ import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.logic.Zadeh_Logic;
 import com.castellanos.fuzzylogicgp.logic.AMBC_Logic;
 import com.castellanos.fuzzylogicgp.logic.GMBC_Logic;
+import com.castellanos.fuzzylogicgp.logic.ACF_Logic;
 
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
@@ -80,8 +81,11 @@ public class TaskFactory {
                 return new GMBC_Logic();
             case ZADEH:
                 return new Zadeh_Logic();
+            case ACF:
+                return new ACF_Logic();
             default:
                 return null;
+            
         }
     }
 
