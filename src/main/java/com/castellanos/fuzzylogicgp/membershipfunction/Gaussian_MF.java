@@ -4,6 +4,8 @@ import com.google.gson.annotations.Expose;
 
 import tech.tablesaw.api.DoubleColumn;
 
+import static java.lang.Math.*;
+
 public class Gaussian_MF extends MembershipFunction {
     /**
      *
@@ -26,6 +28,14 @@ public class Gaussian_MF extends MembershipFunction {
         this.setType(MembershipFunctionType.GAUSSIAN);
     }
 
+    @Override
+    public double deriv(double value, String partial_parameter){
+        if(partial_parameter.equals("deviation"))
+            return  (2./pow(center,3)) * exp(-((pow(value-center,2))/pow(deviation,2)))*pow(value-deviation,2);
+        else if (partial_parameter.equals("center"))
+            return (2./pow(deviation,2)) * exp(-((pow(value-center,2))/pow(deviation,2)))*(value-center);
+        else return 0.0;
+    }
 
     @Override
     public double evaluate(Number value) {

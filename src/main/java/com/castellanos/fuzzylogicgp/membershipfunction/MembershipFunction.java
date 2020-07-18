@@ -44,6 +44,10 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
         throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
     }
 
+    public double deriv(double value, String partial_parameter){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
+
     public  double evaluate(String key){
         throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
     }
