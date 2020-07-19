@@ -6,6 +6,10 @@ import tech.tablesaw.api.DoubleColumn;
 
 import static java.lang.Math.*;
 
+/**
+ * The class {@code GAUSSIAN_MF} is Generalized Gaussian function fuzzy membership generator.
+ * 
+ */
 public class Gaussian_MF extends MembershipFunction {
     /**
      *
@@ -16,6 +20,11 @@ public class Gaussian_MF extends MembershipFunction {
     @Expose
     private Double deviation;
 
+    /**
+     * 
+     * @param center
+     * @param deviation
+     */
     public Gaussian_MF(Double center, Double deviation) {
         this.center = center;
         this.deviation = deviation;
