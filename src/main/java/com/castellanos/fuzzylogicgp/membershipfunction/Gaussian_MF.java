@@ -38,7 +38,7 @@ public class Gaussian_MF extends MembershipFunction {
     }
 
     @Override
-    public double deriv(double value, String partial_parameter){
+    public Double partialDerivate(double value, String partial_parameter){
         if(partial_parameter.equals("deviation"))
             return  (2./pow(center,3)) * exp(-((pow(value-center,2))/pow(deviation,2)))*pow(value-deviation,2);
         else if (partial_parameter.equals("center"))

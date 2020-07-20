@@ -67,7 +67,7 @@ public class GBELL_MF extends MembershipFunction {
      * @return {@code y = 1 / (1 + abs([x - c] / a) ** [2 * b])}
      */
     @Override
-    public double deriv(double value, String partial_parameter){
+    public Double partialDerivate(double value, String partial_parameter){
         if (partial_parameter.equals("width"))
             return (2. * slope * pow((center-value),2) * pow(abs((center-value)/width), ((2 * slope) - 2))) / (pow(width, 3) * pow((pow(abs((center-value)/width),(2*slope)) + 1), 2));
         else if(partial_parameter.equals("slope"))
