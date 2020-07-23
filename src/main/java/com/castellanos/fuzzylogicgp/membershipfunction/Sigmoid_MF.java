@@ -6,7 +6,7 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
-
+import static java.lang.Math.*;
 import tech.tablesaw.api.DoubleColumn;
 
 /**
@@ -39,6 +39,14 @@ public class Sigmoid_MF extends MembershipFunction {
     @Override
     public String toString() {
         return "sigmoid " + this.center + ", " + this.beta;
+    }
+
+    public Double partialDerivate(double value, String partial_parameter){
+        if(partial_parameter.equals("beta"))
+            return  -1 * (center * exp(center * (beta + value))) / pow((exp(beta*center) + exp(center*value)), 2);
+        else if (partial_parameter.equals("center"))
+            return ((value - beta) * exp(center * (value - beta))) / pow((exp(center * (value - center))) + 1, 2);
+        else return 0.0;
     }
 
     @Override
