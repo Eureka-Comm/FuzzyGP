@@ -18,6 +18,11 @@ public class ZForm_MF extends MembershipFunction {
     @Expose
     private Double b;
 
+    @Override
+    public boolean isValid() {
+        return !(a == null || b == null);
+    }
+
     public ZForm_MF(Double a, Double b) {
         this.a = a;
         this.b = b;

@@ -104,5 +104,8 @@ public class GAMMA_MF extends MembershipFunction {
             return false;
         return true;
     }
-
+    @Override
+    public boolean isValid() {
+        return !(a == null || b == null);
+    }
 }

@@ -14,7 +14,10 @@ public class LTRAPEZOIDAL_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
-
+    @Override
+    public boolean isValid() {
+        return!(a==null || b == null);
+    }
     public LTRAPEZOIDAL_MF(Double a, Double b) {
         this.a = a;
         this.b = b;

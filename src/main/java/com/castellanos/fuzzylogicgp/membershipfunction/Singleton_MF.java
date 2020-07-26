@@ -97,5 +97,6 @@ public class Singleton_MF extends MembershipFunction {
         }
         return yColumn;
     }
+    
 
 }

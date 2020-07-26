@@ -21,7 +21,11 @@ public class GBELL_MF extends MembershipFunction {
     private Double slope;
     @Expose
     private Double center;
-
+    
+    @Override
+    public boolean isValid() {
+        return !(width== null || slope== null || center ==null );
+    }
     /**
      * Parameters
      * @param width Double

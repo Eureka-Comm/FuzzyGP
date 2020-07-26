@@ -20,9 +20,14 @@ public class NSigmoid_MF extends MembershipFunction {
      */
     private static final long serialVersionUID = -3118936100100373869L;
     @Expose
-    private double center;
+    private Double center;
     @Expose
-    private double beta;
+    private Double beta;
+
+    @Override
+    public boolean isValid() {
+        return !( center == null || beta == null);
+    }
 
     public NSigmoid_MF(double center, double beta) {
         this.center = center;
@@ -56,7 +61,7 @@ public class NSigmoid_MF extends MembershipFunction {
         return one.min(one.divide(one.add(vexp), MathContext.DECIMAL128));*/
     }
 
-    public double getCenter() {
+    public Double getCenter() {
         return center;
     }
 
@@ -64,7 +69,7 @@ public class NSigmoid_MF extends MembershipFunction {
         this.center = center;
     }
 
-    public double getBeta() {
+    public Double getBeta() {
         return beta;
     }
 

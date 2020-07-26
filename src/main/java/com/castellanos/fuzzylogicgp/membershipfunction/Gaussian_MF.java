@@ -123,5 +123,9 @@ public class Gaussian_MF extends MembershipFunction {
     public Object clone() throws CloneNotSupportedException {
         return new Gaussian_MF(center, deviation);
     }
+    @Override
+    public boolean isValid() {
+        return !(center == null || deviation == null);
+    }
 
 }

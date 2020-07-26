@@ -18,6 +18,10 @@ public class Trapezoidal_MF extends MembershipFunction {
     @Expose
     private Double d;
 
+    @Override
+    public boolean isValid() {
+        return!(a==null || b == null || c == null || d == null);
+    }
     public Trapezoidal_MF(Double a, Double b, Double c, Double d) {
         this.a = a;
         this.b = b;

@@ -14,6 +14,10 @@ public class LGAMMA_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
+    @Override
+    public boolean isValid() {
+        return!(a==null || b == null);
+    }
 
     public LGAMMA_MF(double a, double b) {
         this.a = a;

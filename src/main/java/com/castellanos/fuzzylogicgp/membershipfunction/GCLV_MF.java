@@ -22,7 +22,10 @@ public class GCLV_MF extends MembershipFunction {
     private Double beta;
     @Expose
     private Integer m;
-
+    @Override
+    public boolean isValid() {
+        return!(L == null || beta == null || gamma == null || m == null);
+    }
     public GCLV_MF(String L, String gamma, String beta, String m){
         this.L = Integer.parseInt(L);
         this.gamma = Double.parseDouble(gamma);

@@ -15,6 +15,11 @@ public class PSEUDOEXP_MF extends MembershipFunction {
     @Expose
     private Double deviation;
 
+    @Override
+    public boolean isValid() {
+        return!(center == null|| deviation == null);
+    }
+
     public PSEUDOEXP_MF(Double center, Double deviation) {
         this.center = center;
         this.deviation = deviation;

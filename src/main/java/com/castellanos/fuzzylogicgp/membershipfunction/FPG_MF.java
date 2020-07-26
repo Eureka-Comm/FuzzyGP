@@ -165,4 +165,8 @@ public class FPG_MF extends MembershipFunction {
         }
         return yColumn;
     }
+    @Override
+    public boolean isValid() {
+        return !(gamma==null || beta == null|| m == null);
+    }
 }

@@ -15,6 +15,10 @@ public class Triangular_MF extends MembershipFunction {
     private Double b;
     @Expose
     private Double c;
+    @Override
+    public boolean isValid() {
+        return!(a==null || b == null||c == null);
+    }
 
     public Triangular_MF(String a, String b, String c) {
         this.a = Double.parseDouble(a);
