@@ -2,11 +2,13 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.columns.Column;
 import static java.lang.Math.*;
 
 /**
- * The class {@code GBELL_MF} is Generalized Bell function fuzzy membership generator.
+ * The class {@code GBELL_MF} is Generalized Bell function fuzzy membership
+ * generator.
  * 
  */
 public class GBELL_MF extends MembershipFunction {
@@ -15,99 +17,102 @@ public class GBELL_MF extends MembershipFunction {
      *
      */
     private static final long serialVersionUID = 1421421626L;
-    @Expose 
+    @Expose
     private Double width;
     @Expose
     private Double slope;
     @Expose
     private Double center;
-    
+
     @Override
     public boolean isValid() {
-        return !(width== null || slope== null || center ==null );
+        return !(width == null || slope == null || center == null);
     }
+
     /**
      * Parameters
-     * @param width Double
-     * Bell function parameter controlling width. See Note for definition.
-     * @param slope Double
-     * Bell function parameter controlling slope. See Note for definition.
-     * @param center Double
-     * Bell function parameter defining the center. See Note for definition.
+     * 
+     * @param width  Double Bell function parameter controlling width. See Note for
+     *               definition.
+     * @param slope  Double Bell function parameter controlling slope. See Note for
+     *               definition.
+     * @param center Double Bell function parameter defining the center. See Note
+     *               for definition.
      */
-    public GBELL_MF(Double width, Double slope, Double center){
+    public GBELL_MF(Double width, Double slope, Double center) {
         this.width = width;
         this.slope = slope;
         this.center = center;
         this.setType(MembershipFunctionType.GBELL);
     }
-   
 
     /**
      * Parameters
-     * @param width Double
-     * Bell function parameter controlling width.
-     * @param slope Double
-     * Bell function parameter controlling slope. 
-     * @param center Double
-     * Bell function parameter defining the center.
+     * 
+     * @param width  Double Bell function parameter controlling width.
+     * @param slope  Double Bell function parameter controlling slope.
+     * @param center Double Bell function parameter defining the center.
      */
-    public GBELL_MF(String width, String slope, String center){
+    public GBELL_MF(String width, String slope, String center) {
         this.width = Double.parseDouble(width);
         this.slope = Double.parseDouble(slope);
         this.center = Double.parseDouble(center);
         this.setType(MembershipFunctionType.GBELL);
     }
 
-    public GBELL_MF(){
+    public GBELL_MF() {
         this.setType(MembershipFunctionType.GBELL);
     }
 
     /**
-     * Returns
-     * {@code y} : 1d array
-     * Generalized Bell fuzzy membership function.
+     * Returns {@code y} : 1d array Generalized Bell fuzzy membership function.
      *
      * Definition of Generalized Bell function is:
+     * 
      * @return {@code y = 1 / (1 + abs([x - c] / a) ** [2 * b])}
      */
     @Override
-    public Double partialDerivate(double value, String partial_parameter){
+    public Double partialDerivate(double value, String partial_parameter) {
         if (partial_parameter.equals("width"))
-            return (2. * slope * pow((center-value),2) * pow(abs((center-value)/width), ((2 * slope) - 2))) / (pow(width, 3) * pow((pow(abs((center-value)/width),(2*slope)) + 1), 2));
-        else if(partial_parameter.equals("slope"))
-            return -1 * (2 * pow(abs((center-value)/width), (2 * slope)) * log(abs((center-value)/width))) /(pow((pow(abs((center-value)/width), (2 * slope)) + 1), 2));
+            return (2. * slope * pow((center - value), 2) * pow(abs((center - value) / width), ((2 * slope) - 2)))
+                    / (pow(width, 3) * pow((pow(abs((center - value) / width), (2 * slope)) + 1), 2));
+        else if (partial_parameter.equals("slope"))
+            return -1 * (2 * pow(abs((center - value) / width), (2 * slope)) * log(abs((center - value) / width)))
+                    / (pow((pow(abs((center - value) / width), (2 * slope)) + 1), 2));
         else if (partial_parameter.equals("center"))
-            return (2. * slope * (center-value) * pow(abs((center-value)/width), ((2 * slope) - 2))) /(pow(width, 2) * pow((pow(abs((center-value)/width),(2*slope)) + 1), 2));
-        else return 0.0;
+            return (2. * slope * (center - value) * pow(abs((center - value) / width), ((2 * slope) - 2)))
+                    / (pow(width, 2) * pow((pow(abs((center - value) / width), (2 * slope)) + 1), 2));
+        else
+            return 0.0;
     }
 
     @Override
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-        return 1. / (1. + pow(abs((v - center) / width),(2 * slope)));
+        return 1. / (1. + pow(abs((v - center) / width), (2 * slope)));
     }
 
-    public void setWidth(Double width){
+    public void setWidth(Double width) {
         this.width = width;
     }
-    public void setSlope(Double slope){
+
+    public void setSlope(Double slope) {
         this.slope = slope;
     }
 
-    public void setCenter(Double center){
+    public void setCenter(Double center) {
         this.center = center;
     }
 
-    public Double getWidth(){
+    public Double getWidth() {
         return this.width;
     }
 
-    public Double getSlope(){
+    public Double getSlope() {
         return this.slope;
     }
 
-    public Double getCenter(){
+    public Double getCenter() {
         return this.center;
     }
 
@@ -160,14 +165,20 @@ public class GBELL_MF extends MembershipFunction {
 
     @Override
     public Column yPoints() {
-        // TODO Auto-generated method stub
-        return null;
+        DoubleColumn column = DoubleColumn.create("y column");
+        for (double i = 0; i < width + center; i += 0.1) {
+            column.append(evaluate(i));
+        }
+        return column;
     }
 
     @Override
     public Column xPoints() {
-        // TODO Auto-generated method stub
-        return null;
+        DoubleColumn column = DoubleColumn.create("x column");
+        for (double i = 0; i < width + center; i += 0.1) {
+            column.append((i));
+        }
+        return column;
     }
-    
+
 }

@@ -41,7 +41,7 @@ public class GAMMA_MF extends MembershipFunction {
     @Override
     public Column yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b * a; i += 0.01) {
+        for (double i = 0; i < b * a; i += 0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
@@ -50,7 +50,7 @@ public class GAMMA_MF extends MembershipFunction {
     @Override
     public Column xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b * a; i += 0.01) {
+        for (double i = 0; i < b * a; i += 0.1) {
             xColumn.append(i);
         }
         return xColumn;

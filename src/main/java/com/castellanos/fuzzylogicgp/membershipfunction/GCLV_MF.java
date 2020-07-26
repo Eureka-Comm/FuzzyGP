@@ -6,6 +6,7 @@ import com.castellanos.fuzzylogicgp.logic.ACF_Logic;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.google.gson.annotations.Expose;
 
+import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.columns.Column;
 
 /**
@@ -15,26 +16,26 @@ import tech.tablesaw.columns.Column;
 public class GCLV_MF extends MembershipFunction {
     private static final long serialVersionUID = -2109037051439575667L; // reemplazar por el UID
     @Expose
-    private Integer L;
+    private Double L;
     @Expose
     private Double gamma;
     @Expose
     private Double beta;
     @Expose
-    private Integer m;
+    private Double m;
     @Override
     public boolean isValid() {
         return!(L == null || beta == null || gamma == null || m == null);
     }
     public GCLV_MF(String L, String gamma, String beta, String m){
-        this.L = Integer.parseInt(L);
+        this.L = Double.parseDouble(L);
         this.gamma = Double.parseDouble(gamma);
         this.beta = Double.parseDouble(beta);
-        this.m = Integer.parseInt(m);
+        this.m = Double.parseDouble(m);
         this.setType(MembershipFunctionType.GCLV);
     }
 
-    public GCLV_MF(Integer L, Double gamma, Double beta, Integer m) {
+    public GCLV_MF(Double L, Double gamma, Double beta, Double m) {
         this.L = L;
         this.gamma = gamma;
         this.beta = beta;
@@ -58,11 +59,11 @@ public class GCLV_MF extends MembershipFunction {
         return super.evaluate(v);
     }
 
-    public Integer getL(){
+    public Double getL(){
         return L;
     }
 
-    public void setL(Integer L){
+    public void setL(Double L){
         this.L = L;
     }
 
@@ -82,11 +83,11 @@ public class GCLV_MF extends MembershipFunction {
         this.beta = beta;
     }
 
-    public Integer getM() {
+    public Double getM() {
         return m;
     }
 
-    public void setM(Integer m) {
+    public void setM(Double m) {
         this.m = m;
     }
 
@@ -144,14 +145,20 @@ public class GCLV_MF extends MembershipFunction {
 
     @Override
     public Column yPoints() {
-        // TODO Auto-generated method stub
+        DoubleColumn column = DoubleColumn.create("y column");
+        for (double i = 0; i < gamma*2; i+=0.1) {
+            column.append(evaluate(i));
+        }
         return null;
     }
 
     @Override
     public Column xPoints() {
-        // TODO Auto-generated method stub
-        return null;
+        DoubleColumn column = DoubleColumn.create("x column");
+        for (double i = 0; i < gamma*2; i+=0.1) {
+            column.append(i);
+        }
+        return column;
     }
 
 
