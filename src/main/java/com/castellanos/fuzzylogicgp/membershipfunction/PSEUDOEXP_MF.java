@@ -19,7 +19,9 @@ public class PSEUDOEXP_MF extends MembershipFunction {
     public boolean isValid() {
         return!(center == null|| deviation == null);
     }
-
+    public PSEUDOEXP_MF(){
+        this.setType(MembershipFunctionType.PSEUDOEXP);
+    }
     public PSEUDOEXP_MF(Double center, Double deviation) {
         this.center = center;
         this.deviation = deviation;

@@ -41,6 +41,7 @@ public class GBELL_MF extends MembershipFunction {
         this.center = center;
         this.setType(MembershipFunctionType.GBELL);
     }
+   
 
     /**
      * Parameters

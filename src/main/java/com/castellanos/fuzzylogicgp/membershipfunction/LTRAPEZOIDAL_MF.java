@@ -29,6 +29,9 @@ public class LTRAPEZOIDAL_MF extends MembershipFunction {
         this.b = Double.valueOf(b);
         this.setType(MembershipFunctionType.LTRAPEZOIDAL);
     }
+    public LTRAPEZOIDAL_MF(){
+        this.setType(MembershipFunctionType.LTRAPEZOIDAL);
+    }
 
     @Override
     public double evaluate(Number value) {

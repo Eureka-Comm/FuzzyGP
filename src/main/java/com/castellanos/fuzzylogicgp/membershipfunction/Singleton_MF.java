@@ -20,12 +20,15 @@ public class Singleton_MF extends MembershipFunction {
      */
     private static final long serialVersionUID = -4595317229883563585L;
     @Expose
-    private double a;
+    private Double a;
 
     public Singleton_MF(double a) {        
         this.a = a;
         this.setType(MembershipFunctionType.SINGLETON);
 
+    }
+    public Singleton_MF(){
+        this.setType(MembershipFunctionType.SINGLETON);
     }
 
     public double getA() {
@@ -38,6 +41,8 @@ public class Singleton_MF extends MembershipFunction {
 
     @Override
     public boolean isValid() {
+        if(a==null)
+        return false;
         return !(a > 1.0 || a < 0.0);
     }
 

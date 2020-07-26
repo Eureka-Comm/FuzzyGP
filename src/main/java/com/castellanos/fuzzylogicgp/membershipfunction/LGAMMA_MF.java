@@ -30,6 +30,9 @@ public class LGAMMA_MF extends MembershipFunction {
         this.b = Double.valueOf(b);
         this.setType(MembershipFunctionType.LGAMMA);
     }
+    public LGAMMA_MF(){
+        this.setType(MembershipFunctionType.LGAMMA);
+    }
 
     @Override
     public double evaluate(Number value) {

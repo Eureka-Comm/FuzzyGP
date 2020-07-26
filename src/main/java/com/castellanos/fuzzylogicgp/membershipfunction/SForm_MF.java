@@ -34,6 +34,9 @@ public class SForm_MF extends MembershipFunction {
         this.b = Double.parseDouble(b);
         this.setType(MembershipFunctionType.SFORM);
     }
+    public SForm_MF(){
+        this.setType(MembershipFunctionType.SFORM);
+    }
 
     @Override
     public double evaluate(Number value) {

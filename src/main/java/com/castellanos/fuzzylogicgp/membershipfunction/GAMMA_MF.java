@@ -14,7 +14,10 @@ public class GAMMA_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
-
+    
+    public GAMMA_MF(){
+        this.setType(MembershipFunctionType.GAMMA);
+    }
     public GAMMA_MF(double a, double b) {
         this.a = a;
         this.b = b;

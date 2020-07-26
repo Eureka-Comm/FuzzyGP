@@ -18,6 +18,9 @@ public class RTRAPEZOIDAL_MF extends MembershipFunction {
     public boolean isValid() {
         return!(a==null || b == null);
     }
+    public RTRAPEZOIDAL_MF(){
+        this.setType(MembershipFunctionType.RTRAPEZOIDAL);
+    }
     public RTRAPEZOIDAL_MF(Double a, Double b) {
         this.a = a;
         this.b = b;

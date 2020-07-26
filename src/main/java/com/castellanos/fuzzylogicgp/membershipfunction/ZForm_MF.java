@@ -22,6 +22,9 @@ public class ZForm_MF extends MembershipFunction {
     public boolean isValid() {
         return !(a == null || b == null);
     }
+    public ZForm_MF(){
+        this.setType(MembershipFunctionType.ZFORM);
+    }
 
     public ZForm_MF(Double a, Double b) {
         this.a = a;

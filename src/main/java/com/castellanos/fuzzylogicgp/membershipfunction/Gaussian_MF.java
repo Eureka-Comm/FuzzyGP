@@ -20,6 +20,9 @@ public class Gaussian_MF extends MembershipFunction {
     @Expose
     private Double deviation;
 
+    public Gaussian_MF(){
+        this.setType(MembershipFunctionType.GAUSSIAN);
+    }
     /**
      * 
      * @param center

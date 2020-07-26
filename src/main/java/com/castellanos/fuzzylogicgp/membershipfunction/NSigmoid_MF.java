@@ -40,7 +40,9 @@ public class NSigmoid_MF extends MembershipFunction {
         this.beta = Double.parseDouble(beta);
         this.setType(MembershipFunctionType.NSIGMOID);
     }
-
+    public NSigmoid_MF(){
+        this.setType(MembershipFunctionType.NSIGMOID);
+    }
     @Override
     public String toString() {
         return "nsigmoid " + this.center + ", " + this.beta;

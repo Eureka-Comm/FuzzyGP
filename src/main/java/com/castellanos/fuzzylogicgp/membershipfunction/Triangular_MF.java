@@ -19,6 +19,9 @@ public class Triangular_MF extends MembershipFunction {
     public boolean isValid() {
         return!(a==null || b == null||c == null);
     }
+    public Triangular_MF(){
+        this.setType(MembershipFunctionType.TRIANGULAR);
+    }
 
     public Triangular_MF(String a, String b, String c) {
         this.a = Double.parseDouble(a);

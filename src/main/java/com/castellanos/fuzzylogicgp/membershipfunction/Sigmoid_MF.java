@@ -34,6 +34,9 @@ public class Sigmoid_MF extends MembershipFunction {
         this.beta = beta;
         this.setType(MembershipFunctionType.SIGMOID);
     }
+    public Sigmoid_MF(){
+        this.setType(MembershipFunctionType.SIGMOID);
+    }
 
     public Sigmoid_MF( String center,  String beta) {
         this.center = Double.parseDouble(center );

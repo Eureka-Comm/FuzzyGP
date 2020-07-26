@@ -37,6 +37,9 @@ public class Trapezoidal_MF extends MembershipFunction {
         this.d = Double.parseDouble(d);
         this.setType(MembershipFunctionType.TRAPEZOIDAL);
     }
+    public Trapezoidal_MF(){
+        this.setType(MembershipFunctionType.TRAPEZOIDAL);
+    }
 
     @Override
 

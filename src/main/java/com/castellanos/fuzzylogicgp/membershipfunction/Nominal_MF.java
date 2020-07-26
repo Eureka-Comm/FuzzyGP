@@ -25,6 +25,9 @@ public class Nominal_MF extends MembershipFunction {
         this.value = value;
         this.setType(MembershipFunctionType.NOMINAL);
     }
+    public Nominal_MF(){
+        this.setType(MembershipFunctionType.NOMINAL);
+    }
 
     @Override
     public boolean isValid() {
