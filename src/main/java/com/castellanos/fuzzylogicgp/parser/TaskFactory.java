@@ -36,13 +36,17 @@ public class TaskFactory {
                 parserPredicate = new ParserPredicate(query.getPredicate(), query.getStates(), new ArrayList<>());
                 p = parserPredicate.parser();
                 EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, query.getDb_uri(), query.getOut_file());
-                evaluator.evaluate();
+                double forall = evaluator.evaluate();
+                System.out.println("For all: "+forall);
+                
                 evaluator.exportToCsv();
+            
                 if (((EvaluationQuery) query).isShowTree()) {
                     String stP = new File(query.getOut_file()).getParent();
                     if (stP == null)
                         stP = "";
-                    Path path = Paths.get(stP, "tree-" + System.currentTimeMillis() + ".json");
+                    String name = new File(query.getOut_file()).getName().replace(".xlsx", ".json").replace(".csv", ".json");
+                    Path path = Paths.get(stP, "tree-" +name);
                     Files.write(path, p.toJson().getBytes(), StandardOpenOption.CREATE_NEW);
                 }
                 break;
