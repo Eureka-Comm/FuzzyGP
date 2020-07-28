@@ -38,7 +38,7 @@ public class TaskFactory {
                 p = parserPredicate.parser();
                 EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, evaluationQuery.getDb_uri(), evaluationQuery.getOut_file());
                 double forall = evaluator.evaluate();
-                evaluationQuery.setPredicaTree(p);
+                evaluationQuery.setJsonPredicate(p.toJson());
                 System.out.println("For all: "+forall);
                 
                 evaluator.exportToCsv();
