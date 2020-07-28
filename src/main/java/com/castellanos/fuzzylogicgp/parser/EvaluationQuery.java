@@ -1,5 +1,6 @@
 package com.castellanos.fuzzylogicgp.parser;
 
+import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.google.gson.annotations.Expose;
 
 public class EvaluationQuery extends Query  {
@@ -10,6 +11,15 @@ public class EvaluationQuery extends Query  {
     private static final long serialVersionUID = 7821275859754726432L;
     @Expose
     private boolean showTree;
+    @Expose 
+    private NodeTree predicaTree;
+
+    public NodeTree getPredicaTree() {
+        return predicaTree;
+    }
+    public void setPredicaTree(NodeTree predicaTree) {
+        this.predicaTree = predicaTree;
+    }
     public EvaluationQuery() {
         setType(TaskType.EVALUATION);
     }
