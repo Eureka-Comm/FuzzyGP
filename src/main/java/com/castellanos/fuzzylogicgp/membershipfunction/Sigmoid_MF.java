@@ -20,13 +20,21 @@ public class Sigmoid_MF extends MembershipFunction {
      */
     private static final long serialVersionUID = 8054075265710944588L;
     @Expose
-    private double center;
+    private Double center;
     @Expose
-    private double beta;
+    private Double beta;
+
+    @Override
+    public boolean isValid() {
+        return !(center == null|| beta == null);
+    }
 
     public Sigmoid_MF( double center,  double beta) {
         this.center = center;
         this.beta = beta;
+        this.setType(MembershipFunctionType.SIGMOID);
+    }
+    public Sigmoid_MF(){
         this.setType(MembershipFunctionType.SIGMOID);
     }
 
@@ -114,7 +122,7 @@ public class Sigmoid_MF extends MembershipFunction {
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*2; i+=0.01) {
+        for (double i = 0; i < center*2; i+=0.1) {
             xColumn.append(i);
         }
         return xColumn;
@@ -122,7 +130,7 @@ public class Sigmoid_MF extends MembershipFunction {
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < center*2; i+=0.01) {
+        for (double i = 0; i < center*2; i+=0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;

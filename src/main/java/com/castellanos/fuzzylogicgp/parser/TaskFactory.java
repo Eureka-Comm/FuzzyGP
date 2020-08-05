@@ -33,16 +33,22 @@ public class TaskFactory {
         Logic logic = getLogic(query);
         switch (query.getType()) {
             case EVALUATION:
-                parserPredicate = new ParserPredicate(query.getPredicate(), query.getStates(), new ArrayList<>());
+                EvaluationQuery evaluationQuery = (EvaluationQuery) query;
+                parserPredicate = new ParserPredicate(evaluationQuery.getPredicate(), evaluationQuery.getStates(), new ArrayList<>());
                 p = parserPredicate.parser();
-                EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, query.getDb_uri(), query.getOut_file());
-                evaluator.evaluate();
+                EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, evaluationQuery.getDb_uri(), evaluationQuery.getOut_file());
+                double forall = evaluator.evaluate();
+                evaluationQuery.setJsonPredicate(p.toJson());
+                System.out.println("For all: "+forall);
+                
                 evaluator.exportToCsv();
+            
                 if (((EvaluationQuery) query).isShowTree()) {
                     String stP = new File(query.getOut_file()).getParent();
                     if (stP == null)
                         stP = "";
-                    Path path = Paths.get(stP, "tree-" + System.currentTimeMillis() + ".json");
+                    String name = new File(query.getOut_file()).getName().replace(".xlsx", ".json").replace(".csv", ".json");
+                    Path path = Paths.get(stP, "tree-" +name);
                     Files.write(path, p.toJson().getBytes(), StandardOpenOption.CREATE_NEW);
                 }
                 break;

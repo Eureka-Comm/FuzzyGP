@@ -14,6 +14,10 @@ public class LGAMMA_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
+    @Override
+    public boolean isValid() {
+        return!(a==null || b == null);
+    }
 
     public LGAMMA_MF(double a, double b) {
         this.a = a;
@@ -24,6 +28,9 @@ public class LGAMMA_MF extends MembershipFunction {
     public LGAMMA_MF(String a, String b) {
         this.a = Double.valueOf(a);
         this.b = Double.valueOf(b);
+        this.setType(MembershipFunctionType.LGAMMA);
+    }
+    public LGAMMA_MF(){
         this.setType(MembershipFunctionType.LGAMMA);
     }
 
@@ -38,7 +45,7 @@ public class LGAMMA_MF extends MembershipFunction {
     @Override
     public Column yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b * a; i += 0.01) {
+        for (double i = 0; i < b * a; i += 0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
@@ -47,7 +54,7 @@ public class LGAMMA_MF extends MembershipFunction {
     @Override
     public Column xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b * a; i += 0.01) {
+        for (double i = 0; i < b * a; i += 0.1) {
             xColumn.append(i);
         }
         return xColumn;

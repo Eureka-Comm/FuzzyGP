@@ -18,6 +18,10 @@ public class Trapezoidal_MF extends MembershipFunction {
     @Expose
     private Double d;
 
+    @Override
+    public boolean isValid() {
+        return!(a==null || b == null || c == null || d == null);
+    }
     public Trapezoidal_MF(Double a, Double b, Double c, Double d) {
         this.a = a;
         this.b = b;
@@ -31,6 +35,9 @@ public class Trapezoidal_MF extends MembershipFunction {
         this.b = Double.parseDouble(b);
         this.c = Double.parseDouble(c);
         this.d = Double.parseDouble(d);
+        this.setType(MembershipFunctionType.TRAPEZOIDAL);
+    }
+    public Trapezoidal_MF(){
         this.setType(MembershipFunctionType.TRAPEZOIDAL);
     }
 
@@ -92,7 +99,7 @@ public class Trapezoidal_MF extends MembershipFunction {
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b + d; i += 0.01) {
+        for (double i = 0; i < b + d; i += 0.1) {
             xColumn.append(i);
         }
         return xColumn;
@@ -101,7 +108,7 @@ public class Trapezoidal_MF extends MembershipFunction {
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b + d; i += 0.01) {
+        for (double i = 0; i < b + d; i += 0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;

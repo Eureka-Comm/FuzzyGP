@@ -20,6 +20,9 @@ public class Gaussian_MF extends MembershipFunction {
     @Expose
     private Double deviation;
 
+    public Gaussian_MF(){
+        this.setType(MembershipFunctionType.GAUSSIAN);
+    }
     /**
      * 
      * @param center
@@ -54,7 +57,7 @@ public class Gaussian_MF extends MembershipFunction {
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < center*2; i+=0.01) {
+        for (double i = 0; i < center*2; i+=0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
@@ -63,7 +66,7 @@ public class Gaussian_MF extends MembershipFunction {
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn yColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*2; i+=0.01) {
+        for (double i = 0; i < center*2; i+=0.1) {
             yColumn.append(i);
         }
         return yColumn;
@@ -122,6 +125,10 @@ public class Gaussian_MF extends MembershipFunction {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new Gaussian_MF(center, deviation);
+    }
+    @Override
+    public boolean isValid() {
+        return !(center == null || deviation == null);
     }
 
 }

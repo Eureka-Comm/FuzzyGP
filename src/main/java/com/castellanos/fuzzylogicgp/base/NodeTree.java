@@ -241,7 +241,7 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
     }
 
     public String toJson() {
-        GsonBuilder gson = new GsonBuilder().setPrettyPrinting();
+        GsonBuilder gson = new GsonBuilder();
         return gson.create().toJson(this);
     }
 

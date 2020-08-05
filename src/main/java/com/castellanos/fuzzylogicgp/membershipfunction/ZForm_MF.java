@@ -18,6 +18,14 @@ public class ZForm_MF extends MembershipFunction {
     @Expose
     private Double b;
 
+    @Override
+    public boolean isValid() {
+        return !(a == null || b == null);
+    }
+    public ZForm_MF(){
+        this.setType(MembershipFunctionType.ZFORM);
+    }
+
     public ZForm_MF(Double a, Double b) {
         this.a = a;
         this.b = b;
@@ -102,7 +110,7 @@ public class ZForm_MF extends MembershipFunction {
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b * 2; i += 0.01) {
+        for (double i = 0; i < b * 2; i += 0.1) {
             xColumn.append(i);
         }
         return xColumn;
@@ -111,7 +119,7 @@ public class ZForm_MF extends MembershipFunction {
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b * 2; i += 0.01) {
+        for (double i = 0; i < b * 2; i += 0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
