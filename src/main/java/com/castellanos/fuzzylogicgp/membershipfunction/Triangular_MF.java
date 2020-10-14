@@ -125,14 +125,14 @@ public class Triangular_MF extends MembershipFunction {
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
         if (!b.equals(c)) {
-            for (double i = a - a / 2; i <= b + c / 2; i += 0.01) {
+            for (double i = a - a / 2; i <= c; i += 0.01) {
                 xColumn.append(i);
             }
         } else {
-            for (double i = a - a / 2; i < b; i += 0.01) {
+            for (double i = a - a / 2; i <= c; i += 0.01) {
                 xColumn.append(i);
             }
-            for (double i = a - a / 2; i < b; i += 0.01) {
+            for (double i = 0; i <= c; i += 0.01) {
                 xColumn.append(b);
             }
         }
@@ -143,14 +143,14 @@ public class Triangular_MF extends MembershipFunction {
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
         if (!b.equals(c)) {
-            for (double i = a - a / 2; i <= b + c / 2; i += 0.01) {
+            for (double i = a - a / 2; i <= c; i += 0.01) {
                 yColumn.append(this.evaluate(i));
             }
         }else{
-            for (double i = a - a / 2; i < b; i += 0.01) {
+            for (double i = a - a / 2; i <= b; i += 0.01) {
                 yColumn.append(i);
             }
-            for (double i =0; i <=1; i += 0.01) {
+            for (double i =0; i <=b; i += 0.01) {
                 yColumn.append(i);
             }
         }
