@@ -35,8 +35,9 @@ public class Examples {
         StateNode node = new StateNode("dummy","dummy");
         MembershipFunction mf = new FPG_MF(1.9604408277229095,1.9649108603405534,0.4111713336297085);
        //mf = new FPG_MF(1952.94681253064,4582.599891699062,0.26771988761419474);
-        mf = new Sigmoid_MF(5.5,4);
-        mf = new Triangular_MF(0.0,1.0,1.0);
+        //mf = new Sigmoid_MF(5.5,4);
+       // mf = new FPG_MF(596.4881580779418,1512.0808103003033,0.16039005160976927);
+        //mf = new Triangular_MF(0.0,1.0,1.0);
       //  mf = new Triangular_MF(3.,6.,8.);
         node.setMembershipFunction(mf);
         node.plot("","dummy");

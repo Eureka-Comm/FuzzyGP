@@ -5,14 +5,12 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import static java.lang.Math.pow;
-
 import com.google.gson.annotations.Expose;
-
 import tech.tablesaw.api.DoubleColumn;
 
+import static java.lang.Math.pow;
+
 /**
- *
  * @author hp
  */
 public class FPG_MF extends MembershipFunction {
@@ -66,15 +64,15 @@ public class FPG_MF extends MembershipFunction {
         /*
          * BigDecimal one = new BigDecimal("1", MathContext.DECIMAL128); BigDecimal
          * calc_sig = new Sigmoid(gamma, beta).evaluate(v);
-         * 
+         *
          * // Apfloat apsigm = ApfloatMath.pow(new Apfloat(calc_sig),new Apfloat(m));
          * BigDecimal bgsigm = BigDecimalMath.pow(calc_sig, m, MathContext.DECIMAL128);
-         * 
+         *
          * // Apfloat apsigmm = ApfloatMath.pow(new Apfloat(one.subtract(calc_sig)), new
          * // Apfloat(one.subtract(m))); BigDecimal bgsigmm =
          * BigDecimalMath.pow(one.subtract(calc_sig), one.subtract(m),
          * MathContext.DECIMAL128);
-         * 
+         *
          * // Apfloat M = ApfloatMath.pow(new Apfloat(m), new //
          * Apfloat(m)).multiply(ApfloatMath.pow(new Apfloat(one.subtract(m)), new //
          * Apfloat(one.subtract(m)))); BigDecimal bgM = BigDecimalMath.pow(m, m,
@@ -149,18 +147,20 @@ public class FPG_MF extends MembershipFunction {
             return false;
         return true;
     }
+
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < gamma + beta; i+= (gamma-beta)/10.0) {
+        for (double i = -gamma * 2 - beta; i < gamma * 2 + beta; i += (gamma - beta) / 50.0) {
             xColumn.append(i);
         }
         return xColumn;
     }
+
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < gamma +beta; i+= (gamma-beta)/10.0) {
+        for (double i = -gamma * 2 - beta; i < gamma * 2 + beta; i += (gamma - beta) / 50.0) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
