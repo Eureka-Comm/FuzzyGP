@@ -1,7 +1,6 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
-
 import tech.tablesaw.api.DoubleColumn;
 
 public class Triangular_MF extends MembershipFunction {
@@ -33,7 +32,22 @@ public class Triangular_MF extends MembershipFunction {
     @Override
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-        return Math.max(Math.min((v - a) / (b - a), (c - v) / (c - b)), 0);
+        double la = b - a;
+        double lb = c - b;
+        if (v <= a)
+            return 0;
+        if (a <= v && v <= b) {
+            if (la == 0)
+                return Float.NaN;
+            return (v - a) / la;
+        }
+        if (b <= v && v <= c) {
+            if (lb == 0)
+                return Float.NaN;
+            return (c - v) / lb;
+        }
+        return 0;
+
     }
 
     public Double getA() {
@@ -110,8 +124,17 @@ public class Triangular_MF extends MembershipFunction {
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b + c; i += 0.01) {
-            xColumn.append(i);
+        if (!b.equals(c)) {
+            for (double i = a - a / 2; i <= b + c / 2; i += 0.01) {
+                xColumn.append(i);
+            }
+        } else {
+            for (double i = a - a / 2; i < b; i += 0.01) {
+                xColumn.append(i);
+            }
+            for (double i = a - a / 2; i < b; i += 0.01) {
+                xColumn.append(b);
+            }
         }
         return xColumn;
     }
@@ -119,8 +142,17 @@ public class Triangular_MF extends MembershipFunction {
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b + c; i += 0.01) {
-            yColumn.append(this.evaluate(i));
+        if (!b.equals(c)) {
+            for (double i = a - a / 2; i <= b + c / 2; i += 0.01) {
+                yColumn.append(this.evaluate(i));
+            }
+        }else{
+            for (double i = a - a / 2; i < b; i += 0.01) {
+                yColumn.append(i);
+            }
+            for (double i =0; i <=1; i += 0.01) {
+                yColumn.append(i);
+            }
         }
         return yColumn;
     }
