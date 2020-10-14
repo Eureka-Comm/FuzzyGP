@@ -131,7 +131,6 @@ public class StateNode extends Node {
             DoubleColumn ydc = DoubleColumn.create("y");
             List<Integer> ret = IntStream.range(0, xPoints.size()).boxed().collect(Collectors.toList());
             Collections.shuffle(ret);
-            double j = 0., k = 0.001;
             double[] values = new double[101];
             for (int i = 0; i < values.length; i++) {
                 values[i] = i/100.0;
@@ -141,8 +140,8 @@ public class StateNode extends Node {
             boolean included_one = false;
             for (int i = 0; i < xPoints.size(); i++) {
                 double v = yPoints.get(i);
-                for (int l = 0; l < values.length-1; l++) {
-                    if(v <= values[l] && count[l]<20){
+                for (int l = 0; l < values.length; l++) {
+                    if(v > 0.00006 && v <= values[l] && count[l]<20){
                         xdc.append(xPoints.get(i));
                         ydc.append(v);
                         count[l]++;
@@ -155,7 +154,7 @@ public class StateNode extends Node {
             }
             if (!included_one){
                 int n = 0;
-                for (int i = 0; i < xPoints.size() && n < 100; i++) {
+                for (int i = 0; i < xPoints.size() && n < 200; i++) {
                     if(yPoints.get(i)<=1.0 &&  yPoints.get(i) >= 0.95 ){
                         xdc.append(xPoints.get(i));
                         ydc.append(yPoints.get(i));
@@ -163,17 +162,6 @@ public class StateNode extends Node {
                     }
                 }
             }
-            System.out.println(j + " " + ydc.size() + " " + ydc.max());
-           /* boolean inlude_1  = false;
-            for (int i = 0; i < 1000; i++) {
-                int idx = ret.get(i);
-                xdc.append(xPoints.get(idx));
-                ydc.append(yPoints.get(idx));
-                if(yPoints.get(idx) == 1.0){
-                    inlude_1 = true;
-                }
-            }
-            */
             trace = ScatterTrace.builder(xdc, ydc).build();
         }
         if (dirOutputString != null)
