@@ -1,12 +1,12 @@
 # Fuzzy Logic Java Framework
 This framework is developed in Java version 14.
 
-Logics:
+# Logics:
   * Zadeh
   * AMBC
   * GMBC
 
-Membership Functions:
+# Membership Functions:
   * Gaussian
   * Sigmoidal
   * Negative sigmoidal
@@ -24,15 +24,15 @@ Membership Functions:
   * Nominal
   * Map-Nominal
 
-Supported query types:
+# Supported query types:
   * Predicate Evaluation
   * Predicate Discovery (you can use multiple generators to substitute variables in the guide predicate).
 
-Current algorithms:
+# Current algorithms:
   * For predicate evaluation.
   * GA for optimization of FPG functions.
   * GA for predicate Discovery.
-
+# Notes
 Input datasets in CSV and XLSX format supported.
 
 Input query in JSON and EDN format.

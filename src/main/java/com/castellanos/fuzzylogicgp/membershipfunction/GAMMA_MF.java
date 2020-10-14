@@ -14,7 +14,10 @@ public class GAMMA_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
-
+    
+    public GAMMA_MF(){
+        this.setType(MembershipFunctionType.GAMMA);
+    }
     public GAMMA_MF(double a, double b) {
         this.a = a;
         this.b = b;
@@ -38,7 +41,7 @@ public class GAMMA_MF extends MembershipFunction {
     @Override
     public Column yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b * a; i += 0.01) {
+        for (double i = 0; i < b * a; i += 0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
@@ -47,7 +50,7 @@ public class GAMMA_MF extends MembershipFunction {
     @Override
     public Column xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b * a; i += 0.01) {
+        for (double i = 0; i < b * a; i += 0.1) {
             xColumn.append(i);
         }
         return xColumn;
@@ -104,5 +107,8 @@ public class GAMMA_MF extends MembershipFunction {
             return false;
         return true;
     }
-
+    @Override
+    public boolean isValid() {
+        return !(a == null || b == null);
+    }
 }

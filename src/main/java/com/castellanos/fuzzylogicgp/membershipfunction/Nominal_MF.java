@@ -25,10 +25,14 @@ public class Nominal_MF extends MembershipFunction {
         this.value = value;
         this.setType(MembershipFunctionType.NOMINAL);
     }
+    public Nominal_MF(){
+        this.setType(MembershipFunctionType.NOMINAL);
+    }
 
     @Override
     public boolean isValid() {
-        return (!(value > 1.0 || value < 0.0) && !(notFoundValue > 1.0 || notFoundValue < 0.0));
+        return !(value == null || key == null)
+                || !(value > 1.0 || value < 0.0) && !(notFoundValue > 1.0 || notFoundValue < 0.0);
     }
 
     @Override
@@ -41,8 +45,8 @@ public class Nominal_MF extends MembershipFunction {
 
     @Override
     public Column yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create(""+key);
-        for (double i = 0; i < 10; i+=0.1) {
+        DoubleColumn yColumn = DoubleColumn.create("" + key);
+        for (double i = 0; i < 10; i += 0.1) {
             yColumn.append(value);
         }
         return yColumn;
@@ -50,8 +54,8 @@ public class Nominal_MF extends MembershipFunction {
 
     @Override
     public Column xPoints() {
-        DoubleColumn xColumn =DoubleColumn.create("x column");
-        for (double i = 0; i < 10; i+=0.1) {
+        DoubleColumn xColumn = DoubleColumn.create("x column");
+        for (double i = 0; i < 10; i += 0.1) {
             xColumn.append(i);
         }
         return xColumn;

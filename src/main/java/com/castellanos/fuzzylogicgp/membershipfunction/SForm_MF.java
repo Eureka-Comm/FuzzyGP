@@ -18,6 +18,11 @@ public class SForm_MF extends MembershipFunction {
     @Expose
     private Double b;
 
+    @Override
+    public boolean isValid() {
+        return !(a == null || b == null);
+    }
+
     public SForm_MF(Double a, Double b) {
         this.a = a;
         this.b = b;
@@ -29,7 +34,9 @@ public class SForm_MF extends MembershipFunction {
         this.b = Double.parseDouble(b);
         this.setType(MembershipFunctionType.SFORM);
     }
-
+    public SForm_MF(){
+        this.setType(MembershipFunctionType.SFORM);
+    }
 
     @Override
     public double evaluate(Number value) {
@@ -43,22 +50,25 @@ public class SForm_MF extends MembershipFunction {
 
         return 1;
     }
+
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b*2; i+=0.01) {
+        for (double i = 0; i < b * 2; i += 0.1) {
             xColumn.append(i);
         }
         return xColumn;
     }
+
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b*2; i+=0.01) {
+        for (double i = 0; i < b * 2; i += 0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
     }
+
     @Override
     public String toString() {
         return String.format("[%s %f, %f]", this.type.toString(), this.a, this.b);
@@ -110,6 +120,7 @@ public class SForm_MF extends MembershipFunction {
             return false;
         return true;
     }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new SForm_MF(a, b);

@@ -10,6 +10,15 @@ public class EvaluationQuery extends Query  {
     private static final long serialVersionUID = 7821275859754726432L;
     @Expose
     private boolean showTree;
+    @Expose 
+    private String jsonPredicate;
+
+    public String getJsonPredicate() {
+        return jsonPredicate;
+    }
+    public void setJsonPredicate(String jsonPredicate) {
+        this.jsonPredicate = jsonPredicate;
+    }
     public EvaluationQuery() {
         setType(TaskType.EVALUATION);
     }

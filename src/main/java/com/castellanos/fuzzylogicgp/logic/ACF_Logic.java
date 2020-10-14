@@ -112,13 +112,17 @@ class MathOper{
     
 
 }
-public class ACF_Logic implements Logic {
+public class ACF_Logic extends Logic {
 
     private Integer L,m;
     private MathOper Mo = new MathOper();
-    public ACF_Logic(){}
+    
+    public ACF_Logic(){
+        super();
+    }
     
     public ACF_Logic(int L, int m){
+        super();
         this.L = L;
         this.m = m;
     }
@@ -136,20 +140,19 @@ public class ACF_Logic implements Logic {
 
     @Override
     public double eqv(final double v1, final double v2) {
-        // TODO Auto-generated method stub
-        return 0;
+        double rigth = imp(v1,v2);
+        double left = imp(v2,v1);
+        return Mo.invf(Mo.f(rigth,L,m)+ Mo.f(left, L, m), L, m);
     }
 
     @Override
     public double and(final double v1, final double v2) {
-        // TODO Auto-generated method stub
-        return 0;
+        return Mo.invf(( Mo.f(v1,L,m)+Mo.f(v2,L,m))/2, L, m);
     }
 
     @Override
-    public double and(final ArrayList<Double> values) {
-        // TODO Auto-generated method stub
-        return 0;
+    public double and(ArrayList<Double> values) {
+        return Mo.invf(values.stream().mapToDouble(a -> Mo.f(a,L,m)).sum()/values.size(),L,m);
     }
 
     @Override

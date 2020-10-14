@@ -42,7 +42,7 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
 
     public double evaluate(Number v){
         throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
-    }
+    }    
 
     public  double evaluate(String key){
         throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
@@ -50,6 +50,10 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
     public abstract Column yPoints();
 
     public abstract Column xPoints();
+
+    public Double partialDerivate(double value,String partial_params){
+        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    }
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();

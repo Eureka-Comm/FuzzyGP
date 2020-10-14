@@ -15,6 +15,13 @@ public class PSEUDOEXP_MF extends MembershipFunction {
     @Expose
     private Double deviation;
 
+    @Override
+    public boolean isValid() {
+        return!(center == null|| deviation == null);
+    }
+    public PSEUDOEXP_MF(){
+        this.setType(MembershipFunctionType.PSEUDOEXP);
+    }
     public PSEUDOEXP_MF(Double center, Double deviation) {
         this.center = center;
         this.deviation = deviation;
@@ -35,7 +42,7 @@ public class PSEUDOEXP_MF extends MembershipFunction {
     @Override
     public Column xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*deviation; i+=0.01) {
+        for (double i = 0; i < center*deviation; i+=0.1) {
             xColumn.append(i);
         }
         return xColumn;
@@ -43,7 +50,7 @@ public class PSEUDOEXP_MF extends MembershipFunction {
     @Override
     public Column yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*deviation; i+=0.01) {
+        for (double i = 0; i < center*deviation; i+=0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;

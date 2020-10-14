@@ -184,10 +184,10 @@ public class KDFLC {
                 iteration++;
             }
             Collections.sort(resultList, Collections.reverseOrder());
-            System.out.println("post execution: ");
+           /* System.out.println("post execution: ");
             for (int i = 0; i < population.length; i++) {
                 System.out.println(i + " " + population[i] + " " + population[i].getFitness());
-            }
+            }*/
         }
         System.out.println("Result list " + resultList.size());
         for (int i = 0; i < resultList.size(); i++) {

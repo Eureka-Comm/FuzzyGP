@@ -14,7 +14,13 @@ public class RTRAPEZOIDAL_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
-
+    @Override
+    public boolean isValid() {
+        return!(a==null || b == null);
+    }
+    public RTRAPEZOIDAL_MF(){
+        this.setType(MembershipFunctionType.RTRAPEZOIDAL);
+    }
     public RTRAPEZOIDAL_MF(Double a, Double b) {
         this.a = a;
         this.b = b;
@@ -39,7 +45,7 @@ public class RTRAPEZOIDAL_MF extends MembershipFunction {
     @Override
     public Column yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b+a; i+=0.01) {
+        for (double i = 0; i < b+a; i+=0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
@@ -48,7 +54,7 @@ public class RTRAPEZOIDAL_MF extends MembershipFunction {
     @Override
     public Column xPoints() {
         DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b+a; i+=0.01) {
+        for (double i = 0; i < b+a; i+=0.1) {
             xColumn.append(i);
         }
         return xColumn;

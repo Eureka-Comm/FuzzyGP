@@ -4,6 +4,12 @@ import com.google.gson.annotations.Expose;
 
 import tech.tablesaw.api.DoubleColumn;
 
+import static java.lang.Math.*;
+
+/**
+ * The class {@code GAUSSIAN_MF} is Generalized Gaussian function fuzzy membership generator.
+ * 
+ */
 public class Gaussian_MF extends MembershipFunction {
     /**
      *
@@ -14,6 +20,14 @@ public class Gaussian_MF extends MembershipFunction {
     @Expose
     private Double deviation;
 
+    public Gaussian_MF(){
+        this.setType(MembershipFunctionType.GAUSSIAN);
+    }
+    /**
+     * 
+     * @param center
+     * @param deviation
+     */
     public Gaussian_MF(Double center, Double deviation) {
         this.center = center;
         this.deviation = deviation;
@@ -26,6 +40,14 @@ public class Gaussian_MF extends MembershipFunction {
         this.setType(MembershipFunctionType.GAUSSIAN);
     }
 
+    @Override
+    public Double partialDerivate(double value, String partial_parameter){
+        if(partial_parameter.equals("deviation"))
+            return  (2./pow(center,3)) * exp(-((pow(value-center,2))/pow(deviation,2)))*pow(value-deviation,2);
+        else if (partial_parameter.equals("center"))
+            return (2./pow(deviation,2)) * exp(-((pow(value-center,2))/pow(deviation,2)))*(value-center);
+        else return 0.0;
+    }
 
     @Override
     public double evaluate(Number value) {
@@ -35,7 +57,7 @@ public class Gaussian_MF extends MembershipFunction {
     @Override
     public DoubleColumn yPoints() {
         DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < center*2; i+=0.01) {
+        for (double i = 0; i < center*2; i+=0.1) {
             yColumn.append(this.evaluate(i));
         }
         return yColumn;
@@ -44,7 +66,7 @@ public class Gaussian_MF extends MembershipFunction {
     @Override
     public DoubleColumn xPoints() {
         DoubleColumn yColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*2; i+=0.01) {
+        for (double i = 0; i < center*2; i+=0.1) {
             yColumn.append(i);
         }
         return yColumn;
@@ -103,6 +125,10 @@ public class Gaussian_MF extends MembershipFunction {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new Gaussian_MF(center, deviation);
+    }
+    @Override
+    public boolean isValid() {
+        return !(center == null || deviation == null);
     }
 
 }

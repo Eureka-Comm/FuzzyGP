@@ -12,8 +12,10 @@ import java.util.List;
  * AMBC logic: https://doi.org/10.1142/S1469026811003070 -based implementation.
  * @author Castellanos-Alvarez, Alejandro.
  */
-public class AMBC_Logic implements Logic {
-
+public class AMBC_Logic extends Logic {
+    public AMBC_Logic(){
+        super();
+    }
     @Override
     public double not(double v1) {
         return 1 - v1;
