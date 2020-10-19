@@ -5,18 +5,15 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
-
 public class LTrapezoidal extends MembershipFunction {
     /**
      *
      */
     private static final long serialVersionUID = -8306412291609590562L;
     @Expose
-    private Double a;
+    protected Double a;
     @Expose
-    private Double b;
+    protected Double b;
 
     @Override
     public boolean isValid() {
@@ -38,8 +35,11 @@ public class LTrapezoidal extends MembershipFunction {
         Double v = value.doubleValue();
         if (v < a)
             return 0;
-        if (a <= v && v <= b)
+        if (a <= v && v <= b) {
+            if (b == a)
+                return Double.NaN;
             return (v - a) / (b - a);
+        }
         return 1.0;
     }
 
