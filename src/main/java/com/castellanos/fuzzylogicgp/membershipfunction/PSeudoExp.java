@@ -1,11 +1,11 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
-
-public class PSEUDOEXP_MF extends MembershipFunction {
+public class PSeudoExp extends MembershipFunction {
     /**
      *
      */
@@ -17,21 +17,17 @@ public class PSEUDOEXP_MF extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return!(center == null|| deviation == null);
-    }
-    public PSEUDOEXP_MF(){
-        this.setType(MembershipFunctionType.PSEUDOEXP);
-    }
-    public PSEUDOEXP_MF(Double center, Double deviation) {
-        this.center = center;
-        this.deviation = deviation;
-        this.setType(MembershipFunctionType.PSEUDOEXP);
+        return !(center == null || deviation == null);
     }
 
-    public PSEUDOEXP_MF(String center, String deviation) {
-        this.center = Double.valueOf(center);
-        this.deviation = Double.valueOf(deviation);
-        this.setType(MembershipFunctionType.PSEUDOEXP);
+    public PSeudoExp(Double center, Double deviation) {
+        super(MembershipFunctionType.PSEUDOEXP);
+        this.center = center;
+        this.deviation = deviation;
+    }
+
+    public PSeudoExp(String center, String deviation) {
+        this(Double.parseDouble(center), Double.parseDouble(deviation));
     }
 
     @Override
@@ -39,22 +35,7 @@ public class PSEUDOEXP_MF extends MembershipFunction {
         Double v = value.doubleValue();
         return 1.0 / (1.0 + deviation * Math.pow(v - center, 2));
     }
-    @Override
-    public Column xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*deviation; i+=0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
-    }
-    @Override
-    public Column yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*deviation; i+=0.1) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
-    }
+
     @Override
     public String toString() {
         return String.format("[%s %f, %f]", this.type, this.center, this.deviation);
@@ -93,7 +74,7 @@ public class PSEUDOEXP_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        PSEUDOEXP_MF other = (PSEUDOEXP_MF) obj;
+        PSeudoExp other = (PSeudoExp) obj;
         if (center == null) {
             if (other.center != null)
                 return false;
@@ -105,6 +86,33 @@ public class PSEUDOEXP_MF extends MembershipFunction {
         } else if (!deviation.equals(other.deviation))
             return false;
         return true;
+    }
+
+    @Override
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.abs(center - deviation) / 50;
+        double x = -center * 2 - deviation;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
+    }
+
+    @Override
+    public MembershipFunction copy() {
+        return new PSeudoExp(center, deviation);
     }
 
 }
