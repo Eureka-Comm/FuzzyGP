@@ -151,6 +151,7 @@ public class GeneratorNode extends Node {
         if (current_depth < depth) {
             if (Utils.random.nextDouble() < 0.75 || balanced) {
                 NodeTree tree = new NodeTree(operators[Utils.random.nextInt(operators.length)]);
+                tree.setEditable(true);
                 tree.setByGenerator(this.getId());
                 switch (tree.getType()) {
                     case AND:
@@ -200,6 +201,7 @@ public class GeneratorNode extends Node {
             select = states.get(Utils.random.nextInt(states.size()));
         }
         select = (StateNode) select.copy();
+        select.setEditable(true);
         select.setByGenerator(this.getId());
         return select;
     }

@@ -14,6 +14,7 @@ import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.core.EvaluatePredicate;
+import com.castellanos.fuzzylogicgp.core.GOMF;
 import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.logic.Zadeh_Logic;
@@ -33,21 +34,24 @@ public class TaskFactory {
         switch (query.getType()) {
             case EVALUATION:
                 EvaluationQuery evaluationQuery = (EvaluationQuery) query;
-                parserPredicate = new ParserPredicate(evaluationQuery.getPredicate(), evaluationQuery.getStates(), new ArrayList<>());
+                parserPredicate = new ParserPredicate(evaluationQuery.getPredicate(), evaluationQuery.getStates(),
+                        new ArrayList<>());
                 p = parserPredicate.parser();
-                EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, evaluationQuery.getDb_uri(), evaluationQuery.getOut_file());
+                EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, evaluationQuery.getDb_uri(),
+                        evaluationQuery.getOut_file());
                 double forall = evaluator.evaluate();
                 evaluationQuery.setJsonPredicate(p.toJson());
-                System.out.println("For all: "+forall);
-                
+                System.out.println("For all: " + forall);
+
                 evaluator.exportToCsv();
-            
+
                 if (((EvaluationQuery) query).isShowTree()) {
                     String stP = new File(query.getOut_file()).getParent();
                     if (stP == null)
                         stP = "";
-                    String name = new File(query.getOut_file()).getName().replace(".xlsx", ".json").replace(".csv", ".json");
-                    Path path = Paths.get(stP, "tree-" +name);
+                    String name = new File(query.getOut_file()).getName().replace(".xlsx", ".json").replace(".csv",
+                            ".json");
+                    Path path = Paths.get(stP, "tree-" + name);
                     Files.write(path, p.toJson().getBytes(), StandardOpenOption.CREATE_NEW);
                 }
                 break;
@@ -65,12 +69,18 @@ public class TaskFactory {
                     data = reader.read(options);
                 }
 
-                KDFLC discovery = new KDFLC(parserPredicate, logic,
-                        discoveryQuery.getNum_pop(), discoveryQuery.getNum_iter(), discoveryQuery.getNum_result(),
+                KDFLC discovery = new KDFLC(parserPredicate, logic, discoveryQuery.getNum_pop(),
+                        discoveryQuery.getNum_iter(), discoveryQuery.getNum_result(),
                         discoveryQuery.getMin_truth_value(), discoveryQuery.getMut_percentage(),
                         discoveryQuery.getAdj_num_pop(), discoveryQuery.getAdj_num_iter(),
                         discoveryQuery.getAdj_min_truth_value(), data);
                 discovery.execute();
+                for (int i = 0; i < discovery.getResultList().size(); i++) {
+                    NodeTree n = discovery.getResultList().get(i);
+                    double old = n.getFitness();
+                    EvaluatePredicate evaluatePredicate = new EvaluatePredicate(n, logic, data);                    
+                    System.out.printf("%d : %f <> %f : %f\n", i, old, evaluatePredicate.evaluate(), n.getFitness());
+                }
                 discovery.exportToCsv(discoveryQuery.getOut_file());
                 break;
             default:
@@ -90,7 +100,7 @@ public class TaskFactory {
                 return new ACF_Logic();
             default:
                 return null;
-            
+
         }
     }
 

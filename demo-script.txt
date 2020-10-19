@@ -1,8 +1,8 @@
 {
   "num_pop": 100,
   "num_iter": 20,
-  "num_result": 20,
-  "min_truth_value": 0.95,
+  "num_result": 50,
+  "min_truth_value": 1.0,
   "mut_percentage": 0.05,
   "adj_num_pop": 10,
   "adj_min_truth_value": 0.1,

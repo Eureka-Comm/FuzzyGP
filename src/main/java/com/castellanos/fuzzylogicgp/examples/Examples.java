@@ -155,9 +155,9 @@ public class Examples {
         query.setAdj_num_pop(10);
         query.setMut_percentage(0.05f);
         query.setNum_iter(20);
-        query.setMin_truth_value(0.95f);
+        query.setMin_truth_value((float) 1.0);
         query.setNum_pop(100);
-        query.setNum_result(20);
+        query.setNum_result(50);
         query.setAdj_num_iter(2);
         return query;
     }

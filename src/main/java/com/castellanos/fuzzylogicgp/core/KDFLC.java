@@ -133,13 +133,12 @@ public class KDFLC {
         }
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
-
+        ArrayList<Integer> toReplaceIndex = new ArrayList<>();
         for (int i = 0; i < population.length; i++) {
             if (isToDiscovery) {
                 if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                     resultList.add((NodeTree) population[i].copy());
-                    population[i] = this.createRandomInd(i);
-                    gomf.optimize(population[i]);
+                    toReplaceIndex.add(i);
                 }
             } else {
                 if (population[i].getFitness() >= min_truth_value) {
@@ -152,6 +151,15 @@ public class KDFLC {
 
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
+                for (Integer _index : toReplaceIndex) {
+                    int intents = 0;
+                    do {
+                        population[_index] = createRandomInd(_index);
+                        intents++;
+                    } while (!valid_predicate(population[_index]) && intents < 20);
+                    gomf.optimize(population[_index]);
+                }
+                toReplaceIndex.clear();
                 System.out.println("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
                 int offspring_size = population.length / 2;
                 if (offspring_size % 2 != 0) {
@@ -196,8 +204,7 @@ public class KDFLC {
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                         resultList.add((NodeTree) population[i].copy());
-                        population[i] = this.createRandomInd(i);
-                        gomf.optimize(population[i]);
+                        toReplaceIndex.add(i);
                     }
                 }
                 iteration++;
@@ -233,13 +240,36 @@ public class KDFLC {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
             try {
-                pop[i] = createRandomInd(i);
+                int intents = 0;
+                do {
+                    pop[i] = createRandomInd(i);
+                    intents++;
+                } while (!valid_predicate(pop[i]) && intents < 20);
             } catch (OperatorException e) {
                 e.printStackTrace();
             }
             // System.out.printf("ind %3d: %s\n", i, pop[i]);
         }
         return pop;
+    }
+
+    private boolean valid_predicate(NodeTree nodeTree) {
+        ArrayList<String> labels = new ArrayList<>();
+        for (Node node : nodeTree.getChildrens()) {
+            if (node instanceof NodeTree) {
+                if (!valid_predicate((NodeTree) node)) {
+                    return false;
+                }
+            } else if (node instanceof StateNode) {
+                String label = ((StateNode) node).getLabel();
+                if (!labels.contains(label)) {
+                    labels.add(label);
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private NodeTree createRandomInd(int index) throws OperatorException {
