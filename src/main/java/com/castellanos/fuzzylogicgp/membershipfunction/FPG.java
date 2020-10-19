@@ -6,14 +6,16 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
-import tech.tablesaw.api.DoubleColumn;
 
 import static java.lang.Math.pow;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author hp
  */
-public class FPG_MF extends MembershipFunction {
+public class FPG extends MembershipFunction {
 
     /**
      *
@@ -26,24 +28,23 @@ public class FPG_MF extends MembershipFunction {
     @Expose
     private Double m;
 
-    public FPG_MF(String beta, String gamma, String m) {
+    public FPG(String beta, String gamma, String m) {
+        this();
         this.gamma = Double.parseDouble(gamma);
         this.beta = Double.parseDouble(beta);
         this.m = Double.parseDouble(m);
-        this.setType(MembershipFunctionType.FPG);
     }
 
-    public FPG_MF(Double beta, Double gamma, Double m) {
+    public FPG(Double beta, Double gamma, Double m) {
+        this();
         this.beta = beta;
         this.gamma = gamma;
         this.m = m;
-        this.setType(MembershipFunctionType.FPG);
     }
 
-    public FPG_MF() {
-        this.setType(MembershipFunctionType.FPG);
+    public FPG() {
+        super(MembershipFunctionType.FPG);
     }
-
 
     @Override
     public String toString() {
@@ -52,7 +53,6 @@ public class FPG_MF extends MembershipFunction {
 
     @Override
     public double evaluate(Number v) {
-        // BigDecimal sigm, sigmm, M;
 
         double sigm, sigmm, M;
         sigm = pow(new Sigmoid_MF(gamma, beta).evaluate(v), m);
@@ -60,26 +60,6 @@ public class FPG_MF extends MembershipFunction {
         M = pow(m, m) * pow((1 - m), (1 - m));
 
         return ((sigm * sigmm) / M);
-
-        /*
-         * BigDecimal one = new BigDecimal("1", MathContext.DECIMAL128); BigDecimal
-         * calc_sig = new Sigmoid(gamma, beta).evaluate(v);
-         *
-         * // Apfloat apsigm = ApfloatMath.pow(new Apfloat(calc_sig),new Apfloat(m));
-         * BigDecimal bgsigm = BigDecimalMath.pow(calc_sig, m, MathContext.DECIMAL128);
-         *
-         * // Apfloat apsigmm = ApfloatMath.pow(new Apfloat(one.subtract(calc_sig)), new
-         * // Apfloat(one.subtract(m))); BigDecimal bgsigmm =
-         * BigDecimalMath.pow(one.subtract(calc_sig), one.subtract(m),
-         * MathContext.DECIMAL128);
-         *
-         * // Apfloat M = ApfloatMath.pow(new Apfloat(m), new //
-         * Apfloat(m)).multiply(ApfloatMath.pow(new Apfloat(one.subtract(m)), new //
-         * Apfloat(one.subtract(m)))); BigDecimal bgM = BigDecimalMath.pow(m, m,
-         * MathContext.DECIMAL128) .multiply(BigDecimalMath.pow(one.subtract(m),
-         * one.subtract(m), MathContext.DECIMAL128)); return
-         * bgsigm.multiply(bgsigmm).divide(bgM, MathContext.DECIMAL128);
-         */
     }
 
     public Double getGamma() {
@@ -107,11 +87,6 @@ public class FPG_MF extends MembershipFunction {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new FPG_MF(beta, gamma, m);
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -129,7 +104,7 @@ public class FPG_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        FPG_MF other = (FPG_MF) obj;
+        FPG other = (FPG) obj;
         if (beta == null) {
             if (other.beta != null)
                 return false;
@@ -149,20 +124,25 @@ public class FPG_MF extends MembershipFunction {
     }
 
     @Override
-    public DoubleColumn xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = -gamma * 2 - beta; i < gamma * 2 + beta; i += (gamma - beta) / 50.0) {
-            xColumn.append(i);
-        }
-        return xColumn;
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = (gamma - beta) / 50;
+        double x = -gamma * 2 - beta;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
     }
 
-    @Override
-    public DoubleColumn yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = -gamma * 2 - beta; i < gamma * 2 + beta; i += (gamma - beta) / 50.0) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
-    }
 }

@@ -54,9 +54,7 @@ public abstract class MembershipFunction implements Serializable {
         throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
     }
 
-    public abstract List<Point> getPoints(){
-
-    }
+    public abstract List<Point> getPoints();
 
     public Double partialDerivate(double value, String partial_params) {
         throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");

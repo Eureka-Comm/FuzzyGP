@@ -1,6 +1,7 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
 public class Point {
+    public static Double EPSILON = 0.00006;
     protected final double x;
     protected final double y;
 
