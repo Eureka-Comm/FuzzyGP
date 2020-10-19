@@ -1,18 +1,21 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
 import tech.tablesaw.api.DoubleColumn;
 
 /**
- * S-shaped membership function MathWorks-based implementation
+ * Z-shaped memberhip function MathWorks-based implementation
+ * 
  */
-public class SForm_MF extends MembershipFunction {
-
+public class ZForm extends MembershipFunction {
     /**
      *
      */
-    private static final long serialVersionUID = 7478244472813556676L;
+    private static final long serialVersionUID = -5343964450642686416L;
     @Expose
     private Double a;
     @Expose
@@ -23,50 +26,26 @@ public class SForm_MF extends MembershipFunction {
         return !(a == null || b == null);
     }
 
-    public SForm_MF(Double a, Double b) {
+    public ZForm(Double a, Double b) {
+        super(MembershipFunctionType.ZFORM);
         this.a = a;
         this.b = b;
-        this.setType(MembershipFunctionType.SFORM);
     }
 
-    public SForm_MF(String a, String b) {
-        this.a = Double.parseDouble(a);
-        this.b = Double.parseDouble(b);
-        this.setType(MembershipFunctionType.SFORM);
-    }
-    public SForm_MF(){
-        this.setType(MembershipFunctionType.SFORM);
+    public ZForm(String a, String b) {
+        this(Double.parseDouble(a), Double.parseDouble(b));
     }
 
     @Override
     public double evaluate(Number value) {
         Double v = value.doubleValue();
         if (v <= a)
-            return 0;
+            return 1.0;
         if (a <= v && v <= (a + b) / 2.0)
-            return 2 * Math.pow((v - a) / (b - a), 2);
+            return (1 - 2 * Math.pow((v - a) / (b - a), 2));
         if ((a + b) / 2.0 <= v && v <= b)
-            return (1 - 2 * Math.pow((v - b) / (b - a), 2));
-
-        return 1;
-    }
-
-    @Override
-    public DoubleColumn xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b * 2; i += 0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
-    }
-
-    @Override
-    public DoubleColumn yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b * 2; i += 0.1) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
+            return 2 * Math.pow((v - b) / (b - a), 2);
+        return 0.0;
     }
 
     @Override
@@ -107,7 +86,7 @@ public class SForm_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SForm_MF other = (SForm_MF) obj;
+        ZForm other = (ZForm) obj;
         if (a == null) {
             if (other.a != null)
                 return false;
@@ -122,7 +101,30 @@ public class SForm_MF extends MembershipFunction {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new SForm_MF(a, b);
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.abs(a - b) / 50;
+        double x = -a * 2 - b;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
     }
+
+    @Override
+    public MembershipFunction copy() {
+        return new ZForm(a, b);
+    }
+
 }
