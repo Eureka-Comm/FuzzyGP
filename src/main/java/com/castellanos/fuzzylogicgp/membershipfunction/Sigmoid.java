@@ -5,15 +5,16 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import com.google.gson.annotations.Expose;
+import java.util.ArrayList;
+import java.util.List;
 
-import tech.tablesaw.api.DoubleColumn;
+import com.google.gson.annotations.Expose;
 
 /**
  *
  * @author hp
  */
-public class Sigmoid_MF extends MembershipFunction {
+public class Sigmoid extends MembershipFunction {
 
     /**
      *
@@ -24,14 +25,14 @@ public class Sigmoid_MF extends MembershipFunction {
     @Expose
     private double beta;
 
-    public Sigmoid_MF( double center,  double beta) {
+    public Sigmoid(double center, double beta) {
         this.center = center;
         this.beta = beta;
         this.setType(MembershipFunctionType.SIGMOID);
     }
 
-    public Sigmoid_MF( String center,  String beta) {
-        this.center = Double.parseDouble(center );
+    public Sigmoid(String center, String beta) {
+        this.center = Double.parseDouble(center);
         this.beta = Double.parseDouble(beta);
         this.setType(MembershipFunctionType.SIGMOID);
     }
@@ -44,15 +45,7 @@ public class Sigmoid_MF extends MembershipFunction {
     @Override
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-       /* BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);
-        BigDecimal lg01 = BigDecimalMath.log(new BigDecimal("0.01"), MathContext.DECIMAL128);
-        BigDecimal one = new BigDecimal("1");
-        BigDecimal vexp = BigDecimalMath
-                .exp(((((lg99.subtract(lg01)).divide(center.subtract(beta), MathContext.DECIMAL128)).negate())
-                        .multiply(v.subtract(center))), MathContext.DECIMAL128);
-
-        return one.divide(one.add(vexp), MathContext.DECIMAL128);*/
-        return (1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center)))));
+        return (1 / (1 + (Math.exp(-((Math.log(0.99) - Math.log(0.01)) / (center - beta)) * (v - center)))));
 
     }
 
@@ -60,7 +53,7 @@ public class Sigmoid_MF extends MembershipFunction {
         return center;
     }
 
-    public void setCenter( double center) {
+    public void setCenter(double center) {
         this.center = center;
     }
 
@@ -70,10 +63,6 @@ public class Sigmoid_MF extends MembershipFunction {
 
     public void setBeta(final double beta) {
         this.beta = beta;
-    }
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new Sigmoid_MF(center, beta);
     }
 
     @Override
@@ -96,29 +85,39 @@ public class Sigmoid_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Sigmoid_MF other = (Sigmoid_MF) obj;
+        Sigmoid other = (Sigmoid) obj;
         if (Double.doubleToLongBits(beta) != Double.doubleToLongBits(other.beta))
             return false;
         if (Double.doubleToLongBits(center) != Double.doubleToLongBits(other.center))
             return false;
         return true;
     }
+
     @Override
-    public DoubleColumn xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = center - beta; i < center+beta; i+=(center-beta)/10) {
-            xColumn.append(i);
-        }
-        return xColumn;
-    }
-    @Override
-    public DoubleColumn yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = center - beta; i < center +beta; i+= (center-beta)/10) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
+    public MembershipFunction copy() {
+        return new Sigmoid(center, beta);
     }
 
+    @Override
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.abs(center - beta) / 50;
+        double x = -center * 2 - beta;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
+    }
 
 }
