@@ -173,6 +173,9 @@ public class KDFLC {
                         }
                     }
                 }
+                /*for (NodeTree nodeTree : population) {
+                    System.out.println(nodeTree.getFitness()+" "+nodeTree);
+                }*/
                 Arrays.sort(population, Collections.reverseOrder());
 
                 for (int i = 0; i < population.length; i++) {

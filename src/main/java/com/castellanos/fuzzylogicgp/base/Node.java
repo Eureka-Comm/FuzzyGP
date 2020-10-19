@@ -60,13 +60,6 @@ public abstract class Node implements Serializable {
         this.byGenerator = byGenerator;
     }
 
-    public Object copy() {
-        Node node = (Node) this.copy();
-        if (byGenerator != null) {
-            node.setByGenerator(byGenerator);
-        }
-        node.setEditable(editable);
-        return node;
-    }
+    public abstract Object copy();
 
 }

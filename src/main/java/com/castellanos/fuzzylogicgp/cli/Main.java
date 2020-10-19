@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.examples.Examples;
@@ -28,6 +29,8 @@ public class Main {
 
     @Option(names = { "-f", "--file" }, description = "Path and name of file")
     private String fileName;
+    @Option(names = { "--seed" }, description = "Seed random")
+    private Long seed;
 
     @Option(names = { "-h", "--help" }, description = "Display help/usage.", help = true)
     private boolean help;
@@ -50,11 +53,15 @@ public class Main {
     public static void main(String[] args)
             throws OperatorException, CloneNotSupportedException, IOException, URISyntaxException {
         final Main main = CommandLine.populateCommand(new Main(), args);
-        
+                
         if (main.help) {
             CommandLine.usage(main, out, CommandLine.Help.Ansi.AUTO);
         } else {
             Query query = null;
+            if (main.seed!=null){
+                Random random = new Random();
+                random.setSeed(main.seed);
+            }
             if (main.fileName != null) {
 
                 if (main.formatEdn) {
@@ -91,7 +98,6 @@ public class Main {
         }
     }
 
-  
     private static Query demoToFile(Query query) throws IOException {
         InputStream resourceAsStream = ClassLoader.getSystemClassLoader()
                 .getResourceAsStream("datasets" + File.separator + query.getDb_uri());
@@ -106,5 +112,4 @@ public class Main {
 
     }
 
-    
 }

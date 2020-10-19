@@ -64,7 +64,6 @@ public class GeneratorNode extends Node {
         this.variables = variables;
     }
 
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -103,6 +102,11 @@ public class GeneratorNode extends Node {
     public String toString() {
         return "GeneratorNode [label=" + label + ", operators=" + Arrays.toString(operators) + ", variables="
                 + variables + "]";
+    }
+
+    @Override
+    public Object copy() {
+        return this;
     }
 
 }

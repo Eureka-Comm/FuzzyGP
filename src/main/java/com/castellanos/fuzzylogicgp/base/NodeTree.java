@@ -247,11 +247,12 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
             NodeTree tree = new NodeTree(this.getType());
             this.childrens.forEach(n -> {
                 try {
-                    addChild((Node) n.copy());
+                    tree.addChild((Node) n.copy());
                 } catch (OperatorException e) {
                     e.printStackTrace();
                 }
             });
+            tree.setFitness(fitness);
             return tree;
         } catch (OperatorException e) {
             e.printStackTrace();

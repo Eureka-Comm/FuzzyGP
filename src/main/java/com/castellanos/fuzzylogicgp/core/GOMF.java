@@ -166,7 +166,6 @@ public class GOMF {
     }
 
     private HashMap<String, Object> randomChromosome(StateNode _item) {
-        FPG f = new FPG();
         Double[] r = minPromMaxToleranceValues(_item.getColName());
         HashMap<String, Object> map = new HashMap<>();
 
@@ -174,7 +173,7 @@ public class GOMF {
         double gamma_double = randomValue(r[0], r[2]);
         double value;
         do {
-            value = randomValue(r[0], f.getGamma());
+            value = randomValue(r[0], gamma_double);
 
         } while (value >= gamma_double || (gamma_double - value) <= r[3]);
         map.put("owner", _item.getId());
@@ -213,26 +212,21 @@ public class GOMF {
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
         // System.out.println(currentPop);
         currentPop.forEach(mf -> {
-            NodeTree predicate = null;
-            predicate = (NodeTree) predicatePattern.copy();
+            ArrayList<StateNode> toclean = new ArrayList<>();
             for (HashMap<String, Object> k : mf.getElements()) {
-                Node node = predicate.findById(k.get("owner").toString());
+                Node node = predicatePattern.findById(k.get("owner").toString());
                 if (node instanceof StateNode) {
                     StateNode st = (StateNode) node;
-                    try {
-                        st.setMembershipFunction(
-                                new FPG((double) k.get("beta"), (double) k.get("gamma"), (double) k.get("m")));
-
-                        NodeTree.replace(NodeTree.getNodeParent(predicate, k.get("owner").toString()), st, st, false);
-                    } catch (OperatorException e) {
-                        e.printStackTrace();
-                    }
+                    st.setMembershipFunction(
+                            new FPG((double) k.get("beta"), (double) k.get("gamma"), (double) k.get("m")));
+                    toclean.add(st);
                 }
             }
 
             EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
-            evaluator.setPredicate(predicate);
+            evaluator.setPredicate(predicatePattern);
             mf.setFitness(evaluator.evaluate());
+            toclean.forEach(s -> s.setMembershipFunction(null));
 
         });
 
