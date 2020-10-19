@@ -1,11 +1,14 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.columns.Column;
 
-public class LTRAPEZOIDAL_MF extends MembershipFunction {
+public class LTrapezoidal extends MembershipFunction {
     /**
      *
      */
@@ -14,23 +17,20 @@ public class LTRAPEZOIDAL_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
+
     @Override
     public boolean isValid() {
-        return!(a==null || b == null);
-    }
-    public LTRAPEZOIDAL_MF(Double a, Double b) {
-        this.a = a;
-        this.b = b;
-        this.setType(MembershipFunctionType.LTRAPEZOIDAL);
+        return !(a == null || b == null);
     }
 
-    public LTRAPEZOIDAL_MF(String a, String b) {
-        this.a = Double.valueOf(a);
-        this.b = Double.valueOf(b);
-        this.setType(MembershipFunctionType.LTRAPEZOIDAL);
+    public LTrapezoidal(double a, double b) {
+        super(MembershipFunctionType.TRAPEZOIDAL);
+        this.a = a;
+        this.b = b;
     }
-    public LTRAPEZOIDAL_MF(){
-        this.setType(MembershipFunctionType.LTRAPEZOIDAL);
+
+    public LTrapezoidal(String a, String b) {
+        this(Double.parseDouble(a), Double.parseDouble(b));
     }
 
     @Override
@@ -43,23 +43,6 @@ public class LTRAPEZOIDAL_MF extends MembershipFunction {
         return 1.0;
     }
 
-    @Override
-    public Column yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b+a; i+=0.1) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
-    }
-
-    @Override
-    public Column xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b+a; i+=0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
-    }
     @Override
     public String toString() {
         return String.format("[%s %f, %f]", this.type.toString(), this.a, this.b);
@@ -98,7 +81,7 @@ public class LTRAPEZOIDAL_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        LTRAPEZOIDAL_MF other = (LTRAPEZOIDAL_MF) obj;
+        LTrapezoidal other = (LTrapezoidal) obj;
         if (a == null) {
             if (other.a != null)
                 return false;
@@ -110,6 +93,33 @@ public class LTRAPEZOIDAL_MF extends MembershipFunction {
         } else if (!b.equals(other.b))
             return false;
         return true;
+    }
+
+    @Override
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.abs(a - b) / 50;
+        double x = -a * 2 - b;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
+    }
+
+    @Override
+    public MembershipFunction copy() {
+        return new LTrapezoidal(a, b);
     }
 
 }

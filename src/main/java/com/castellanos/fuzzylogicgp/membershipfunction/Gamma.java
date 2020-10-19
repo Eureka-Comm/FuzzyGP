@@ -15,20 +15,14 @@ public class Gamma extends MembershipFunction {
     @Expose
     protected Double b;
 
-    public Gamma() {
-        super(MembershipFunctionType.GAMMA);
-    }
-
     public Gamma(double a, double b) {
-        this();
+        super(MembershipFunctionType.GAMMA);
         this.a = a;
         this.b = b;
     }
 
     public Gamma(String a, String b) {
-        this();
-        this.a = Double.valueOf(a);
-        this.b = Double.valueOf(b);
+        this(Double.parseDouble(a), Double.parseDouble(b));
     }
 
     @Override

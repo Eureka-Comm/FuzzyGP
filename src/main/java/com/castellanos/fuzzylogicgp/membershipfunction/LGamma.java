@@ -21,9 +21,6 @@ public class LGamma extends Gamma {
         this.setType(MembershipFunctionType.LGAMMA);
     }
 
-    public LGamma() {
-        this.setType(MembershipFunctionType.LGAMMA);
-    }
 
     @Override
     public double evaluate(Number value) {
