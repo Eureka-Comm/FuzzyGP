@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.castellanos.fuzzylogicgp.base.DataSet;
-import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 
 
 /**
@@ -27,11 +27,11 @@ public class ANNmain {
         List<List<Double>> X = train.getDataWithOutClass();
         List<Double> Y = train.getDataClass();
 
-        List<List<Sigmoid_MF>> MFw = new ArrayList<>();
+        List<List<Sigmoid>> MFw = new ArrayList<>();
         for (int w = 0; w < X.size(); w++ ) {
-            List<Sigmoid_MF> MFh = new ArrayList<Sigmoid_MF>();
+            List<Sigmoid> MFh = new ArrayList<Sigmoid>();
             for (int h =0; h<3; h++){
-                Sigmoid_MF v = new Sigmoid_MF(0.5,generatRandomPositiveNegitiveValue(10));
+                Sigmoid v = new Sigmoid(0.5,generatRandomPositiveNegitiveValue(10));
                 MFh.add(v);
             }
             MFw.add(MFh);

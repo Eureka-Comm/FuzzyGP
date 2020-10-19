@@ -12,23 +12,20 @@ import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gamma;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
 import com.castellanos.fuzzylogicgp.membershipfunction.LGamma;
-import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.LTrapezoidal;
 import com.castellanos.fuzzylogicgp.membershipfunction.Nominal;
-import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.PSeudoExp;
+import com.castellanos.fuzzylogicgp.membershipfunction.RTrapezoidal;
+import com.castellanos.fuzzylogicgp.membershipfunction.SForm;
 import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Singleton;
-import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal;
 import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
-import com.castellanos.fuzzylogicgp.membershipfunction.ZForm_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.ZForm;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
-import com.castellanos.fuzzylogicgp.parser.EDNParser;
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
 import com.castellanos.fuzzylogicgp.logic.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
-import com.castellanos.fuzzylogicgp.parser.TaskFactory;
 
 public class Examples {
     public static void main(String[] args) {
@@ -172,14 +169,14 @@ public class Examples {
         // Triangular triangular = new Triangular(1.0,5.0,9.0);
         MembershipFunction mf = new Gaussian(5.0, 2.0);
         mf = new Triangular(1.0, 5.0, 9.0);
-        mf = new Trapezoidal_MF(1.0, 5.0, 7.0, 8.0);
-        mf = new SForm_MF(1.0, 8.0);// *
-        mf = new ZForm_MF(2.0, 8.0);
+        mf = new Trapezoidal(1.0, 5.0, 7.0, 8.0);
+        mf = new SForm(1.0, 8.0);// *
+        mf = new ZForm(2.0, 8.0);
         mf = new Sigmoid(5.0, 1.0);
         mf = new FPG(9.23, 12.30, 0.5);
-        mf = new PSEUDOEXP_MF(5.0, 2.0);
-        mf = new LTRAPEZOIDAL_MF(3.0, 7.0);
-        mf = new RTRAPEZOIDAL_MF(3.0, 7.0);
+        mf = new PSeudoExp(5.0, 2.0);
+        mf = new LTrapezoidal(3.0, 7.0);
+        mf = new RTrapezoidal(3.0, 7.0);
         mf = new Singleton(5);
         mf = new Gamma(4, 3);
         mf = new LGamma(4, 3);
