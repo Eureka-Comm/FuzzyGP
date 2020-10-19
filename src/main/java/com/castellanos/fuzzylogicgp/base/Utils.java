@@ -5,11 +5,12 @@
  */
 package com.castellanos.fuzzylogicgp.base;
 
+import java.util.Random;
 
 /**
  *
  * @author hp
  */
 public class Utils {
-    
+    public static Random random = new Random();
 }

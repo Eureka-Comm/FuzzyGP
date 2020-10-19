@@ -16,8 +16,8 @@ import java.util.Random;
 import com.castellanos.fuzzylogicgp.base.Node;
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.NodeType;
-import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
+import com.castellanos.fuzzylogicgp.base.Utils;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 
@@ -45,7 +45,7 @@ public class GOMF {
     private List<StateNode> sns;
     private final HashMap<String, Double[]> minPromMaxMapValues;
 
-    private static final Random rand = new Random();
+    private static final Random rand = Utils.random;
     private final ChromosomeComparator chromosomeComparator = new ChromosomeComparator();
 
     public GOMF(Table data, Logic logic, double mut_percentage, int adj_num_pop, int adj_iter, double adj_truth_value) {

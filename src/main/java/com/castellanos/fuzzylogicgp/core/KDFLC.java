@@ -17,6 +17,7 @@ import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.base.TournamentSelection;
+import com.castellanos.fuzzylogicgp.base.Utils;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.parser.MembershipFunctionSerializer;
@@ -55,7 +56,7 @@ public class KDFLC {
     private double adj_min_truth_value;
 
     // Aux
-    private static final Random rand = new Random();
+    private static Random rand = Utils.random;
     private Table data;
     private ArrayList<NodeTree> resultList;
 
@@ -173,9 +174,10 @@ public class KDFLC {
                         }
                     }
                 }
-                /*for (NodeTree nodeTree : population) {
-                    System.out.println(nodeTree.getFitness()+" "+nodeTree);
-                }*/
+                /*
+                 * for (NodeTree nodeTree : population) {
+                 * System.out.println(nodeTree.getFitness()+" "+nodeTree); }
+                 */
                 Arrays.sort(population, Collections.reverseOrder());
 
                 for (int i = 0; i < population.length; i++) {

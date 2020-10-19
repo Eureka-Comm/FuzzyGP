@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.castellanos.fuzzylogicgp.base.OperatorException;
+import com.castellanos.fuzzylogicgp.base.Utils;
 import com.castellanos.fuzzylogicgp.examples.Examples;
 import com.castellanos.fuzzylogicgp.parser.EDNParser;
 import com.castellanos.fuzzylogicgp.parser.Query;
@@ -53,14 +54,13 @@ public class Main {
     public static void main(String[] args)
             throws OperatorException, CloneNotSupportedException, IOException, URISyntaxException {
         final Main main = CommandLine.populateCommand(new Main(), args);
-                
+
         if (main.help) {
             CommandLine.usage(main, out, CommandLine.Help.Ansi.AUTO);
         } else {
             Query query = null;
-            if (main.seed!=null){
-                Random random = new Random();
-                random.setSeed(main.seed);
+            if (main.seed != null) {
+                Utils.random.setSeed(main.seed);
             }
             if (main.fileName != null) {
 
