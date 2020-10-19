@@ -293,6 +293,7 @@ public class GOMF {
                         element.put("m", rand.nextDouble());
                         break;
                 }
+                next.getElements()[index] = repair(element);
             }
         }
     }

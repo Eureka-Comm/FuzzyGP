@@ -1,10 +1,6 @@
 package com.castellanos.fuzzylogicgp.base;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.util.ArrayList;
 
 import com.google.gson.GsonBuilder;

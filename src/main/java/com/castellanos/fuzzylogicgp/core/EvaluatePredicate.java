@@ -19,8 +19,6 @@ import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 
-import org.checkerframework.checker.units.qual.s;
-
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
@@ -117,8 +115,8 @@ public class EvaluatePredicate {
             ec.append("");
         }
         fuzzyData.addColumns(fa, ec, resultColumn);
-        //System.out.println("ForAll: "+forAllValue);
-        //System.out.println("Exist: "+ec.get(0));
+        // System.out.println("ForAll: "+forAllValue);
+        // System.out.println("Exist: "+ec.get(0));
         return forAllValue;
         // }
         // return BigDecimal.ONE.negate();
@@ -131,7 +129,8 @@ public class EvaluatePredicate {
     public void exportToJSON(String file) throws IOException {
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
         JsonWriter jsonWriter = new JsonWriter();
-        JsonWriteOptions options = JsonWriteOptions.builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
+        JsonWriteOptions options = JsonWriteOptions
+                .builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
         jsonWriter.write(fuzzyData, options);
         fuzzyData.write().toFile(f);
     }
@@ -219,6 +218,7 @@ public class EvaluatePredicate {
 
     }
 
+    @SuppressWarnings("unchecked")
     private void dataFuzzy() {
         fuzzyData = Table.create();
         ArrayList<Node> nodes = NodeTree.getNodesByType(p, NodeType.STATE);
@@ -232,7 +232,7 @@ public class EvaluatePredicate {
                 if (type == ColumnType.DOUBLE) {
                     Column<Double> column = (Column<Double>) data.column(s.getColName());
                     for (Double cell : column) {
-                       dc.append(s.getMembershipFunction().evaluate((cell)));
+                        dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
 
                 } else if (type == ColumnType.FLOAT) {
@@ -253,7 +253,7 @@ public class EvaluatePredicate {
                         dc.append(s.getMembershipFunction().evaluate((cell)));
                     }
                 } else if (type == ColumnType.STRING) {
-                    Column<String> column = (Column<String>) data.column(s.getColName());                    
+                    Column<String> column = (Column<String>) data.column(s.getColName());
                     for (String valueString : column) {
                         dc.append(s.getMembershipFunction().evaluate((valueString)));
                     }
@@ -270,6 +270,7 @@ public class EvaluatePredicate {
     public void setPredicate(NodeTree p) {
         this.p = p;
     }
+
     /**
      * 
      * @return fuzzy data table of the evaluated predicate
@@ -277,6 +278,7 @@ public class EvaluatePredicate {
     public Table getFuzzyData() {
         return fuzzyData;
     }
+
     /**
      * 
      * @return the evaluated predicated
@@ -284,6 +286,5 @@ public class EvaluatePredicate {
     public NodeTree getPredicate() {
         return p;
     }
-    
 
 }

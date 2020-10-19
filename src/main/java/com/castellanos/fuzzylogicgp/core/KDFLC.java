@@ -28,7 +28,6 @@ import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.Destination;
-import tech.tablesaw.io.csv.CsvWriteOptions;
 import tech.tablesaw.io.json.*;
 
 /**

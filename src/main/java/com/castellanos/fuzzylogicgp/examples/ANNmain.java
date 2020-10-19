@@ -1,7 +1,6 @@
 package com.castellanos.fuzzylogicgp.examples;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -25,7 +24,6 @@ public class ANNmain {
     public static void main(String[] args) {
         DataSet train = new DataSet("tinto.csv");
         List<List<Double>> X = train.getDataWithOutClass();
-        List<Double> Y = train.getDataClass();
 
         List<List<Sigmoid>> MFw = new ArrayList<>();
         for (int w = 0; w < X.size(); w++ ) {

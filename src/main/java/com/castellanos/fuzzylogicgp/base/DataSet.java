@@ -58,7 +58,7 @@ public class DataSet {
     public List<String> getNames() {
         return data.columnNames();
     }
-
+    @SuppressWarnings("unchecked")
     private List<Double> TypeData(String name) {
         ColumnType type = data.column(name).type();
         List<Double> data_cells = new ArrayList<Double>();
