@@ -86,7 +86,7 @@ public class EDNParser {
                 discoveryQuery.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "")));
                 discoveryQuery.setPredicate(
                         findPredicate().replaceAll(":generator", "").replace("{", "").replace("}", "").trim());
-                discoveryQuery.setDepth(Integer.parseInt(queryMap.get(Keyword.newKeyword("depth")).toString().trim()));
+                // discoveryQuery.setDepth(Integer.parseInt(queryMap.get(Keyword.newKeyword("depth")).toString().trim()));
                 discoveryQuery
                         .setNum_pop(Integer.parseInt(queryMap.get(Keyword.newKeyword("num-pop")).toString().trim()));
                 discoveryQuery
@@ -105,6 +105,9 @@ public class EDNParser {
                         Float.parseFloat(queryMap.get(Keyword.newKeyword("adj-min-truth-value")).toString().trim()));
                 discoveryQuery.setGenerators(
                         convertToGenerator((Map<?, ?>) queryMap.get(Keyword.newKeyword("generator")), convertToState));
+                for (GeneratorNode g : discoveryQuery.getGenerators()) {
+                    g.setDepth(Integer.parseInt(queryMap.get(Keyword.newKeyword("depth")).toString().trim()));
+                }
                 return discoveryQuery;
             default:
                 throw new IllegalArgumentException("Unsupported query.");
@@ -120,6 +123,7 @@ public class EDNParser {
         for (int i = 0; i < oNodeTypes.length; i++) {
             oNodeTypes[i] = NodeType.valueOf(opeStrings[i].trim());
         }
+
         geneNode.setOperators(oNodeTypes);
         String[] vars = gen.get(Keyword.newKeyword("variables")).toString().replace("[", "").replace("]", "")
                 .split(",");

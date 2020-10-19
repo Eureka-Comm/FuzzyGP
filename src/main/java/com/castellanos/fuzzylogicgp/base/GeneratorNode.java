@@ -23,6 +23,8 @@ public class GeneratorNode extends Node {
     @Expose
     private String label;
     @Expose
+    private int depth;
+    @Expose
     private NodeType operators[];
     @Expose
     private List<String> variables;
@@ -30,14 +32,24 @@ public class GeneratorNode extends Node {
     public GeneratorNode() {
         this.setType(NodeType.OPERATOR);
         this.setEditable(true);
+        depth = 2;
     }
 
-    public GeneratorNode(String label, NodeType[] operators, List<String> variables) {
+    public GeneratorNode(String label, NodeType[] operators, List<String> variables, int depth) {
         this.label = label;
         this.operators = operators;
         this.variables = variables;
+        this.depth = depth;
         this.setType(NodeType.OPERATOR);
         this.setEditable(true);
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
     }
 
     public String getLabel() {
@@ -65,9 +77,15 @@ public class GeneratorNode extends Node {
     }
 
     @Override
+    public Object copy() {
+        return this;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + depth;
         result = prime * result + ((label == null) ? 0 : label.hashCode());
         result = prime * result + Arrays.hashCode(operators);
         result = prime * result + ((variables == null) ? 0 : variables.hashCode());
@@ -83,6 +101,8 @@ public class GeneratorNode extends Node {
         if (getClass() != obj.getClass())
             return false;
         GeneratorNode other = (GeneratorNode) obj;
+        if (depth != other.depth)
+            return false;
         if (label == null) {
             if (other.label != null)
                 return false;
@@ -100,13 +120,8 @@ public class GeneratorNode extends Node {
 
     @Override
     public String toString() {
-        return "GeneratorNode [label=" + label + ", operators=" + Arrays.toString(operators) + ", variables="
-                + variables + "]";
-    }
-
-    @Override
-    public Object copy() {
-        return this;
+        return "GeneratorNode [depth=" + depth + ", label=" + label + ", operators=" + Arrays.toString(operators)
+                + ", variables=" + variables + "]";
     }
 
 }

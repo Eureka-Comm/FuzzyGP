@@ -13,8 +13,7 @@ public class DiscoveryQuery extends Query {
      */
     private static final long serialVersionUID = -5095255239602552073L;
 
-    @Expose
-    protected int depth;
+   
     @Expose
     protected int num_pop;
     @Expose
@@ -38,15 +37,7 @@ public class DiscoveryQuery extends Query {
         setType(TaskType.DISCOVERY);
     }
 
-    public int getDepth() {
-        return depth;
-    }
 
-    public void setDepth(int depth) {
-        if (depth <=1)
-            throw new IllegalArgumentException("Depth must be >= 2.");
-        this.depth = depth;
-    }
 
     public int getNum_pop() {
         return num_pop;
@@ -130,7 +121,7 @@ public class DiscoveryQuery extends Query {
     @Override
     public String toString() {
         return "DiscoveryQuery [adj_min_truth_value=" + adj_min_truth_value + ", adj_num_iter=" + adj_num_iter
-                + ", adj_num_pop=" + adj_num_pop + ", depth=" + depth + ", generators=" + generators
+                + ", adj_num_pop=" + adj_num_pop + ", generators=" + generators
                 + ", min_truth_value=" + min_truth_value + ", mut_percentage=" + mut_percentage + ", num_iter="
                 + num_iter + ", num_pop=" + num_pop + ", num_result=" + num_result + "]" + super.toString();
     }
@@ -142,7 +133,6 @@ public class DiscoveryQuery extends Query {
         result = prime * result + Float.floatToIntBits(adj_min_truth_value);
         result = prime * result + adj_num_iter;
         result = prime * result + adj_num_pop;
-        result = prime * result + depth;
         result = prime * result + ((generators == null) ? 0 : generators.hashCode());
         result = prime * result + Float.floatToIntBits(min_truth_value);
         result = prime * result + Float.floatToIntBits(mut_percentage);
@@ -167,8 +157,7 @@ public class DiscoveryQuery extends Query {
             return false;
         if (adj_num_pop != other.adj_num_pop)
             return false;
-        if (depth != other.depth)
-            return false;
+        
         if (generators == null) {
             if (other.generators != null)
                 return false;

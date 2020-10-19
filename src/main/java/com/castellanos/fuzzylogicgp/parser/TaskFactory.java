@@ -65,7 +65,7 @@ public class TaskFactory {
                     data = reader.read(options);
                 }
 
-                KDFLC discovery = new KDFLC(parserPredicate, logic, discoveryQuery.getDepth(),
+                KDFLC discovery = new KDFLC(parserPredicate, logic,
                         discoveryQuery.getNum_pop(), discoveryQuery.getNum_iter(), discoveryQuery.getNum_result(),
                         discoveryQuery.getMin_truth_value(), discoveryQuery.getMut_percentage(),
                         discoveryQuery.getAdj_num_pop(), discoveryQuery.getAdj_num_iter(),

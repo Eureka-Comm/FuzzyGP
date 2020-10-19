@@ -43,7 +43,6 @@ public class KDFLC {
     private NodeTree predicatePattern;
     private HashMap<String, List<StateNode>> statesByGenerators;
     private Logic logic;
-    private int depth;
     private int num_pop;
     private int num_iter;
     private int num_result;
@@ -62,12 +61,11 @@ public class KDFLC {
 
     private Table fuzzyData;
 
-    public KDFLC(ParserPredicate pp, Logic logic, int depth, int num_pop, int num_iter, int num_result,
-            double min_truth_value, double mut_percentage, int adj_num_pop, int adj_num_iter,
-            double adj_min_truth_value, Table data) throws OperatorException, CloneNotSupportedException {
+    public KDFLC(ParserPredicate pp, Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value,
+            double mut_percentage, int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data)
+            throws OperatorException, CloneNotSupportedException {
 
-        if (depth <= 1)
-            throw new IllegalArgumentException("Depth must be >= 2.");
+        
         if (min_truth_value < 0.0 || min_truth_value > 1.0)
             throw new IllegalArgumentException("Min truth value must be in [0,1].");
 
