@@ -214,30 +214,25 @@ public class GOMF {
         // System.out.println(currentPop);
         currentPop.forEach(mf -> {
             NodeTree predicate = null;
-            try {
-                predicate = (NodeTree) predicatePattern.clone();
-                for (HashMap<String, Object> k : mf.getElements()) {
-                    Node node = predicate.findById(k.get("owner").toString());
-                    if (node instanceof StateNode) {
-                        StateNode st = (StateNode) node;
-                        try {
-                            st.setMembershipFunction(
-                                    new FPG((double) k.get("beta"), (double) k.get("gamma"), (double) k.get("m")));
+            predicate = (NodeTree) predicatePattern.copy();
+            for (HashMap<String, Object> k : mf.getElements()) {
+                Node node = predicate.findById(k.get("owner").toString());
+                if (node instanceof StateNode) {
+                    StateNode st = (StateNode) node;
+                    try {
+                        st.setMembershipFunction(
+                                new FPG((double) k.get("beta"), (double) k.get("gamma"), (double) k.get("m")));
 
-                            NodeTree.replace(NodeTree.getNodeParent(predicate, k.get("owner").toString()), st, st,
-                                    false);
-                        } catch (OperatorException e) {
-                            e.printStackTrace();
-                        }
+                        NodeTree.replace(NodeTree.getNodeParent(predicate, k.get("owner").toString()), st, st, false);
+                    } catch (OperatorException e) {
+                        e.printStackTrace();
                     }
                 }
-
-                EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
-                evaluator.setPredicate(predicate);
-                mf.setFitness(evaluator.evaluate());
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
             }
+
+            EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
+            evaluator.setPredicate(predicate);
+            mf.setFitness(evaluator.evaluate());
 
         });
 

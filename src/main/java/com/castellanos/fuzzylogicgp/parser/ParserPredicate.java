@@ -139,7 +139,7 @@ public class ParserPredicate {
         return elementos;
     }
 
-    private void createNodeFromExpre(String rootString) throws OperatorException, CloneNotSupportedException {
+    private void createNodeFromExpre(String rootString) throws OperatorException {
         Node tmp = null;
         switch (rootString) {
             case "AND":
@@ -171,7 +171,7 @@ public class ParserPredicate {
 
                 for (int i = 0; i < states.size(); i++) {
                     if (states.get(i).getLabel().equals(rootString)) {
-                        tmp = (Node) states.get(i).clone();
+                        tmp = (Node) states.get(i).copy();
                         break;
                     }
                 }

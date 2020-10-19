@@ -246,25 +246,21 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
+    public Object copy() {
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(this);
-
-            oos.flush();
-            oos.close();
-            bos.close();
-            byte[] byteData = bos.toByteArray();
-            ByteArrayInputStream bais = new ByteArrayInputStream(byteData);
-            Object object = (Object) new ObjectInputStream(bais).readObject();
-            return object;
-        } catch (IOException | ClassNotFoundException e) {
+            NodeTree tree = new NodeTree(this.getType());
+            this.childrens.forEach(n -> {
+                try {
+                    addChild((Node) n.copy());
+                } catch (OperatorException e) {
+                    e.printStackTrace();
+                }
+            });
+            return tree;
+        } catch (OperatorException e) {
             e.printStackTrace();
         }
         return null;
-
     }
 
     public static int dfs(NodeTree root, Node node) {
@@ -288,12 +284,13 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         return -1;
     }
 
-    public static void replace(NodeTree nodeTree, Node toReplace, Node newNode, boolean isUpdateRoot) throws OperatorException {
-       
-        if(isUpdateRoot){
+    public static void replace(NodeTree nodeTree, Node toReplace, Node newNode, boolean isUpdateRoot)
+            throws OperatorException {
+
+        if (isUpdateRoot) {
             nodeTree.setType(newNode.getType());
             nodeTree.setEditable(newNode.isEditable());
-            if(toReplace instanceof GeneratorNode){
+            if (toReplace instanceof GeneratorNode) {
                 nodeTree.setByGenerator(toReplace.getId());
             }
             nodeTree.getChildrens().clear();
@@ -346,7 +343,8 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         if (childrens == null) {
             if (other.childrens != null)
                 return false;
-        } else if (!this.toString().equals(other.toString()) && fitness != null && other.fitness != null && !fitness.equals(other.fitness))
+        } else if (!this.toString().equals(other.toString()) && fitness != null && other.fitness != null
+                && !fitness.equals(other.fitness))
             return false;
         return true;
     }

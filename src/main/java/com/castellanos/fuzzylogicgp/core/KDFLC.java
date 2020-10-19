@@ -106,7 +106,7 @@ public class KDFLC {
                 for (String var : gNode.getVariables()) {
                     for (StateNode s : parserPredicate.getStates()) {
                         if (s.getLabel().equals(var)) {
-                            StateNode ss = (StateNode) s.clone();
+                            StateNode ss = (StateNode) s.copy();
                             ss.setByGenerator(gNode.getId());
                             states.add(ss);
                             break;
@@ -128,11 +128,11 @@ public class KDFLC {
         for (int i = 0; i < population.length; i++) {
             if (isToDiscovery) {
                 if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
-                    resultList.add((NodeTree) population[i].clone());
+                    resultList.add((NodeTree) population[i].copy());
                 }
             } else {
                 if (population[i].getFitness() >= min_truth_value) {
-                    resultList.add((NodeTree) population[i].clone());
+                    resultList.add((NodeTree) population[i].copy());
                 }
             }
         }
@@ -168,7 +168,7 @@ public class KDFLC {
                     for (int j = lastFound; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
                             // System.out.println(offspring[i].getFitness());
-                            population[j] = (NodeTree) offspring[i].clone();
+                            population[j] = (NodeTree) offspring[i].copy();
                             lastFound = j + 1;
                             break;
                         }
@@ -178,16 +178,17 @@ public class KDFLC {
 
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
-                        resultList.add((NodeTree) population[i].clone());
+                        resultList.add((NodeTree) population[i].copy());
                     }
                 }
                 iteration++;
             }
             Collections.sort(resultList, Collections.reverseOrder());
-           /* System.out.println("post execution: ");
-            for (int i = 0; i < population.length; i++) {
-                System.out.println(i + " " + population[i] + " " + population[i].getFitness());
-            }*/
+            /*
+             * System.out.println("post execution: "); for (int i = 0; i <
+             * population.length; i++) { System.out.println(i + " " + population[i] + " " +
+             * population[i].getFitness()); }
+             */
         }
         System.out.println("Result list " + resultList.size());
         for (int i = 0; i < resultList.size(); i++) {
@@ -219,12 +220,8 @@ public class KDFLC {
     }
 
     private NodeTree createRandomInd() {
-        NodeTree p = null;
-        try {
-            p = (NodeTree) predicatePattern.clone();
-        } catch (CloneNotSupportedException e1) {
-            e1.printStackTrace();
-        }
+        NodeTree p = (NodeTree) predicatePattern.copy();
+
         // Iterator<Node> iterator = p.getNodes().values().iterator();
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
@@ -278,14 +275,9 @@ public class KDFLC {
                     intents++;
                 } while (contains && intents < size);
             }
-            StateNode s = null;
-            try {
-                s = (StateNode) select.clone();
-                s.setByGenerator(gNode.getId());
-                s.setEditable(true);
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
+            StateNode s = (StateNode) select.copy();
+            s.setByGenerator(gNode.getId());
+            s.setEditable(true);
             // s.setFather(father.getId());
             ((NodeTree) father).addChild(s);
 
@@ -372,14 +364,10 @@ public class KDFLC {
                     intents++;
                 } while (contains && intents < size);
             }
-            StateNode s = null;
-            try {
-                s = (StateNode) select.clone();
-                s.setByGenerator(gNode.getId());
-                s.setEditable(true);
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
+            StateNode s = (StateNode) select.copy();
+            s.setByGenerator(gNode.getId());
+            s.setEditable(true);
+
             if (isToReplace) {
                 NodeTree.replace(p, gNode, s, !isToReplace);
             } else {
@@ -434,7 +422,7 @@ public class KDFLC {
         }
     }
 
-    private void mutation(NodeTree[] population) throws OperatorException, CloneNotSupportedException {
+    private void mutation(NodeTree[] population) throws OperatorException {
         for (int i = 0; i < population.length; i++) {
             if (rand.nextDouble() < mut_percentage) {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
@@ -445,7 +433,7 @@ public class KDFLC {
                     n = editableNode.get(rand.nextInt(editableNode.size()));
                     intents++;
                 }
-                Node clon = (Node) n.clone();
+                Node clon = (Node) n.copy();
                 switch (n.getType()) {
                     case OR:
                         clon.setType(NodeType.AND);
@@ -482,9 +470,9 @@ public class KDFLC {
         }
     }
 
-    private NodeTree[] crossover(NodeTree a, NodeTree b) throws CloneNotSupportedException, OperatorException {
-        NodeTree ac = (NodeTree) a.clone();
-        NodeTree bc = (NodeTree) b.clone();
+    private NodeTree[] crossover(NodeTree a, NodeTree b) throws OperatorException {
+        NodeTree ac = (NodeTree) a.copy();
+        NodeTree bc = (NodeTree) b.copy();
 
         ArrayList<Node> a_editable = NodeTree.getEditableNodes(ac);
         ArrayList<Node> b_editable = NodeTree.getEditableNodes(bc);
@@ -496,16 +484,16 @@ public class KDFLC {
             cand_b = b_editable.get(rand.nextInt(b_editable.size()));
             nivel_b = NodeTree.dfs(bc, cand_b);
         } while (nivel_b > nivel);
-        NodeTree.replace(NodeTree.getNodeParent(ac, cand.getId()), cand, (Node) cand_b.clone(), false);
+        NodeTree.replace(NodeTree.getNodeParent(ac, cand.getId()), cand, (Node) cand_b.copy(), false);
 
         if (nivel <= nivel_b) {
-            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone(), false);
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.copy(), false);
         } else {
             do {
                 cand = a_editable.get(rand.nextInt(a_editable.size()));
                 nivel = NodeTree.dfs(ac, cand);
             } while (nivel > nivel_b);
-            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.clone(), false);
+            NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.copy(), false);
         }
         return new NodeTree[] { ac, bc };
     }
