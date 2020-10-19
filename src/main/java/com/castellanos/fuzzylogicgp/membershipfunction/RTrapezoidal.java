@@ -21,8 +21,10 @@ public class RTrapezoidal extends LTrapezoidal {
         Double v = value.doubleValue();
         if (v < a)
             return 1.0;
-        if (a <= v && v <= b)
-            return 1 - (v - a) / (b - a);
+        if (a <= v && v <= b) {
+            double lw = (b == a) ? Double.NaN : b - a;
+            return 1 - (v - a) / lw;
+        }
         return 0.0;
     }
 

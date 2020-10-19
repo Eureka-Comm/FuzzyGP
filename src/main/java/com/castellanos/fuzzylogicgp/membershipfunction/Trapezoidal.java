@@ -1,18 +1,16 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
-
-public class Trapezoidal_MF extends MembershipFunction {
+public class Trapezoidal extends LTrapezoidal {
     /**
      *
      */
     private static final long serialVersionUID = 5895372936423063836L;
-    @Expose
-    private Double a;
-    @Expose
-    private Double b;
+
     @Expose
     private Double c;
     @Expose
@@ -20,53 +18,41 @@ public class Trapezoidal_MF extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return!(a==null || b == null || c == null || d == null);
-    }
-    public Trapezoidal_MF(Double a, Double b, Double c, Double d) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-        this.setType(MembershipFunctionType.TRAPEZOIDAL);
+        return !(a == null || b == null || c == null || d == null);
     }
 
-    public Trapezoidal_MF(String a, String b, String c, String d) {
-        this.a = Double.parseDouble(a);
-        this.b = Double.parseDouble(b);
-        this.c = Double.parseDouble(c);
-        this.d = Double.parseDouble(d);
-        this.setType(MembershipFunctionType.TRAPEZOIDAL);
+    public Trapezoidal(Double a, Double b, Double c, Double d) {
+        super(a, b);
+        this.c = c;
+        this.d = d;
+        this.type = MembershipFunctionType.TRAPEZOIDAL;
     }
-    public Trapezoidal_MF(){
-        this.setType(MembershipFunctionType.TRAPEZOIDAL);
+
+    public Trapezoidal(String a, String b, String c, String d) {
+        this(Double.parseDouble(a), Double.parseDouble(b), Double.parseDouble(c), Double.parseDouble(d));
     }
 
     @Override
 
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-        return Math.max(Math.min(Math.min((v - a) / (b - a), (d - v) / (d - c)), 1), 0);
+        if (v < a)
+            return 0;
+        if (a <= v && v <= b) {
+            double lw = (a == b) ? Double.NaN : b - a;
+            return (v - a) / lw;
+        }
+        if (b <= v && v < c)
+            return 1;
+        if (c <= v && v < d)
+            return 1 - (v - c) / (d - c);
+        return 0;
+
     }
 
     @Override
     public String toString() {
         return String.format("[%s %f, %f, %f, %f]", this.type.toString(), this.a, this.b, this.c, this.d);
-    }
-
-    public Double getA() {
-        return a;
-    }
-
-    public void setA(Double a) {
-        this.a = a;
-    }
-
-    public Double getB() {
-        return b;
-    }
-
-    public void setB(Double b) {
-        this.b = b;
     }
 
     public Double getC() {
@@ -97,24 +83,6 @@ public class Trapezoidal_MF extends MembershipFunction {
     }
 
     @Override
-    public DoubleColumn xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b + d; i += 0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
-    }
-
-    @Override
-    public DoubleColumn yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b + d; i += 0.1) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -122,7 +90,7 @@ public class Trapezoidal_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Trapezoidal_MF other = (Trapezoidal_MF) obj;
+        Trapezoidal other = (Trapezoidal) obj;
         if (a == null) {
             if (other.a != null)
                 return false;
@@ -147,7 +115,29 @@ public class Trapezoidal_MF extends MembershipFunction {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new Trapezoidal_MF(a, b, c, d);
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.max(Math.max(Math.abs(a - b), Math.abs(b - c)), Math.abs(c - d)) / 50.0;
+        double x = -a * 2 - c;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
+    }
+
+    @Override
+    public MembershipFunction copy() {
+        return new Trapezoidal(a, b, c, d);
     }
 }
