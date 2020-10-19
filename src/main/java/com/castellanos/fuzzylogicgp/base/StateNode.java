@@ -6,6 +6,7 @@
 package com.castellanos.fuzzylogicgp.base;
 
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
+import com.castellanos.fuzzylogicgp.membershipfunction.Point;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import tech.tablesaw.api.DoubleColumn;
@@ -17,6 +18,7 @@ import tech.tablesaw.plotly.traces.Trace;
 
 import java.io.File;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,7 +104,6 @@ public class StateNode extends Node {
         }
     }
 
-
     @Override
     public Object clone() throws CloneNotSupportedException {
         StateNode state = new StateNode();
@@ -111,7 +112,7 @@ public class StateNode extends Node {
         if (this.getColName() != null)
             state.setColName(colName);
         if (this.getMembershipFunction() != null)
-            state.setMembershipFunction((MembershipFunction) this.getMembershipFunction().clone());
+            state.setMembershipFunction((MembershipFunction) this.getMembershipFunction().copy());
         if (this.getByGenerator() != null)
             state.setByGenerator(this.getByGenerator());
         state.setEditable(this.isEditable());
@@ -121,48 +122,54 @@ public class StateNode extends Node {
     public void plot(String dirOutputString, String fileName) {
 
         Layout layout = Layout.builder().title(label + "(" + colName + "): " + membershipFunction.toString()).build();
-        DoubleColumn xPoints = (DoubleColumn) membershipFunction.xPoints();
-        DoubleColumn yPoints = (DoubleColumn) membershipFunction.yPoints();
+        ArrayList<Point> points = (ArrayList<Point>) membershipFunction.getPoints();
         Trace trace = null;
-        if (yPoints.size() <= 1000) {
-            trace = ScatterTrace.builder(xPoints, yPoints).build();
+
+        if (points.size() <= 1000) {
+            double[] x = new double[points.size()];
+            double[] y = new double[points.size()];
+            for (int i = 0; i < y.length; i++) {
+                x[i] = points.get(i).getX();
+                y[i] = points.get(i).getY();
+            }
+            trace = ScatterTrace.builder(x, y).mode(ScatterTrace.Mode.LINE).build();
         } else {
             DoubleColumn xdc = DoubleColumn.create("x");
             DoubleColumn ydc = DoubleColumn.create("y");
-            List<Integer> ret = IntStream.range(0, xPoints.size()).boxed().collect(Collectors.toList());
+            List<Integer> ret = IntStream.range(0, points.size()).boxed().collect(Collectors.toList());
             Collections.shuffle(ret);
             double[] values = new double[101];
             for (int i = 0; i < values.length; i++) {
-                values[i] = i/100.0;
+                values[i] = i / 100.0;
             }
-            System.out.println(yPoints.size());
-            int []count = new int[values.length];
+            System.out.println(points.size());
+            int[] count = new int[values.length];
             boolean included_one = false;
-            for (int i = 0; i < xPoints.size(); i++) {
-                double v = yPoints.get(i);
+            for (int i = 0; i < points.size(); i++) {
+                Point v = points.get(i);
                 for (int l = 0; l < values.length; l++) {
-                    if(v > 0.00006 && v <= values[l] && count[l]<20){
-                        xdc.append(xPoints.get(i));
-                        ydc.append(v);
+                    if (v.getY() > 0.00006 && v.getY() <= values[l] && count[l] < 20) {
+                        xdc.append(v.getX());
+                        ydc.append(v.getY());
                         count[l]++;
-                        if(v >0.95 && v<= 1){
+                        if (v.getY() > 0.95 && v.getY() <= 1) {
                             included_one = true;
                         }
                         break;
                     }
                 }
             }
-            if (!included_one){
+            if (!included_one) {
                 int n = 0;
-                for (int i = 0; i < xPoints.size() && n < 200; i++) {
-                    if(yPoints.get(i)<=1.0 &&  yPoints.get(i) >= 0.95 ){
-                        xdc.append(xPoints.get(i));
-                        ydc.append(yPoints.get(i));
+                for (int i = 0; i < points.size() && n < 200; i++) {
+                    if (points.get(i).getY() <= 1.0 && points.get(i).getY() >= 0.95) {
+                        xdc.append(points.get(i).getX());
+                        ydc.append(points.get(i).getY());
                         n++;
                     }
                 }
             }
-            trace = ScatterTrace.builder(xdc, ydc).build();
+            trace = ScatterTrace.builder(xdc, ydc).mode(ScatterTrace.Mode.LINE).build();
         }
         if (dirOutputString != null)
             Plot.show(new Figure(layout, trace),

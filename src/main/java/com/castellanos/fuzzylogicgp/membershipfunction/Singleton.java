@@ -85,6 +85,7 @@ public class Singleton extends MembershipFunction {
     public List<Point> getPoints() {
         ArrayList<Point> point = new ArrayList<>();
         point.add(new Point(a, 1.0));
+        point.add(new Point(a,0));
         return point;
     }
 

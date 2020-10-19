@@ -12,12 +12,12 @@ import java.util.UUID;
  *
  * @author hp
  */
-public abstract class Node implements Cloneable, Serializable {
+public abstract class Node implements Serializable {
     /**
      *
      */
     private static final long serialVersionUID = 2377425499330019252L;
-    private final String id ;
+    private final String id;
     private NodeType type;
     private boolean editable;
     private String byGenerator;
@@ -60,11 +60,9 @@ public abstract class Node implements Cloneable, Serializable {
         this.byGenerator = byGenerator;
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        Node node = null;
-        node = (Node) super.clone();
-        if(byGenerator!=null){
+    public Object copy() {
+        Node node = (Node) this.copy();
+        if (byGenerator != null) {
             node.setByGenerator(byGenerator);
         }
         node.setEditable(editable);

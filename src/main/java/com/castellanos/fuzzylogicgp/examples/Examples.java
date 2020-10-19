@@ -7,21 +7,21 @@ import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
-import com.castellanos.fuzzylogicgp.membershipfunction.FPG_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.GAMMA_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.LGAMMA_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
+import com.castellanos.fuzzylogicgp.membershipfunction.Gamma;
+import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
+import com.castellanos.fuzzylogicgp.membershipfunction.LGamma;
 import com.castellanos.fuzzylogicgp.membershipfunction.LTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.Nominal_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Nominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.PSEUDOEXP_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.RTRAPEZOIDAL_MF;
 import com.castellanos.fuzzylogicgp.membershipfunction.SForm_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.Singleton_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Sigmoid;
+import com.castellanos.fuzzylogicgp.membershipfunction.Singleton;
 import com.castellanos.fuzzylogicgp.membershipfunction.Trapezoidal_MF;
-import com.castellanos.fuzzylogicgp.membershipfunction.Triangular_MF;
+import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
 import com.castellanos.fuzzylogicgp.membershipfunction.ZForm_MF;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
 import com.castellanos.fuzzylogicgp.parser.EDNParser;
@@ -32,17 +32,20 @@ import com.castellanos.fuzzylogicgp.parser.TaskFactory;
 
 public class Examples {
     public static void main(String[] args) {
-        StateNode node = new StateNode("dummy","dummy");
-        MembershipFunction mf = new FPG_MF(1.9604408277229095,1.9649108603405534,0.4111713336297085);
-       //mf = new FPG_MF(1952.94681253064,4582.599891699062,0.26771988761419474);
-        //mf = new Sigmoid_MF(5.5,4);
-       // mf = new FPG_MF(596.4881580779418,1512.0808103003033,0.16039005160976927);
-        //mf = new Triangular_MF(0.0,1.0,1.0);
-      //  mf = new Triangular_MF(3.,6.,8.);
+        StateNode node = new StateNode("dummy", "dummy");
+        MembershipFunction mf = new FPG(1.9604408277229095, 1.9649108603405534, 0.4111713336297085);
+        // mf = new FPG_MF(1952.94681253064,4582.599891699062,0.26771988761419474);
+        // mf = new Sigmoid_MF(5.5,4);
+     mf = new FPG(596.4881580779418,1512.0808103003033,0.16039005160976927);
+      //   mf = new Triangular(0.0,1.0,1.0);
+        // mf = new Triangular(3.,6.,8.);
+        mf = new Singleton(5);
+        mf = new Nominal("a", (double) 1);
         node.setMembershipFunction(mf);
-        node.plot("","dummy");
+        node.plot("", "dummy");
 
     }
+
     public static Query irisQuery() {
         DiscoveryQuery query = new DiscoveryQuery();
 
@@ -51,9 +54,9 @@ public class Examples {
         states.add(new StateNode("sepal width", "sepal.width"));
         states.add(new StateNode("petal lenght", "petal.length"));
         states.add(new StateNode("petal width", "petal.width"));
-        StateNode Setosa = new StateNode("Setosa", "variety", new Nominal_MF("Setosa", 1.0));
-        StateNode Versicolor = new StateNode("Versicolor", "variety", new Nominal_MF("Versicolor", 1.0));
-        StateNode Virginica = new StateNode("Virginica", "variety", new Nominal_MF("Virginica", 1.0));
+        StateNode Setosa = new StateNode("Setosa", "variety", new Nominal("Setosa", 1.0));
+        StateNode Versicolor = new StateNode("Versicolor", "variety", new Nominal("Versicolor", 1.0));
+        StateNode Virginica = new StateNode("Virginica", "variety", new Nominal("Virginica", 1.0));
 
         //
 
@@ -109,9 +112,9 @@ public class Examples {
         query.setOut_file("result-evaluation-prop.csv");
         query.setShowTree(true);
         ArrayList<StateNode> states = new ArrayList<>();
-        states.add(new StateNode("high alcohol", "alcohol", new Sigmoid_MF(11.65, 9)));
-        states.add(new StateNode("low pH", "pH", new NSigmoid_MF(3.375, 2.93)));
-        states.add(new StateNode("high quality", "quality", new Sigmoid_MF(5.5, 4)));
+        states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
+        states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
+        states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
         query.setStates(states);
         query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");
         return query;
@@ -167,19 +170,19 @@ public class Examples {
     public static void testMembershipFunction() {
 
         // Triangular triangular = new Triangular(1.0,5.0,9.0);
-        MembershipFunction mf = new Gaussian_MF(5.0, 2.0);
-        mf = new Triangular_MF(1.0, 5.0, 9.0);
+        MembershipFunction mf = new Gaussian(5.0, 2.0);
+        mf = new Triangular(1.0, 5.0, 9.0);
         mf = new Trapezoidal_MF(1.0, 5.0, 7.0, 8.0);
         mf = new SForm_MF(1.0, 8.0);// *
         mf = new ZForm_MF(2.0, 8.0);
-        mf = new Sigmoid_MF(5.0, 1.0);
-        mf = new FPG_MF(9.23, 12.30, 0.5);
+        mf = new Sigmoid(5.0, 1.0);
+        mf = new FPG(9.23, 12.30, 0.5);
         mf = new PSEUDOEXP_MF(5.0, 2.0);
         mf = new LTRAPEZOIDAL_MF(3.0, 7.0);
         mf = new RTRAPEZOIDAL_MF(3.0, 7.0);
-        mf = new Singleton_MF(5);
-        mf = new GAMMA_MF(4, 3);
-        mf = new LGAMMA_MF(4, 3);
+        mf = new Singleton(5);
+        mf = new Gamma(4, 3);
+        mf = new LGamma(4, 3);
 
         StateNode state = new StateNode("high quality", "quality", mf);
         state.plot("/home/thinkpad/Documents/FuzzyLogicGP", "membershipFunctionGrap");

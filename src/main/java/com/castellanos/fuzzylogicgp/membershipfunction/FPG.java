@@ -55,8 +55,8 @@ public class FPG extends MembershipFunction {
     public double evaluate(Number v) {
 
         double sigm, sigmm, M;
-        sigm = pow(new Sigmoid_MF(gamma, beta).evaluate(v), m);
-        sigmm = pow(1.0 - new Sigmoid_MF(gamma, beta).evaluate(v), 1.0 - m);
+        sigm = pow(new Sigmoid(gamma, beta).evaluate(v), m);
+        sigmm = pow(1.0 - new Sigmoid(gamma, beta).evaluate(v), 1.0 - m);
         M = pow(m, m) * pow((1 - m), (1 - m));
 
         return ((sigm * sigmm) / M);
