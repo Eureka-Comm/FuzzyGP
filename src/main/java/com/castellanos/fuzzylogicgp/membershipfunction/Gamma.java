@@ -116,7 +116,6 @@ public class Gamma extends MembershipFunction {
             x += step;
         } while (y > Point.EPSILON);
         return points;
-
     }
 
     @Override
