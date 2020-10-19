@@ -1,12 +1,11 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import java.util.HashMap;
+import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.columns.Column;
-
-public class MapNominal_MF extends MembershipFunction {
+public class MapNominal extends MembershipFunction {
     /**
      *
      */
@@ -16,11 +15,10 @@ public class MapNominal_MF extends MembershipFunction {
     @Expose
     private Double notFoundValue = 0.0;
 
-    public MapNominal_MF() {
+    public MapNominal() {
+        super(MembershipFunctionType.MAPNOMIAL);
         values = new HashMap<>();
-        setType(MembershipFunctionType.MAPNOMIAL);
     }
-    
 
     public void setNotFoundValue(Double notFoundValue) {
         this.notFoundValue = notFoundValue;
@@ -31,7 +29,7 @@ public class MapNominal_MF extends MembershipFunction {
     }
 
     public Double addParameter(String key, Double value) {
-        if(value<0.0 || value>1.0){
+        if (value < 0.0 || value > 1.0) {
             throw new IllegalArgumentException("Value must be in [0,1].");
         }
         return this.values.put(key, value);
@@ -58,7 +56,7 @@ public class MapNominal_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        MapNominal_MF other = (MapNominal_MF) obj;
+        MapNominal other = (MapNominal) obj;
         if (notFoundValue == null) {
             if (other.notFoundValue != null)
                 return false;
@@ -97,30 +95,19 @@ public class MapNominal_MF extends MembershipFunction {
 
     @Override
     public double evaluate(String key) {
-        // return (values.getOrDefault(key, notFoundValue) == notFoundValue) ?
-        // notFoundValue : 1.0;
         return values.getOrDefault(key, notFoundValue);
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        MapNominal_MF map = new MapNominal_MF();
-        if (notFoundValue != null)
-            map.setNotFoundValue(notFoundValue);
-        if (getValues() != null)
-            map.setValues(getValues());
-        return map;
+    public MembershipFunction copy() {
+        MapNominal mn = new MapNominal();
+        mn.setNotFoundValue(notFoundValue);
+        values.forEach((k, v) -> mn.addParameter(k, v));
+        return mn;
     }
 
     @Override
-    public Column yPoints() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Column xPoints() {
-        // TODO Auto-generated method stub
-        return null;
+    public List<Point> getPoints() {
+        throw new UnsupportedOperationException("Not implemented yet.");
     }
 }
