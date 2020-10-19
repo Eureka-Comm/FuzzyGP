@@ -1,63 +1,36 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import com.google.gson.annotations.Expose;
-
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
-
-public class LGAMMA_MF extends MembershipFunction {
+public class LGamma extends Gamma {
     /**
      *
      */
     private static final long serialVersionUID = -7381927880504229507L;
-    @Expose
-    private Double a;
-    @Expose
-    private Double b;
+
     @Override
     public boolean isValid() {
-        return!(a==null || b == null);
+        return !(a == null || b == null);
     }
 
-    public LGAMMA_MF(double a, double b) {
-        this.a = a;
-        this.b = b;
+    public LGamma(double a, double b) {
+        super(a, b);
+        this.type = MembershipFunctionType.LGAMMA;
+    }
+
+    public LGamma(String a, String b) {
+        super(a, b);
         this.setType(MembershipFunctionType.LGAMMA);
     }
 
-    public LGAMMA_MF(String a, String b) {
-        this.a = Double.valueOf(a);
-        this.b = Double.valueOf(b);
-        this.setType(MembershipFunctionType.LGAMMA);
-    }
-    public LGAMMA_MF(){
+    public LGamma() {
         this.setType(MembershipFunctionType.LGAMMA);
     }
 
     @Override
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-        if( v <=a)
-        return 0.0;
-        return (b*Math.pow(v-a, 2)/(1+b*Math.pow(v-a, 2)));
-    }
-
-    @Override
-    public Column yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b * a; i += 0.1) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
-    }
-
-    @Override
-    public Column xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b * a; i += 0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
+        if (v <= a)
+            return 0.0;
+        return (b * Math.pow(v - a, 2) / (1 + b * Math.pow(v - a, 2)));
     }
 
     @Override
@@ -98,7 +71,7 @@ public class LGAMMA_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        LGAMMA_MF other = (LGAMMA_MF) obj;
+        LGamma other = (LGamma) obj;
         if (a == null) {
             if (other.a != null)
                 return false;
@@ -110,6 +83,10 @@ public class LGAMMA_MF extends MembershipFunction {
         } else if (!b.equals(other.b))
             return false;
         return true;
+    }
+    @Override
+    public MembershipFunction copy() {
+        return new LGamma(a, b);
     }
 
 }

@@ -11,9 +11,9 @@ public class Gamma extends MembershipFunction {
      */
     private static final long serialVersionUID = 4147507158835989000L;
     @Expose
-    private Double a;
+    protected Double a;
     @Expose
-    private Double b;
+    protected Double b;
 
     public Gamma() {
         super(MembershipFunctionType.GAMMA);
