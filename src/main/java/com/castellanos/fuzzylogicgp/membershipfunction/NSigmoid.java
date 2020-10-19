@@ -5,15 +5,14 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import com.google.gson.annotations.Expose;
-
-import tech.tablesaw.api.DoubleColumn;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author hp
  */
-public class NSigmoid_MF extends MembershipFunction {
+public class NSigmoid extends MembershipFunction {
 
     /**
      *
@@ -26,23 +25,23 @@ public class NSigmoid_MF extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return !( center == null || beta == null);
+        return !(center == null || beta == null);
     }
 
-    public NSigmoid_MF(double center, double beta) {
+    public NSigmoid(double center, double beta) {
+        this();
         this.center = center;
         this.beta = beta;
-        this.setType(MembershipFunctionType.NSIGMOID);
     }
 
-    public NSigmoid_MF(String center, String beta) {
-        this.center = Double.parseDouble(center);
-        this.beta = Double.parseDouble(beta);
-        this.setType(MembershipFunctionType.NSIGMOID);
+    public NSigmoid(String center, String beta) {
+        this(Double.parseDouble(center), Double.parseDouble(beta));
     }
-    public NSigmoid_MF(){
-        this.setType(MembershipFunctionType.NSIGMOID);
+
+    public NSigmoid() {
+        super(MembershipFunctionType.NSIGMOID);
     }
+
     @Override
     public String toString() {
         return "nsigmoid " + this.center + ", " + this.beta;
@@ -51,16 +50,7 @@ public class NSigmoid_MF extends MembershipFunction {
     @Override
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-        return (1-(1/(1+(Math.exp(-((Math.log(0.99)-Math.log(0.01))/(center-beta))*(v-center))))));
-
-        /*BigDecimal lg99 = BigDecimalMath.log(new BigDecimal("0.99"), MathContext.DECIMAL128);
-        BigDecimal lg01 = BigDecimalMath.log(new BigDecimal("0.01"), MathContext.DECIMAL128);
-        BigDecimal one = new BigDecimal("1");
-        BigDecimal vexp = BigDecimalMath
-                .exp(((((lg99.subtract(lg01)).divide(center.subtract(beta), MathContext.DECIMAL128)).negate())
-                        .multiply(v.subtract(center))), MathContext.DECIMAL128);
-
-        return one.min(one.divide(one.add(vexp), MathContext.DECIMAL128));*/
+        return (1 - (1 / (1 + (Math.exp(-((Math.log(0.99) - Math.log(0.01)) / (center - beta)) * (v - center))))));
     }
 
     public Double getCenter() {
@@ -77,10 +67,6 @@ public class NSigmoid_MF extends MembershipFunction {
 
     public void setBeta(double beta) {
         this.beta = beta;
-    }
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new NSigmoid_MF(center, beta);
     }
 
     @Override
@@ -103,7 +89,7 @@ public class NSigmoid_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        NSigmoid_MF other = (NSigmoid_MF) obj;
+        NSigmoid other = (NSigmoid) obj;
         if (Double.doubleToLongBits(beta) != Double.doubleToLongBits(other.beta))
             return false;
         if (Double.doubleToLongBits(center) != Double.doubleToLongBits(other.center))
@@ -112,20 +98,25 @@ public class NSigmoid_MF extends MembershipFunction {
     }
 
     @Override
-    public DoubleColumn xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < center*2; i+=0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.abs(center - beta) / 50;
+        double x = -center * 2 - beta;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
     }
-    @Override
-    public DoubleColumn yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < center*2; i+=0.1) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
-    }
-    
+
 }
