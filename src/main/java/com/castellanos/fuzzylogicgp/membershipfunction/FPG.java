@@ -35,7 +35,7 @@ public class FPG extends MembershipFunction {
         this.m = Double.parseDouble(m);
     }
 
-    public FPG(Double beta, Double gamma, Double m) {
+    public FPG(double beta, double gamma, double m) {
         this();
         this.beta = beta;
         this.gamma = gamma;
@@ -143,6 +143,11 @@ public class FPG extends MembershipFunction {
             x += step;
         } while (y > Point.EPSILON);
         return points;
+    }
+
+    @Override
+    public MembershipFunction copy() {
+        return new FPG(beta, gamma, m);
     }
 
 }

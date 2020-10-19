@@ -1,11 +1,11 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
-
-public class GAMMA_MF extends MembershipFunction {
+public class Gamma extends MembershipFunction {
     /**
      *
      */
@@ -14,20 +14,21 @@ public class GAMMA_MF extends MembershipFunction {
     private Double a;
     @Expose
     private Double b;
-    
-    public GAMMA_MF(){
-        this.setType(MembershipFunctionType.GAMMA);
-    }
-    public GAMMA_MF(double a, double b) {
-        this.a = a;
-        this.b = b;
-        this.setType(MembershipFunctionType.GAMMA);
+
+    public Gamma() {
+        super(MembershipFunctionType.GAMMA);
     }
 
-    public GAMMA_MF(String a, String b) {
+    public Gamma(double a, double b) {
+        this();
+        this.a = a;
+        this.b = b;
+    }
+
+    public Gamma(String a, String b) {
+        this();
         this.a = Double.valueOf(a);
         this.b = Double.valueOf(b);
-        this.setType(MembershipFunctionType.GAMMA);
     }
 
     @Override
@@ -36,24 +37,6 @@ public class GAMMA_MF extends MembershipFunction {
         if (v <= a)
             return 0.0;
         return (1.0 - Math.exp(-b * Math.pow(v - a, 2)));
-    }
-
-    @Override
-    public Column yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < b * a; i += 0.1) {
-            yColumn.append(this.evaluate(i));
-        }
-        return yColumn;
-    }
-
-    @Override
-    public Column xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < b * a; i += 0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
     }
 
     @Override
@@ -94,7 +77,7 @@ public class GAMMA_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        GAMMA_MF other = (GAMMA_MF) obj;
+        Gamma other = (Gamma) obj;
         if (a == null) {
             if (other.a != null)
                 return false;
@@ -107,8 +90,37 @@ public class GAMMA_MF extends MembershipFunction {
             return false;
         return true;
     }
+
     @Override
     public boolean isValid() {
         return !(a == null || b == null);
+    }
+
+    @Override
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.abs(a - b) / 50;
+        double x = -a * 2 - b;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
+
+    }
+
+    @Override
+    public MembershipFunction copy() {
+        return new Gamma(a, b);
     }
 }

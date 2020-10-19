@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.columns.Column;
 
 /**
  *
@@ -60,10 +59,7 @@ public abstract class MembershipFunction implements Serializable {
         throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
     }
 
-    public MembershipFunction copy() {
-        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
-    }
-
+    public abstract MembershipFunction copy();
     @Override
     public int hashCode() {
         final int prime = 31;
