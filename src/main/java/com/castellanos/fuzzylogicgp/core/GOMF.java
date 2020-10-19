@@ -88,7 +88,6 @@ public class GOMF {
         // ChromosomePojo[] currentPop;
         ArrayList<ChromosomePojo> currentPop;
         int iteration = 0;
-
         currentPop = makePop();
         evaluatePredicate(currentPop);
 
@@ -171,14 +170,16 @@ public class GOMF {
 
         minPromMaxMapValues.put(_item.getId(), r);
         double gamma_double = randomValue(r[0], r[2]);
-        double value;
+        double beta;
         do {
-            value = randomValue(r[0], gamma_double);
-
-        } while (value >= gamma_double || (gamma_double - value) <= r[3]);
+            beta = randomValue(r[0], gamma_double);
+            if(Math.abs(gamma_double - beta) <= r[3]){
+                gamma_double = randomValue(r[0], r[2]);
+            }
+        } while (beta >= gamma_double || Math.abs(gamma_double - beta) <= r[3]);
         map.put("owner", _item.getId());
         map.put("gamma", gamma_double);
-        map.put("beta", value);
+        map.put("beta", beta);
         map.put("m", rand.nextDouble());
         return map;
     }
@@ -267,20 +268,26 @@ public class GOMF {
                 HashMap<String, Object> element = next.getElements()[index];
                 Double[] r = minPromMaxMapValues.get(next.getElements()[index].get("owner"));
                 Double value;
-
+                int intents;
                 switch (index) {
                     case 0:
                         Double gamma = (double) element.get("gamma");
+                        intents = 0;
                         do {
                             value = randomValue(r[0], gamma);
-                        } while (Math.abs(gamma - value) <= r[3] || gamma == value);
+                            intents++;
+
+                        } while ((Math.abs(gamma - value) <= r[3] || gamma == value )&& intents< 100);
                         element.put("beta", value);
                         break;
                     case 1:
                         Double beta = (double) element.get("beta");
+                        intents = 0;
                         do {
                             value = randomValue(beta, r[2]);
-                        } while (value <= beta || Math.abs(beta - value) <= r[3]);
+                            intents++;
+
+                        } while ((value <= beta || Math.abs(beta - value) <= r[3] ) && intents< 100);
                         element.put("gamma", value);
                         break;
                     case 2:
@@ -356,7 +363,6 @@ public class GOMF {
                 while (key.hasNext()) {
                     String k = key.next();
                     map.put(k, (rand.nextDouble() <= 0.5) ? p1Map.get(k) : p2Map.get(k));
-
                 }
 
                 child[childIndex].getElements()[j] = repair(map);
@@ -375,7 +381,7 @@ public class GOMF {
         if (Double.isNaN(gamma)) {
             gamma = randomValue(beta, minMaxPromT[2]);
         }
-        while (Math.abs(beta - gamma) <= minMaxPromT[3]) {
+        while (Math.abs(beta - gamma) <= minMaxPromT[3] || gamma==beta) {
             gamma = randomValue(minMaxPromT[0], minMaxPromT[2]);
             beta = randomValue(minMaxPromT[0], gamma);
         }

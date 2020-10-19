@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.function.IntFunction;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
@@ -113,10 +114,22 @@ public class KDFLC {
             }
         }
         NodeTree[] population = makePopulation();
+        /*
+         * Arrays.parallelSetAll(population, new IntFunction<NodeTree>(){
+         * 
+         * @Override public NodeTree apply(int arg0) { GOMF gomf = new GOMF(data, logic,
+         * mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+         * gomf.optimize(population[arg0]); return population[arg0]; }
+         * 
+         * });
+         */
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+
         for (int i = 0; i < population.length; i++) {
+            System.out.print(i + " " + population[i] + " ");
             gomf.optimize(population[i]);
-            // System.out.println(i+" "+population[i]+" "+population[i].getFitness());
+            System.out.println(population[i].getFitness());
+
         }
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
@@ -125,6 +138,8 @@ public class KDFLC {
             if (isToDiscovery) {
                 if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                     resultList.add((NodeTree) population[i].copy());
+                    population[i] = this.createRandomInd(i);
+                    gomf.optimize(population[i]);
                 }
             } else {
                 if (population[i].getFitness() >= min_truth_value) {
@@ -132,7 +147,9 @@ public class KDFLC {
                 }
             }
         }
+
         if (isToDiscovery) {
+
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
                 System.out.println("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
@@ -179,6 +196,8 @@ public class KDFLC {
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
                         resultList.add((NodeTree) population[i].copy());
+                        population[i] = this.createRandomInd(i);
+                        gomf.optimize(population[i]);
                     }
                 }
                 iteration++;
@@ -243,12 +262,6 @@ public class KDFLC {
                     }
                     return (NodeTree) generate;
                 }
-                /*
-                 * try { if (rand.nextDouble() < 0.4) complete_tree(p, (GeneratorNode) node,
-                 * null, 0, NodeTree.dfs(p, node)); else growTree(p, (GeneratorNode) node, null,
-                 * 0, NodeTree.dfs(p, node)); } catch (OperatorException e) {
-                 * e.printStackTrace(); }
-                 */
             }
         }
 
@@ -259,11 +272,11 @@ public class KDFLC {
         for (int i = 0; i < population.length; i++) {
             if (rand.nextDouble() < mut_percentage) {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
-                Node n = editableNode.get(Utils.randInt(0,editableNode.size() - 1));
+                Node n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
 
                 int intents = 0;
                 while (n.getType() == NodeType.NOT && intents < editableNode.size()) {
-                    n = editableNode.get(Utils.randInt(0,editableNode.size() - 1));
+                    n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
                     intents++;
                 }
                 Node clon = (Node) n.copy();
