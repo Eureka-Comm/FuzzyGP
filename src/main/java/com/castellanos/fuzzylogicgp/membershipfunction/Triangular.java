@@ -1,9 +1,11 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import com.google.gson.annotations.Expose;
-import tech.tablesaw.api.DoubleColumn;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Triangular_MF extends MembershipFunction {
+import com.google.gson.annotations.Expose;
+
+public class Triangular extends MembershipFunction {
     /**
      *
      */
@@ -15,14 +17,14 @@ public class Triangular_MF extends MembershipFunction {
     @Expose
     private Double c;
 
-    public Triangular_MF(String a, String b, String c) {
+    public Triangular(String a, String b, String c) {
         this.a = Double.parseDouble(a);
         this.b = Double.parseDouble(b);
         this.c = Double.parseDouble(c);
         this.setType(MembershipFunctionType.TRIANGULAR);
     }
 
-    public Triangular_MF(Double a, Double b, Double c) {
+    public Triangular(Double a, Double b, Double c) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -92,7 +94,7 @@ public class Triangular_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Triangular_MF other = (Triangular_MF) obj;
+        Triangular other = (Triangular) obj;
         if (a == null) {
             if (other.a != null)
                 return false;
@@ -117,43 +119,29 @@ public class Triangular_MF extends MembershipFunction {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new Triangular_MF(a, b, c);
+    public MembershipFunction copy() {
+        return new Triangular(a, b, c);
     }
 
     @Override
-    public DoubleColumn xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        if (!b.equals(c)) {
-            for (double i = a - a / 2; i <= c; i += 0.01) {
-                xColumn.append(i);
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.max(Math.abs(a - b) / 50, Math.abs(b - c) / 50);
+        double x = -a - c / 2;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
             }
-        } else {
-            for (double i = a - a / 2; i <= c; i += 0.01) {
-                xColumn.append(i);
-            }
-            for (double i = 0; i <= c; i += 0.01) {
-                xColumn.append(b);
-            }
-        }
-        return xColumn;
-    }
+            x += step;
+        } while (y <= 0.98);
 
-    @Override
-    public DoubleColumn yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        if (!b.equals(c)) {
-            for (double i = a - a / 2; i <= c; i += 0.01) {
-                yColumn.append(this.evaluate(i));
-            }
-        }else{
-            for (double i = a - a / 2; i <= b; i += 0.01) {
-                yColumn.append(i);
-            }
-            for (double i =0; i <=b; i += 0.01) {
-                yColumn.append(i);
-            }
-        }
-        return yColumn;
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
     }
 }
