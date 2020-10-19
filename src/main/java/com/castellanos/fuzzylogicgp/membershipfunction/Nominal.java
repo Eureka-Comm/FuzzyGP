@@ -1,11 +1,11 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
-
-public class Nominal_MF extends MembershipFunction {
+public class Nominal extends MembershipFunction {
     /**
      *
      */
@@ -17,16 +17,17 @@ public class Nominal_MF extends MembershipFunction {
     @Expose
     private Double notFoundValue = 0.0;
 
-    public Nominal_MF(String key, Double value) {
+    public Nominal(String key, Double value) {
+        this();
         if (value > 1.0 || value < 0.0) {
             throw new IllegalArgumentException("Value must be in [0,1]");
         }
         this.key = key;
         this.value = value;
-        this.setType(MembershipFunctionType.NOMINAL);
     }
-    public Nominal_MF(){
-        this.setType(MembershipFunctionType.NOMINAL);
+
+    public Nominal() {
+        super(MembershipFunctionType.NOMINAL);
     }
 
     @Override
@@ -41,24 +42,6 @@ public class Nominal_MF extends MembershipFunction {
             return value;
         }
         return notFoundValue;
-    }
-
-    @Override
-    public Column yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("" + key);
-        for (double i = 0; i < 10; i += 0.1) {
-            yColumn.append(value);
-        }
-        return yColumn;
-    }
-
-    @Override
-    public Column xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < 10; i += 0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
     }
 
     public String getKey() {
@@ -109,7 +92,7 @@ public class Nominal_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Nominal_MF other = (Nominal_MF) obj;
+        Nominal other = (Nominal) obj;
         if (key == null) {
             if (other.key != null)
                 return false;
@@ -131,5 +114,20 @@ public class Nominal_MF extends MembershipFunction {
     @Override
     public String toString() {
         return String.format("[%s %s %f %f]", this.type, key, value, notFoundValue);
+    }
+
+    @Override
+    public MembershipFunction copy() {
+        Nominal n = new Nominal(key, value);
+        n.setNotFoundValue(notFoundValue);
+        return n;
+    }
+
+    @Override
+    public List<Point> getPoints() {
+        ArrayList<Point> point = new ArrayList<>();
+        point.add(new Point(1, value));
+        point.add(new Point(0.5, notFoundValue));
+        return point;
     }
 }

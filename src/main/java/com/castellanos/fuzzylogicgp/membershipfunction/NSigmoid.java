@@ -8,6 +8,8 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.annotations.Expose;
+
 /**
  *
  * @author hp
@@ -117,6 +119,11 @@ public class NSigmoid extends MembershipFunction {
             x += step;
         } while (y > Point.EPSILON);
         return points;
+    }
+
+    @Override
+    public MembershipFunction copy() {
+        return new NSigmoid(center, beta);
     }
 
 }
