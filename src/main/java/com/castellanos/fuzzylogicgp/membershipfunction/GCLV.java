@@ -1,19 +1,14 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import static java.lang.Math.pow;
+import java.util.List;
 
-import com.castellanos.fuzzylogicgp.logic.ACF_Logic;
-import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.google.gson.annotations.Expose;
-
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
 
 /**
  * @author s210
  */
 
-public class GCLV_MF extends MembershipFunction {
+public class GCLV extends MembershipFunction {
     private static final long serialVersionUID = -2109037051439575667L; // reemplazar por el UID
     @Expose
     private Double L;
@@ -23,47 +18,33 @@ public class GCLV_MF extends MembershipFunction {
     private Double beta;
     @Expose
     private Double m;
+
     @Override
     public boolean isValid() {
-        return!(L == null || beta == null || gamma == null || m == null);
-    }
-    public GCLV_MF(String L, String gamma, String beta, String m){
-        this.L = Double.parseDouble(L);
-        this.gamma = Double.parseDouble(gamma);
-        this.beta = Double.parseDouble(beta);
-        this.m = Double.parseDouble(m);
-        this.setType(MembershipFunctionType.GCLV);
+        return !(L == null || beta == null || gamma == null || m == null);
     }
 
-    public GCLV_MF(Double L, Double gamma, Double beta, Double m) {
+    public GCLV(String L, String gamma, String beta, String m) {
+        this(Double.parseDouble(L), Double.parseDouble(gamma), Double.parseDouble(beta), Double.parseDouble(m));
+    }
+
+    public GCLV(Double L, Double gamma, Double beta, Double m) {
+        this();
         this.L = L;
         this.gamma = gamma;
         this.beta = beta;
         this.m = m;
-        this.setType(MembershipFunctionType.GCLV);
     }
 
-    public GCLV_MF() {
-        this.setType(MembershipFunctionType.GCLV);
-    }
-    @Override
-    public double evaluate(Number v) {
-        ACF_Logic logic; 
-        for (Logic logic2 : Logic.getInstances()) {
-            if(logic2 instanceof ACF_Logic ){
-                logic = (ACF_Logic) logic2;
-                break;
-            }
-        }
-        
-        return super.evaluate(v);
+    public GCLV() {
+        super(MembershipFunctionType.GCLV);
     }
 
-    public Double getL(){
+    public Double getL() {
         return L;
     }
 
-    public void setL(Double L){
+    public void setL(Double L) {
         this.L = L;
     }
 
@@ -92,11 +73,6 @@ public class GCLV_MF extends MembershipFunction {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new GCLV_MF(L, gamma, beta, m);
-    }
-
-    @Override
     public String toString() {
         return "GCLV " + this.L + " " + this.gamma + " " + this.beta + " " + this.m;
     }
@@ -119,7 +95,7 @@ public class GCLV_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        GCLV_MF other = (GCLV_MF) obj;
+        GCLV other = (GCLV) obj;
         if (L == null) {
             if (other.L != null)
                 return false;
@@ -144,27 +120,17 @@ public class GCLV_MF extends MembershipFunction {
     }
 
     @Override
-    public Column yPoints() {
-        DoubleColumn column = DoubleColumn.create("y column");
-        for (double i = 0; i < gamma*2; i+=0.1) {
-            column.append(evaluate(i));
-        }
-        return null;
+    public List<Point> getPoints() {
+        throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public Column xPoints() {
-        DoubleColumn column = DoubleColumn.create("x column");
-        for (double i = 0; i < gamma*2; i+=0.1) {
-            column.append(i);
-        }
-        return column;
+    public MembershipFunction copy() {
+        return new GCLV(L, gamma, beta, m);
     }
 
-
-
-
-    
-
-    
+    @Override
+    public double evaluate(Number v) {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
 }
