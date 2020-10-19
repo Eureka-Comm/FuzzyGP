@@ -6,6 +6,7 @@
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
@@ -15,21 +16,26 @@ import tech.tablesaw.columns.Column;
  *
  * @author hp
  */
-public abstract class MembershipFunction implements Cloneable, Serializable {
+public abstract class MembershipFunction implements Serializable {
 
     /**
      *
      */
     private static final long serialVersionUID = -9006368296289781684L;
 
+    public MembershipFunction(MembershipFunctionType type) {
+        this.type = type;
+    }
+
     public MembershipFunction() {
+        this(null);
     }
 
     @Expose
     public MembershipFunctionType type;
 
-    public boolean isValid(){
-        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    public boolean isValid() {
+        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
     }
 
     public MembershipFunctionType getType() {
@@ -40,23 +46,24 @@ public abstract class MembershipFunction implements Cloneable, Serializable {
         this.type = type;
     }
 
-    public double evaluate(Number v){
-        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
-    }    
-
-    public  double evaluate(String key){
-        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    public double evaluate(Number v) {
+        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
     }
-    public abstract Column yPoints();
 
-    public abstract Column xPoints();
-
-    public Double partialDerivate(double value,String partial_params){
-        throw new UnsupportedOperationException("["+this.type+"]: Not supported yet."); 
+    public double evaluate(String key) {
+        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
     }
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+
+    public abstract List<Point> getPoints(){
+
+    }
+
+    public Double partialDerivate(double value, String partial_params) {
+        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
+    }
+
+    public MembershipFunction copy() {
+        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
     }
 
     @Override
