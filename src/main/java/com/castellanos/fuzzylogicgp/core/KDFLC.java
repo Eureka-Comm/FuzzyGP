@@ -65,7 +65,6 @@ public class KDFLC {
             double mut_percentage, int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data)
             throws OperatorException, CloneNotSupportedException {
 
-        
         if (min_truth_value < 0.0 || min_truth_value > 1.0)
             throw new IllegalArgumentException("Min truth value must be in [0,1].");
 
@@ -77,7 +76,6 @@ public class KDFLC {
         this.parserPredicate = pp;
         this.predicatePattern = pp.parser();
         this.logic = logic;
-        this.depth = depth;
         this.num_pop = num_pop;
         this.num_iter = num_iter;
         this.num_result = num_result;
@@ -215,13 +213,17 @@ public class KDFLC {
     private NodeTree[] makePopulation() {
         NodeTree[] pop = new NodeTree[num_pop];
         for (int i = 0; i < pop.length; i++) {
-            pop[i] = createRandomInd();
+            try {
+                pop[i] = createRandomInd(i);
+            } catch (OperatorException e) {
+                e.printStackTrace();
+            }
             // System.out.printf("ind %3d: %s\n", i, pop[i]);
         }
         return pop;
     }
 
-    private NodeTree createRandomInd() {
+    private NodeTree createRandomInd(int index) throws OperatorException {
         NodeTree p = (NodeTree) predicatePattern.copy();
 
         // Iterator<Node> iterator = p.getNodes().values().iterator();
@@ -229,210 +231,39 @@ public class KDFLC {
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
-                try {
-                    if (rand.nextDouble() < 0.4)
-                        complete_tree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
-                    else
-                        growTree(p, (GeneratorNode) node, null, 0, NodeTree.dfs(p, node));
-                } catch (OperatorException e) {
-                    e.printStackTrace();
+                Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()),
+                        index < num_pop / 2);
+                if (p != node) {
+                    NodeTree.replace(p, node, generate, false);
+                } else {
+                    if (generate.getType() == NodeType.STATE) {
+                        NodeTree root = new NodeTree(NodeType.NOT);
+                        root.addChild(generate);
+                        return root;
+                    }
+                    return (NodeTree) generate;
                 }
-
+                /*
+                 * try { if (rand.nextDouble() < 0.4) complete_tree(p, (GeneratorNode) node,
+                 * null, 0, NodeTree.dfs(p, node)); else growTree(p, (GeneratorNode) node, null,
+                 * 0, NodeTree.dfs(p, node)); } catch (OperatorException e) {
+                 * e.printStackTrace(); }
+                 */
             }
         }
 
         return p;
     }
 
-    private void complete_tree(NodeTree p, GeneratorNode gNode, Node father, int arity, int currentDepth)
-            throws OperatorException {
-
-        boolean isToReplace = false;
-        if (father == null && !(p.getType().equals(NodeType.OPERATOR))) {
-            NodeTree find = NodeTree.getNodeParent(p, gNode.getId());
-            if (find != null) {
-                father = find;
-                isToReplace = true;
-            }
-        }
-
-        if (currentDepth >= depth && !isToReplace) {
-            int size = statesByGenerators.get(gNode.getId()).size();
-            StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
-            if (size >= 2 && father != null) {
-                ArrayList<Node> childs = ((NodeTree) father).getChildrens();
-                boolean contains = false;
-                int intents = 1;
-                do {
-                    for (Node node : childs) {
-                        if (node instanceof StateNode) {
-                            StateNode st = ((StateNode) node);
-                            if (st.getLabel().equals(select.getLabel())) {
-                                contains = true;
-                            }
-                        }
-                    }
-                    if (contains)
-                        select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
-                    intents++;
-                } while (contains && intents < size);
-            }
-            StateNode s = (StateNode) select.copy();
-            s.setByGenerator(gNode.getId());
-            s.setEditable(true);
-            // s.setFather(father.getId());
-            ((NodeTree) father).addChild(s);
-
-        } else {
-            int max = gNode.getVariables().size();
-            max = (int) (((float) max / 2 >= 2) ? (float) max / 2 : max);
-            arity = rand.nextInt(max);
-            if (arity < 2) {
-                arity = 2;
-            }
-
-            Node newFather;
-            NodeType nType = gNode.getOperators()[rand.nextInt(gNode.getOperators().length)];
-            switch (nType) {
-                case AND:
-                    newFather = new NodeTree(NodeType.AND);
-                    break;
-                case OR:
-                    newFather = new NodeTree(NodeType.OR);
-                    break;
-                case IMP:
-                    newFather = new NodeTree(NodeType.IMP);
-                    arity = 2;
-                    break;
-                case EQV:
-                    newFather = new NodeTree(NodeType.EQV);
-                    arity = 2;
-                    break;
-                case NOT:
-                    newFather = new NodeTree(NodeType.NOT);
-                    arity = 1;
-                    break;
-                default:
-                    newFather = null;
-            }
-            newFather.setEditable(true);
-            newFather.setByGenerator(gNode.getId());
-
-            if (father == null || isToReplace) {
-                NodeTree.replace(p, gNode, newFather, !isToReplace);
-                if (!isToReplace) {
-                    newFather = p;
-                    // currentDepth=-1;
-                }
-
-            } else
-                ((NodeTree) father).addChild(newFather);
-            for (int i = 0; i < arity; i++)
-                complete_tree(p, gNode, newFather, arity, currentDepth + 1);
-        }
-    }
-
-    private void growTree(NodeTree p, GeneratorNode gNode, Node father, int arity, int currentDepth)
-            throws OperatorException {
-
-        boolean isToReplace = false;
-        if (father == null && !p.getType().equals(NodeType.OPERATOR)) {
-            NodeTree find = NodeTree.getNodeParent(p, gNode.getId());
-            if (find != null) {
-                father = find;
-                isToReplace = true;
-            }
-        }
-
-        if ((currentDepth >= depth || rand.nextDouble() < 0.65) && (father != null && currentDepth != 0)) {
-            int size = statesByGenerators.get(gNode.getId()).size();
-            StateNode select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
-            if (size >= 2 && father != null) {
-
-                ArrayList<Node> childs = ((NodeTree) father).getChildrens();
-                boolean contains = false;
-                int intents = 1;
-                do {
-                    for (Node node : childs) {
-                        if (node instanceof StateNode) {
-                            StateNode st = ((StateNode) node);
-                            if (st.getLabel().equals(select.getLabel())) {
-                                contains = true;
-                            }
-                        }
-                    }
-                    if (contains)
-                        select = statesByGenerators.get(gNode.getId()).get(rand.nextInt(size));
-                    intents++;
-                } while (contains && intents < size);
-            }
-            StateNode s = (StateNode) select.copy();
-            s.setByGenerator(gNode.getId());
-            s.setEditable(true);
-
-            if (isToReplace) {
-                NodeTree.replace(p, gNode, s, !isToReplace);
-            } else {
-                ((NodeTree) father).addChild(s);
-            }
-
-        } else {
-            int max = gNode.getVariables().size();
-            max = (int) (((float) max / 2 >= 2) ? (float) max / 2 : max);
-            arity = rand.nextInt(max);
-            if (arity < 2) {
-                arity = 2;
-            }
-
-            Node newFather;
-            NodeType nType = gNode.getOperators()[rand.nextInt(gNode.getOperators().length)];
-            switch (nType) {
-                case AND:
-                    newFather = new NodeTree(NodeType.AND);
-                    break;
-                case OR:
-                    newFather = new NodeTree(NodeType.OR);
-                    break;
-                case IMP:
-                    newFather = new NodeTree(NodeType.IMP);
-                    arity = 2;
-                    break;
-                case EQV:
-                    newFather = new NodeTree(NodeType.EQV);
-                    arity = 2;
-                    break;
-                case NOT:
-                    newFather = new NodeTree(NodeType.NOT);
-                    arity = 1;
-                    break;
-                default:
-                    newFather = null;
-            }
-            newFather.setEditable(true);
-            newFather.setByGenerator(gNode.getId());
-            if (father == null || isToReplace) {
-                NodeTree.replace(p, gNode, newFather, !isToReplace);
-                if (!isToReplace) {
-                    newFather = p;
-                    // currentDepth=-1;
-                }
-
-            } else
-                ((NodeTree) father).addChild(newFather);
-            for (int i = 0; i < arity; i++)
-                growTree(p, gNode, newFather, arity, currentDepth + 1);
-        }
-    }
-
     private void mutation(NodeTree[] population) throws OperatorException {
         for (int i = 0; i < population.length; i++) {
             if (rand.nextDouble() < mut_percentage) {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
-                Node n = editableNode.get(rand.nextInt(editableNode.size()));
+                Node n = editableNode.get(Utils.randInt(0,editableNode.size() - 1));
 
                 int intents = 0;
                 while (n.getType() == NodeType.NOT && intents < editableNode.size()) {
-                    n = editableNode.get(rand.nextInt(editableNode.size()));
+                    n = editableNode.get(Utils.randInt(0,editableNode.size() - 1));
                     intents++;
                 }
                 Node clon = (Node) n.copy();

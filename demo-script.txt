@@ -1,5 +1,4 @@
 {
-  "depth": 2,
   "num_pop": 100,
   "num_iter": 20,
   "num_result": 20,
@@ -11,6 +10,8 @@
   "generators": [
     {
       "label": "comodin",
+      "depth": 2,
+      "max_child_number": 2,
       "operators": [
         "AND",
         "OR",
