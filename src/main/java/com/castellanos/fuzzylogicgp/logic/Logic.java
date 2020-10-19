@@ -6,32 +6,43 @@
 package com.castellanos.fuzzylogicgp.logic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  *
  * @author hp
  */
 public abstract class Logic {
-
-    private static Set<Logic> instances = Collections.newSetFromMap(new WeakHashMap<Logic, Boolean>());
+    protected boolean natural_implication;
 
     public Logic() {
-        instances.add(this);
+        this(false);
     }
 
-    public static Set<Logic> getInstances() {
-        return instances;
+    public Logic(boolean natural_implication) {
+        this.natural_implication = natural_implication;
+    }
+
+    public boolean isNatural_implication() {
+        return natural_implication;
+    }
+
+    public void setNatural_implication(boolean natural_implication) {
+        this.natural_implication = natural_implication;
     }
 
     public abstract double not(double v1);
 
-    public abstract double imp(double v1, double v2);
+    public double imp(double v1, double v2) {
+        if (natural_implication) {
+            return this.or(this.not(v1), v2);
+        }
+        return this.or(this.not(v1), this.and(v1, v2));
+    }
 
-    public abstract double eqv(double v1, double v2);
+    public double eqv(double v1, double v2) {
+        return this.and(this.imp(v1, v2), this.imp(v2, v1));
+    }
 
     public abstract double and(double v1, double v2);
 

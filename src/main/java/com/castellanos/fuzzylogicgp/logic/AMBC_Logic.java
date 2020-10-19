@@ -10,25 +10,14 @@ import java.util.List;
 
 /**
  * AMBC logic: https://doi.org/10.1142/S1469026811003070 -based implementation.
+ * 
  * @author Castellanos-Alvarez, Alejandro.
  */
 public class AMBC_Logic extends Logic {
-    public AMBC_Logic(){
-        super();
-    }
+
     @Override
     public double not(double v1) {
         return 1 - v1;
-    }
-
-    @Override
-    public double imp(double v1, double v2) {
-        return or(not(v1), v2);
-    }
-
-    @Override
-    public double eqv(double v1, double v2) {
-        return and(imp(v1, v2), imp(v2, v1));
     }
 
     @Override
@@ -63,7 +52,7 @@ public class AMBC_Logic extends Logic {
     @Override
     public double or(ArrayList<Double> values) {
         double min = 1.0;
-        double sum =0.0;
+        double sum = 0.0;
         for (Double valDouble : values) {
             double tmp = 1.0 - valDouble;
             sum += tmp;
@@ -71,8 +60,7 @@ public class AMBC_Logic extends Logic {
                 min = tmp;
             }
         }
-        return (1.0 - Math
-                .sqrt(min * (1.0 / values.size()) * sum));
+        return (1.0 - Math.sqrt(min * (1.0 / values.size()) * sum));
     }
 
     @Override
