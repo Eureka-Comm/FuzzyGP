@@ -5,15 +5,16 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
-import com.google.gson.annotations.Expose;
+import java.util.ArrayList;
+import java.util.List;
 
-import tech.tablesaw.api.DoubleColumn;
+import com.google.gson.annotations.Expose;
 
 /**
  *
  * @author hp
  */
-public class Singleton_MF extends MembershipFunction {
+public class Singleton extends MembershipFunction {
 
     /**
      *
@@ -22,27 +23,27 @@ public class Singleton_MF extends MembershipFunction {
     @Expose
     private Double a;
 
-    public Singleton_MF(double a) {        
+    public Singleton(double a) {
+        this();
         this.a = a;
-        this.setType(MembershipFunctionType.SINGLETON);
-
     }
-    public Singleton_MF(){
-        this.setType(MembershipFunctionType.SINGLETON);
+
+    public Singleton() {
+        this.type = MembershipFunctionType.SINGLETON;
     }
 
     public double getA() {
         return a;
     }
 
-    public void setA(double a) {        
+    public void setA(double a) {
         this.a = a;
     }
 
     @Override
     public boolean isValid() {
-        if(a==null)
-        return false;
+        if (a == null)
+            return false;
         return !(a > 1.0 || a < 0.0);
     }
 
@@ -74,34 +75,22 @@ public class Singleton_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Singleton_MF other = (Singleton_MF) obj;
+        Singleton other = (Singleton) obj;
         if (Double.doubleToLongBits(a) != Double.doubleToLongBits(other.a))
             return false;
         return true;
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new Singleton_MF(a);
+    public List<Point> getPoints() {
+        ArrayList<Point> point = new ArrayList<>();
+        point.add(new Point(a, 1.0));
+        return point;
     }
 
     @Override
-    public DoubleColumn xPoints() {
-        DoubleColumn xColumn = DoubleColumn.create("x column");
-        for (double i = 0; i < a * 2; i += 0.1) {
-            xColumn.append(i);
-        }
-        return xColumn;
+    public MembershipFunction copy() {
+        return new Singleton(a);
     }
-
-    @Override
-    public DoubleColumn yPoints() {
-        DoubleColumn yColumn = DoubleColumn.create("y column");
-        for (double i = 0; i < a * 2; i += 0.1) {
-            yColumn.append(1.0);
-        }
-        return yColumn;
-    }
-    
 
 }
