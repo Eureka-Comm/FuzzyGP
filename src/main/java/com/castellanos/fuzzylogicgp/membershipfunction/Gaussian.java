@@ -2,7 +2,6 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
 
 import static java.lang.Math.*;
 

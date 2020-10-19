@@ -2,16 +2,17 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.columns.Column;
 import static java.lang.Math.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The class {@code GBELL_MF} is Generalized Bell function fuzzy membership
  * generator.
  * 
  */
-public class GBELL_MF extends MembershipFunction {
+public class GBell extends MembershipFunction {
 
     /**
      *
@@ -39,11 +40,11 @@ public class GBELL_MF extends MembershipFunction {
      * @param center Double Bell function parameter defining the center. See Note
      *               for definition.
      */
-    public GBELL_MF(Double width, Double slope, Double center) {
+    public GBell(Double width, Double slope, Double center) {
+        this();
         this.width = width;
         this.slope = slope;
         this.center = center;
-        this.setType(MembershipFunctionType.GBELL);
     }
 
     /**
@@ -53,15 +54,15 @@ public class GBELL_MF extends MembershipFunction {
      * @param slope  Double Bell function parameter controlling slope.
      * @param center Double Bell function parameter defining the center.
      */
-    public GBELL_MF(String width, String slope, String center) {
+    public GBell(String width, String slope, String center) {
+        this();
         this.width = Double.parseDouble(width);
         this.slope = Double.parseDouble(slope);
         this.center = Double.parseDouble(center);
-        this.setType(MembershipFunctionType.GBELL);
     }
 
-    public GBELL_MF() {
-        this.setType(MembershipFunctionType.GBELL);
+    public GBell() {
+        super(MembershipFunctionType.GBELL);
     }
 
     /**
@@ -139,7 +140,7 @@ public class GBELL_MF extends MembershipFunction {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        GBELL_MF other = (GBELL_MF) obj;
+        GBell other = (GBell) obj;
         if (width == null) {
             if (other.width != null)
                 return false;
@@ -159,26 +160,29 @@ public class GBELL_MF extends MembershipFunction {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new GBELL_MF(width, slope, center);
+    public MembershipFunction copy() {
+        return new GBell(width, slope, center);
     }
 
     @Override
-    public Column yPoints() {
-        DoubleColumn column = DoubleColumn.create("y column");
-        for (double i = 0; i < width + center; i += 0.1) {
-            column.append(evaluate(i));
-        }
-        return column;
-    }
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
+        double step = Math.abs(center - width) / 50;
+        double x = -width * 2 - center - slope;
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98);
 
-    @Override
-    public Column xPoints() {
-        DoubleColumn column = DoubleColumn.create("x column");
-        for (double i = 0; i < width + center; i += 0.1) {
-            column.append((i));
-        }
-        return column;
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON);
+        return points;
     }
-
 }
