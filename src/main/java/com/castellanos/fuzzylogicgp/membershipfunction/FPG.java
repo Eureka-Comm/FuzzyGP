@@ -48,7 +48,7 @@ public class FPG extends MembershipFunction {
 
     @Override
     public String toString() {
-        return "FPG " + this.beta + " " + this.gamma + " " + this.m;
+        return "FPG " + this.gamma + " " + this.beta + " " + this.m;
     }
 
     @Override

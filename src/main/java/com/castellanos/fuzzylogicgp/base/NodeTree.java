@@ -1,6 +1,5 @@
 package com.castellanos.fuzzylogicgp.base;
 
-
 import java.util.ArrayList;
 
 import com.google.gson.GsonBuilder;
@@ -36,6 +35,9 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
                 setType(type);
                 break;
             case NOT:
+                setType(type);
+                break;
+            case OPERATOR:
                 setType(type);
                 break;
             default:
@@ -197,6 +199,8 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         if (idChild == null) {
             return null;
         }
+        if (root == null)
+            return null;
         for (Node node : root.getChildrens()) {
             if (node.getId().equals(idChild)) {
                 return root;

@@ -41,53 +41,53 @@
   "states": [
     {
       "label": "citric_acid",
-      "colName": "citric_acid"
+      "cname": "citric_acid"
     },
     {
       "label": "volatile_acidity",
-      "colName": "volatile_acidity"
+      "cname": "volatile_acidity"
     },
     {
       "label": "fixed_acidity",
-      "colName": "fixed_acidity"
+      "cname": "fixed_acidity"
     },
     {
       "label": "free_sulfur_dioxide",
-      "colName": "free_sulfur_dioxide"
+      "cname": "free_sulfur_dioxide"
     },
     {
       "label": "sulphates",
-      "colName": "sulphates"
+      "cname": "sulphates"
     },
     {
       "label": "alcohol",
-      "colName": "alcohol"
+      "cname": "alcohol"
     },
     {
       "label": "residual_sugar",
-      "colName": "residual_sugar"
+      "cname": "residual_sugar"
     },
     {
       "label": "pH",
-      "colName": "pH"
+      "cname": "pH"
     },
     {
       "label": "total_sulfur_dioxide",
-      "colName": "total_sulfur_dioxide"
+      "cname": "total_sulfur_dioxide"
     },
     {
       "label": "quality",
-      "colName": "quality"
+      "cname": "quality"
     },
     {
       "label": "density",
-      "colName": "density"
+      "cname": "density"
     },
     {
       "label": "chlorides",
-      "colName": "chlorides"
+      "cname": "chlorides"
     }
   ],
   "logic": "GMBC",
-  "predicate": "(IMP \"comodin\" \"quality\")"
+  "predicate": "\"comodin\""
 }

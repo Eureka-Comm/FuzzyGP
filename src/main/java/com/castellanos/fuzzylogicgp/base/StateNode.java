@@ -36,9 +36,9 @@ public class StateNode extends Node {
     @Expose
     private String label;
     @Expose
-    private String colName;
+    private String cname;
     @Expose
-    @SerializedName("f")
+    @SerializedName("membership")
     private MembershipFunction membershipFunction;
 
     public StateNode() {
@@ -47,23 +47,23 @@ public class StateNode extends Node {
 
     public StateNode(StateNode state) {
         this.label = state.getLabel();
-        this.colName = state.getColName();
+        this.cname = state.getColName();
         this.setType(NodeType.STATE);
         if (state.getMembershipFunction() != null)
             this.membershipFunction = state.getMembershipFunction();
         this.setEditable(state.isEditable());
     }
 
-    public StateNode(String label, String colName) {
+    public StateNode(String label, String cname) {
         this.label = label;
-        this.colName = colName;
+        this.cname = cname;
         this.setType(NodeType.STATE);
         this.setEditable(false);
     }
 
-    public StateNode(String label, String colName, MembershipFunction membershipFunction) {
+    public StateNode(String label, String cname, MembershipFunction membershipFunction) {
         this.label = label;
-        this.colName = colName;
+        this.cname = cname;
         this.membershipFunction = membershipFunction;
         this.setEditable(false);
         this.setType(NodeType.STATE);
@@ -71,11 +71,11 @@ public class StateNode extends Node {
     }
 
     public String getColName() {
-        return colName;
+        return cname;
     }
 
-    public void setColName(String colName) {
-        this.colName = colName;
+    public void setColName(String cname) {
+        this.cname = cname;
     }
 
     public String getLabel() {
@@ -97,10 +97,10 @@ public class StateNode extends Node {
     @Override
     public String toString() {
         if (this.membershipFunction != null) {
-            return String.format("{:label \"%s\" :colname \"%s\" :f [%s]}", this.label, this.colName,
+            return String.format("{:label \"%s\", :colname \"%s\", :f [%s]}", this.label, this.cname,
                     this.membershipFunction);
         } else {
-            return String.format("{:label \"%s\" :colname \"%s\"}", this.label, this.colName);
+            return String.format("{:label \"%s\", :colname \"%s\"}", this.label, this.cname);
         }
     }
 
@@ -110,7 +110,7 @@ public class StateNode extends Node {
         if (this.getLabel() != null)
             state.setLabel(label);
         if (this.getColName() != null)
-            state.setColName(colName);
+            state.setColName(cname);
         if (this.getMembershipFunction() != null)
             state.setMembershipFunction((MembershipFunction) this.getMembershipFunction().copy());
         if (this.getByGenerator() != null)
@@ -121,7 +121,7 @@ public class StateNode extends Node {
 
     public void plot(String dirOutputString, String fileName) {
 
-        Layout layout = Layout.builder().title(label + "(" + colName + "): " + membershipFunction.toString()).build();
+        Layout layout = Layout.builder().title(label + "(" + cname + "): " + membershipFunction.toString()).build();
         ArrayList<Point> points = (ArrayList<Point>) membershipFunction.getPoints();
         Trace trace = null;
 

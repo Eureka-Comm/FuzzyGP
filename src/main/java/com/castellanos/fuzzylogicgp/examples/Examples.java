@@ -139,6 +139,7 @@ public class Examples {
         query.setOut_file(out_file);
         query.setLogic(LogicType.GMBC);
         String predicate = "(IMP \"comodin\" \"quality\")";
+         predicate = "\"comodin\"";
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("comodin");
         ArrayList<String> variables = new ArrayList<>();

@@ -208,6 +208,15 @@ public class KDFLC {
                     }
                 }
                 iteration++;
+                if (iteration % (num_iter / 10) == 0) {
+                    int n = 0;
+                    for (int i = 0; i < num_pop && n < num_pop / 10; i++) {
+                        if (rand.nextDouble() < 0.5 && !toReplaceIndex.contains(i)) {
+                            toReplaceIndex.add(i);
+                            n++;
+                        }
+                    }
+                }
             }
             Collections.sort(resultList, Collections.reverseOrder());
             /*
@@ -274,7 +283,10 @@ public class KDFLC {
 
     private NodeTree createRandomInd(int index) throws OperatorException {
         NodeTree p = (NodeTree) predicatePattern.copy();
-
+        boolean flag = false;
+        if(predicatePattern.getChildrens().size()==1){
+            flag = predicatePattern.getChildrens().get(0) instanceof  GeneratorNode;
+        }
         // Iterator<Node> iterator = p.getNodes().values().iterator();
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
@@ -282,8 +294,8 @@ public class KDFLC {
             if (node instanceof GeneratorNode) {
                 Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()),
                         index < num_pop / 2);
-                if (p != node) {
-                    NodeTree.replace(p, node, generate, false);
+                if (p != node && p.getType() != NodeType.OPERATOR) {
+                    NodeTree.replace(p, node, generate, flag);
                 } else {
                     if (generate.getType() == NodeType.STATE) {
                         NodeTree root = new NodeTree(NodeType.NOT);
@@ -392,19 +404,18 @@ public class KDFLC {
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         builder.excludeFieldsWithoutExposeAnnotation();
         // builder.setPrettyPrinting();
-        Gson print = builder.create();
 
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
             p.add(resultList.get(i).toString());
-            ArrayList<String> st = new ArrayList<>();
+            String st = "(";
             for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
                 if (node instanceof StateNode) {
                     StateNode s = (StateNode) node;
-                    st.add(print.toJson(s));
+                    st+= s.toString()+" ";
                 }
             }
-            d.add(st.toString());
+            d.add(st.trim()+")");
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
 
