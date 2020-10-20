@@ -79,7 +79,7 @@ public class Gaussian extends MembershipFunction {
 
     @Override
     public String toString() {
-        return String.format("[%s %f, %f]", this.type.toString(), this.center, this.deviation);
+        return String.format("[%s %f %f]", this.type.toString(), this.center, this.deviation);
     }
 
     @Override

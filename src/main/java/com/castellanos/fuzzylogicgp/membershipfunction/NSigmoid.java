@@ -46,7 +46,7 @@ public class NSigmoid extends MembershipFunction {
 
     @Override
     public String toString() {
-        return "nsigmoid " + this.center + ", " + this.beta;
+        return "[-sigmoid " + this.center + " " + this.beta+"]";
     }
 
     @Override

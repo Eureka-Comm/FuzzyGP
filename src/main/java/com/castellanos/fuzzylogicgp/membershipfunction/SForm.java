@@ -50,7 +50,7 @@ public class SForm extends MembershipFunction {
 
     @Override
     public String toString() {
-        return String.format("[%s %f, %f]", this.type.toString(), this.a, this.b);
+        return String.format("[%s %f %f]", this.type.toString(), this.a, this.b);
     }
 
     public Double getA() {

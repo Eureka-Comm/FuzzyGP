@@ -39,7 +39,7 @@ public class Sigmoid extends MembershipFunction {
 
     @Override
     public String toString() {
-        return "sigmoid " + this.center + ", " + this.beta;
+        return "sigmoid " + this.center + " " + this.beta;
     }
 
     @Override

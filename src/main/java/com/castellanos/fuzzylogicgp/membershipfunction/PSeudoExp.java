@@ -38,7 +38,7 @@ public class PSeudoExp extends MembershipFunction {
 
     @Override
     public String toString() {
-        return String.format("[%s %f, %f]", this.type, this.center, this.deviation);
+        return String.format("[%s %f %f]", this.type, this.center, this.deviation);
     }
 
     public Double getCenter() {

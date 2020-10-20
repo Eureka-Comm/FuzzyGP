@@ -10,6 +10,20 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
  * @author hp
  */
 public enum MembershipFunctionType {
-    GCLV,FPG, SIGMOID, NSIGMOID, SINGLETON, MAPNOMIAL, TRIANGULAR, TRAPEZOIDAL,RTRAPEZOIDAL,LTRAPEZOIDAL,GAMMA,LGAMMA,PSEUDOEXP, GAUSSIAN, ZFORM, SFORM, NOMINAL, GBELL;
-    
+    GCLV("gclv"), FPG("fpg"), SIGMOID("sigmoid"), NSIGMOID("-sigmoid"), SINGLETON("singleton"),
+    MAPNOMIAL("map-nominal"), TRIANGULAR("triangular"), TRAPEZOIDAL("trapezoidal"), RTRAPEZOIDAL("Rtrapezoidal"),
+    LTRAPEZOIDAL("Ltrapezoidal"), GAMMA("gamma"), LGAMMA("Lgamma"), PSEUDOEXP("pseudo-exp"), GAUSSIAN("gaussian"),
+    ZFORM("Zform"), SFORM("Sfomr"), NOMINAL("nomial"), GBELL("gbell");
+
+    private final String str;
+
+    private MembershipFunctionType(String str) {
+        this.str = str;
+    }
+
+    @Override
+    public String toString() {
+        return this.str;
+    }
+
 }

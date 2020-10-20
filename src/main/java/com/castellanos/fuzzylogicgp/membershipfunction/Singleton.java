@@ -49,7 +49,7 @@ public class Singleton extends MembershipFunction {
 
     @Override
     public String toString() {
-        return "singleton " + this.a;
+        return "[singleton " + this.a+"]";
     }
 
     @Override

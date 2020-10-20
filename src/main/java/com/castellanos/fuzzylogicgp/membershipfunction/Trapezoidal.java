@@ -52,7 +52,7 @@ public class Trapezoidal extends LTrapezoidal {
 
     @Override
     public String toString() {
-        return String.format("[%s %f, %f, %f, %f]", this.type.toString(), this.a, this.b, this.c, this.d);
+        return String.format("[%s %f %f %f %f]", this.type.toString(), this.a, this.b, this.c, this.d);
     }
 
     public Double getC() {

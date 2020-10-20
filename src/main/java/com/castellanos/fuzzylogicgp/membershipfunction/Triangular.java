@@ -115,7 +115,7 @@ public class Triangular extends MembershipFunction {
 
     @Override
     public String toString() {
-        return String.format("[%s %.3f, %.3f, %.3f]", this.type.toString(), this.a, this.b, this.c);
+        return String.format("[%s %f %f %f]", this.type.toString(), this.a, this.b, this.c);
     }
 
     @Override
