@@ -9,6 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <tech.tablesaw.version>0.38.1</tech.tablesaw.version>
     </properties>
     <build>
         <plugins>
@@ -58,25 +59,25 @@
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-core</artifactId>
-            <version>LATEST</version>
+            <version>${tech.tablesaw.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-excel -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-excel</artifactId>
-            <version>LATEST</version>
+            <version>${tech.tablesaw.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-jsplot -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-jsplot</artifactId>
-            <version>LATEST</version>
+            <version>${tech.tablesaw.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/tech.tablesaw/tablesaw-json -->
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-json</artifactId>
-            <version>LATEST</version>
+            <version>${tech.tablesaw.version}</version>
         </dependency>
         <!-- java edn -->
         <dependency>
