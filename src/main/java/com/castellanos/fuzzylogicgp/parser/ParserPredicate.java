@@ -60,7 +60,6 @@ public class ParserPredicate {
                 }
 
             }
-            System.out.println(currentNodeRoot);
             if (predicate == null && currentNodeRoot != null) {
                 NodeTree p = new NodeTree();
                 p.addChild(currentNodeRoot);

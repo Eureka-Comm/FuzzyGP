@@ -12,7 +12,7 @@
         "beta": 9.0,
         "type": "SIGMOID"
       },
-      "description": "2020-10-20T05:04:50.809855Z"
+      "description": "2020-10-20T05:12:59.762442Z"
     },
     {
       "label": "low pH",
@@ -22,7 +22,7 @@
         "beta": 2.93,
         "type": "NSIGMOID"
       },
-      "description": "2020-10-20T05:04:50.810018Z"
+      "description": "2020-10-20T05:12:59.762596Z"
     },
     {
       "label": "high quality",
@@ -32,7 +32,7 @@
         "beta": 4.0,
         "type": "SIGMOID"
       },
-      "description": "2020-10-20T05:04:50.810037Z"
+      "description": "2020-10-20T05:12:59.762615Z"
     }
   ],
   "logic": {
