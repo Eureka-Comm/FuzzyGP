@@ -32,7 +32,8 @@
         "quality",
         "density",
         "chlorides"
-      ]
+      ],
+      "description": ""
     }
   ],
   "type": "DISCOVERY",
@@ -41,51 +42,63 @@
   "states": [
     {
       "label": "citric_acid",
-      "cname": "citric_acid"
+      "cname": "citric_acid",
+      "description": ""
     },
     {
       "label": "volatile_acidity",
-      "cname": "volatile_acidity"
+      "cname": "volatile_acidity",
+      "description": ""
     },
     {
       "label": "fixed_acidity",
-      "cname": "fixed_acidity"
+      "cname": "fixed_acidity",
+      "description": ""
     },
     {
       "label": "free_sulfur_dioxide",
-      "cname": "free_sulfur_dioxide"
+      "cname": "free_sulfur_dioxide",
+      "description": ""
     },
     {
       "label": "sulphates",
-      "cname": "sulphates"
+      "cname": "sulphates",
+      "description": ""
     },
     {
       "label": "alcohol",
-      "cname": "alcohol"
+      "cname": "alcohol",
+      "description": ""
     },
     {
       "label": "residual_sugar",
-      "cname": "residual_sugar"
+      "cname": "residual_sugar",
+      "description": ""
     },
     {
       "label": "pH",
-      "cname": "pH"
+      "cname": "pH",
+      "description": ""
     },
     {
       "label": "total_sulfur_dioxide",
-      "cname": "total_sulfur_dioxide"
+      "cname": "total_sulfur_dioxide",
+      "description": ""
     },
     {
       "label": "quality",
-      "cname": "quality"
+      "cname": "quality",
+      "description": ""
     },
     {
       "label": "density",
-      "cname": "density"
+      "cname": "density",
+      "description": ""
     },
     {
       "label": "chlorides",
-      "cname": "chlorides"
+      "cname": "chlorides",
+      "description": ""
     }
   ],
   "logic": "GMBC",

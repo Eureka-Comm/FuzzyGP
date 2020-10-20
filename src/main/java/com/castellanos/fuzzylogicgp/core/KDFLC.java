@@ -124,10 +124,9 @@ public class KDFLC {
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
 
         for (int i = 0; i < population.length; i++) {
-            System.out.print(i + " " + population[i] + " ");
+            //System.out.print(i + " " + population[i] + " ");
             gomf.optimize(population[i]);
-            System.out.println(population[i].getFitness());
-
+           // System.out.println(population[i].getFitness());
         }
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
