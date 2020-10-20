@@ -173,7 +173,7 @@ public class GOMF {
         double beta;
         do {
             beta = randomValue(r[0], gamma_double);
-            if(Math.abs(gamma_double - beta) <= r[3]){
+            if (Math.abs(gamma_double - beta) <= r[3]) {
                 gamma_double = randomValue(r[0], r[2]);
             }
         } while (beta >= gamma_double || Math.abs(gamma_double - beta) <= r[3]);
@@ -233,29 +233,24 @@ public class GOMF {
 
     }
 
-    private void chromosomePrint(int iteration, ArrayList<ChromosomePojo> currentPop) {
-        System.out.println("*****-*****-*****-*****-*****-*****-*****");
-        for (int i = 0; i < currentPop.size(); i++) {
-            ChromosomePojo m = currentPop.get(i);
-            // String st = "";
-            System.out.println(iteration + "[ " + i + "]" + m.getFitness());
-            for (HashMap<String, Object> fmap : m.getElements()) {
-                // st += " " + fmap.getFpg().toString();
-                Node node = predicatePattern.findById(fmap.get("owner").toString());
-                if (node instanceof StateNode) {
-                    StateNode stt = (StateNode) node;
-                    stt.setMembershipFunction(
-                            new FPG((double) fmap.get("beta"), (double) fmap.get("gamma"), (double) fmap.get("m")));
-                    System.out.println(stt);
-                    stt.setMembershipFunction(null);
-                }
-
-            }
-
-            // System.out.println(iteration + "[" + i + "]- Fit: " + m.getFitness() + " - "
-            // + st);
-        }
-    }
+    /*
+     * private void chromosomePrint(int iteration, ArrayList<ChromosomePojo>
+     * currentPop) {
+     * System.out.println("*****-*****-*****-*****-*****-*****-*****"); for (int i =
+     * 0; i < currentPop.size(); i++) { ChromosomePojo m = currentPop.get(i); //
+     * String st = ""; System.out.println(iteration + "[ " + i + "]" +
+     * m.getFitness()); for (HashMap<String, Object> fmap : m.getElements()) { // st
+     * += " " + fmap.getFpg().toString(); Node node =
+     * predicatePattern.findById(fmap.get("owner").toString()); if (node instanceof
+     * StateNode) { StateNode stt = (StateNode) node; stt.setMembershipFunction( new
+     * FPG((double) fmap.get("beta"), (double) fmap.get("gamma"), (double)
+     * fmap.get("m"))); System.out.println(stt); stt.setMembershipFunction(null); }
+     * 
+     * }
+     * 
+     * // System.out.println(iteration + "[" + i + "]- Fit: " + m.getFitness() +
+     * " - " // + st); } }
+     */
 
     private void chromosomeMutation(ArrayList<ChromosomePojo> pop) {
         for (int i = 0; i < pop.size(); i++) {
@@ -277,7 +272,7 @@ public class GOMF {
                             value = randomValue(r[0], gamma);
                             intents++;
 
-                        } while ((Math.abs(gamma - value) <= r[3] || gamma == value )&& intents< 100);
+                        } while ((Math.abs(gamma - value) <= r[3] || gamma == value) && intents < 100);
                         element.put("beta", value);
                         break;
                     case 1:
@@ -287,7 +282,7 @@ public class GOMF {
                             value = randomValue(beta, r[2]);
                             intents++;
 
-                        } while ((value <= beta || Math.abs(beta - value) <= r[3] ) && intents< 100);
+                        } while ((value <= beta || Math.abs(beta - value) <= r[3]) && intents < 100);
                         element.put("gamma", value);
                         break;
                     case 2:
@@ -381,7 +376,7 @@ public class GOMF {
         if (Double.isNaN(gamma)) {
             gamma = randomValue(beta, minMaxPromT[2]);
         }
-        while (Math.abs(beta - gamma) <= minMaxPromT[3] || gamma==beta) {
+        while (Math.abs(beta - gamma) <= minMaxPromT[3] || gamma == beta) {
             gamma = randomValue(minMaxPromT[0], minMaxPromT[2]);
             beta = randomValue(minMaxPromT[0], gamma);
         }

@@ -14,7 +14,6 @@ import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.core.EvaluatePredicate;
-import com.castellanos.fuzzylogicgp.core.GOMF;
 import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.logic.Zadeh_Logic;
@@ -75,12 +74,6 @@ public class TaskFactory {
                         discoveryQuery.getAdj_num_pop(), discoveryQuery.getAdj_num_iter(),
                         discoveryQuery.getAdj_min_truth_value(), data);
                 discovery.execute();
-                for (int i = 0; i < discovery.getResultList().size(); i++) {
-                    NodeTree n = discovery.getResultList().get(i);
-                    double old = n.getFitness();
-                    EvaluatePredicate evaluatePredicate = new EvaluatePredicate(n, logic, data);                    
-                    System.out.printf("%d : %f <> %f : %f\n", i, old, evaluatePredicate.evaluate(), n.getFitness());
-                }
                 discovery.exportToCsv(discoveryQuery.getOut_file());
                 break;
             default:

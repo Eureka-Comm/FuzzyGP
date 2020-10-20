@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.function.IntFunction;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.Node;
@@ -23,7 +22,6 @@ import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.parser.MembershipFunctionSerializer;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import tech.tablesaw.api.DoubleColumn;
@@ -284,8 +282,8 @@ public class KDFLC {
     private NodeTree createRandomInd(int index) throws OperatorException {
         NodeTree p = (NodeTree) predicatePattern.copy();
         boolean flag = false;
-        if(predicatePattern.getChildrens().size()==1){
-            flag = predicatePattern.getChildrens().get(0) instanceof  GeneratorNode;
+        if (predicatePattern.getChildrens().size() == 1) {
+            flag = predicatePattern.getChildrens().get(0) instanceof GeneratorNode;
         }
         // Iterator<Node> iterator = p.getNodes().values().iterator();
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
@@ -412,10 +410,10 @@ public class KDFLC {
             for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
                 if (node instanceof StateNode) {
                     StateNode s = (StateNode) node;
-                    st+= s.toString()+" ";
+                    st += s.toString() + " ";
                 }
             }
-            d.add(st.trim()+")");
+            d.add(st.trim() + ")");
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
 
