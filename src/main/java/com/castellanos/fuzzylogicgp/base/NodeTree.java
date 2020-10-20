@@ -256,6 +256,7 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
                     e.printStackTrace();
                 }
             });
+            tree.setDescription(description);
             tree.setFitness(fitness);
             return tree;
         } catch (OperatorException e) {

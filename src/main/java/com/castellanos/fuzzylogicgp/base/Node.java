@@ -8,6 +8,8 @@ package com.castellanos.fuzzylogicgp.base;
 import java.io.Serializable;
 import java.util.UUID;
 
+import com.google.gson.annotations.Expose;
+
 /**
  *
  * @author hp
@@ -21,9 +23,19 @@ public abstract class Node implements Serializable {
     private NodeType type;
     private boolean editable;
     private String byGenerator;
+    @Expose
+    protected String description = "";
 
     public Node() {
         id = UUID.randomUUID().toString();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public NodeType getType() {

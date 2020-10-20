@@ -38,7 +38,7 @@ public class StateNode extends Node {
     @Expose
     private String cname;
     @Expose
-    @SerializedName("membership")
+    @SerializedName("f")
     private MembershipFunction membershipFunction;
 
     public StateNode() {
@@ -116,6 +116,7 @@ public class StateNode extends Node {
         if (this.getByGenerator() != null)
             state.setByGenerator(this.getByGenerator());
         state.setEditable(this.isEditable());
+        state.setDescription(this.description);
         return state;
     }
 
