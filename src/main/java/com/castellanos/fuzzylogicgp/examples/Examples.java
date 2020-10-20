@@ -1,5 +1,6 @@
 package com.castellanos.fuzzylogicgp.examples;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
@@ -23,7 +24,6 @@ import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
 import com.castellanos.fuzzylogicgp.membershipfunction.ZForm;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
-import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos.fuzzylogicgp.logic.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
@@ -114,6 +114,7 @@ public class Examples {
         states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
         states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
         states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
+        states.forEach(s -> s.setDescription(Instant.now().toString()));
         query.setStates(states);
         query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");
         return query;

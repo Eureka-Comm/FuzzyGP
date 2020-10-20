@@ -47,7 +47,7 @@ public class TaskFactory {
                     String name = new File(query.getOut_file()).getName().replace(".xlsx", ".json").replace(".csv",
                             ".json");
                     Path path = Paths.get(stP, "tree-" + name);
-                    Files.write(path, p.toJson().getBytes(), StandardOpenOption.CREATE_NEW);
+                    Files.write(path, p.toJson().getBytes(), StandardOpenOption.CREATE);
                 }
                 break;
             case DISCOVERY:

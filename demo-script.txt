@@ -1,108 +1,42 @@
 {
-  "num_pop": 100,
-  "num_iter": 20,
-  "num_result": 50,
-  "min_truth_value": 1.0,
-  "mut_percentage": 0.05,
-  "adj_num_pop": 10,
-  "adj_min_truth_value": 0.1,
-  "adj_num_iter": 2,
-  "generators": [
-    {
-      "label": "comodin",
-      "depth": 2,
-      "max_child_number": 2,
-      "operators": [
-        "AND",
-        "OR",
-        "IMP",
-        "EQV",
-        "NOT"
-      ],
-      "variables": [
-        "citric_acid",
-        "volatile_acidity",
-        "fixed_acidity",
-        "free_sulfur_dioxide",
-        "sulphates",
-        "alcohol",
-        "residual_sugar",
-        "pH",
-        "total_sulfur_dioxide",
-        "quality",
-        "density",
-        "chlorides"
-      ],
-      "description": ""
-    }
-  ],
-  "type": "DISCOVERY",
+  "showTree": true,
+  "type": "EVALUATION",
   "db_uri": "/home/thinkpad/Documents/FuzzyLogicGP/dataset.csv",
-  "out_file": "result-discovery-prop.csv",
+  "out_file": "result-evaluation-prop.csv",
   "states": [
     {
-      "label": "citric_acid",
-      "cname": "citric_acid",
-      "description": ""
-    },
-    {
-      "label": "volatile_acidity",
-      "cname": "volatile_acidity",
-      "description": ""
-    },
-    {
-      "label": "fixed_acidity",
-      "cname": "fixed_acidity",
-      "description": ""
-    },
-    {
-      "label": "free_sulfur_dioxide",
-      "cname": "free_sulfur_dioxide",
-      "description": ""
-    },
-    {
-      "label": "sulphates",
-      "cname": "sulphates",
-      "description": ""
-    },
-    {
-      "label": "alcohol",
+      "label": "high alcohol",
       "cname": "alcohol",
-      "description": ""
+      "f": {
+        "center": 11.65,
+        "beta": 9.0,
+        "type": "SIGMOID"
+      },
+      "description": "2020-10-20T05:04:50.809855Z"
     },
     {
-      "label": "residual_sugar",
-      "cname": "residual_sugar",
-      "description": ""
-    },
-    {
-      "label": "pH",
+      "label": "low pH",
       "cname": "pH",
-      "description": ""
+      "f": {
+        "center": 3.375,
+        "beta": 2.93,
+        "type": "NSIGMOID"
+      },
+      "description": "2020-10-20T05:04:50.810018Z"
     },
     {
-      "label": "total_sulfur_dioxide",
-      "cname": "total_sulfur_dioxide",
-      "description": ""
-    },
-    {
-      "label": "quality",
+      "label": "high quality",
       "cname": "quality",
-      "description": ""
-    },
-    {
-      "label": "density",
-      "cname": "density",
-      "description": ""
-    },
-    {
-      "label": "chlorides",
-      "cname": "chlorides",
-      "description": ""
+      "f": {
+        "center": 5.5,
+        "beta": 4.0,
+        "type": "SIGMOID"
+      },
+      "description": "2020-10-20T05:04:50.810037Z"
     }
   ],
   "logic": {
     "type": "GMBC"
   },
-  "predicate": "\"comodin\""
+  "predicate": "(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")"
 }
