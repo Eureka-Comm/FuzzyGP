@@ -8,7 +8,9 @@ package com.castellanos.fuzzylogicgp.parser;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
+import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.logic.LogicType;
+import com.castellanos.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gamma;
 import com.castellanos.fuzzylogicgp.membershipfunction.Gaussian;
@@ -67,14 +69,15 @@ public class EDNParser {
         String out = (String) queryMap.get(dbOut);
         List<StateNode> convertToState = convertToState((Collection) queryMap.get(statesKey));
         String logicSt = queryMap.get(logicKey).toString();
+        LogicBuilder logicBuilder = LogicBuilder.newBuilder(
+                LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "").toUpperCase()));
         switch (map.get(jobKey).toString()) {
             case ":evaluation":
                 Query query = new EvaluationQuery();
                 query.setDb_uri(path);
                 query.setOut_file(out);
                 query.setStates(new ArrayList<>(convertToState));
-                query.setLogic(
-                        LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "").toUpperCase()));
+                query.setLogic(logicBuilder);
                 query.setPredicate(findPredicate());
                 return query;
             case ":discovery":
@@ -83,7 +86,9 @@ public class EDNParser {
                 discoveryQuery.setDb_uri(path);
                 discoveryQuery.setOut_file(out);
                 discoveryQuery.setStates(new ArrayList<>(convertToState));
-                discoveryQuery.setLogic(LogicType.valueOf(logicSt.replace(":", "").replace("[", "").replace("]", "")));
+                // discoveryQuery.setLogic(LogicType.valueOf(logicSt.replace(":",
+                // "").replace("[", "").replace("]", "")));
+                discoveryQuery.setLogic(logicBuilder);
                 discoveryQuery.setPredicate(
                         findPredicate().replaceAll(":generator", "").replace("{", "").replace("}", "").trim());
                 // discoveryQuery.setDepth(Integer.parseInt(queryMap.get(Keyword.newKeyword("depth")).toString().trim()));

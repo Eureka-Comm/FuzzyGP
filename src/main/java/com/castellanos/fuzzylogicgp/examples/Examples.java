@@ -23,6 +23,8 @@ import com.castellanos.fuzzylogicgp.membershipfunction.Triangular;
 import com.castellanos.fuzzylogicgp.membershipfunction.ZForm;
 import com.castellanos.fuzzylogicgp.parser.DiscoveryQuery;
 import com.castellanos.fuzzylogicgp.parser.EvaluationQuery;
+import com.castellanos.fuzzylogicgp.logic.Logic;
+import com.castellanos.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos.fuzzylogicgp.logic.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 
@@ -60,7 +62,7 @@ public class Examples {
         query.setDb_uri("iris.csv");
         String out_file = "result-discovery-irs.csv";
         query.setOut_file(out_file);
-        query.setLogic(LogicType.GMBC);
+        query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("properties");
         ArrayList<String> variables = new ArrayList<>();
@@ -89,7 +91,7 @@ public class Examples {
         query.setPredicate(predicate);
         query.setAdj_min_truth_value(0.1f);
         query.setAdj_num_pop(10);
-       
+
         query.setMut_percentage(0.05f);
         query.setNum_iter(30);
         query.setMin_truth_value(0.95f);
@@ -104,7 +106,8 @@ public class Examples {
 
         EvaluationQuery query = new EvaluationQuery();
         query.setDb_uri("tinto.csv");
-        query.setLogic(LogicType.GMBC);
+
+        query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         query.setOut_file("result-evaluation-prop.csv");
         query.setShowTree(true);
         ArrayList<StateNode> states = new ArrayList<>();
@@ -137,9 +140,9 @@ public class Examples {
         query.setDb_uri("tinto.csv");
         String out_file = "result-discovery-prop.csv";
         query.setOut_file(out_file);
-        query.setLogic(LogicType.GMBC);
+        query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         String predicate = "(IMP \"comodin\" \"quality\")";
-         predicate = "\"comodin\"";
+        predicate = "\"comodin\"";
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("comodin");
         ArrayList<String> variables = new ArrayList<>();

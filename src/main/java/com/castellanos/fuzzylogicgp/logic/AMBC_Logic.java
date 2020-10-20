@@ -15,6 +15,14 @@ import java.util.List;
  */
 public class AMBC_Logic extends Logic {
 
+    public AMBC_Logic(boolean natural_implication) {
+        super(natural_implication);
+    }
+
+    public AMBC_Logic() {
+        this(false);
+    }
+
     @Override
     public double not(double v1) {
         return 1 - v1;

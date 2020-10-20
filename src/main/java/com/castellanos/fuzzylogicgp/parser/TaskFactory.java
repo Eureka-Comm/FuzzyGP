@@ -16,10 +16,6 @@ import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.core.EvaluatePredicate;
 import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.Logic;
-import com.castellanos.fuzzylogicgp.logic.Zadeh_Logic;
-import com.castellanos.fuzzylogicgp.logic.AMBC_Logic;
-import com.castellanos.fuzzylogicgp.logic.GMBC_Logic;
-import com.castellanos.fuzzylogicgp.logic.ACF_Logic;
 
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
@@ -29,7 +25,7 @@ public class TaskFactory {
     public static void execute(Query query) throws OperatorException, CloneNotSupportedException, IOException {
         ParserPredicate parserPredicate;
         NodeTree p;
-        Logic logic = getLogic(query);
+        Logic logic = query.getLogic().build();
         switch (query.getType()) {
             case EVALUATION:
                 EvaluationQuery evaluationQuery = (EvaluationQuery) query;
@@ -81,21 +77,14 @@ public class TaskFactory {
         }
     }
 
-    private static Logic getLogic(Query query) {
-        switch (query.getLogic()) {
-            case AMBC:
-                return new AMBC_Logic();
-            case GMBC:
-                return new GMBC_Logic();
-            case ZADEH:
-                return new Zadeh_Logic();
-            case ACF:
-                return new ACF_Logic();
-            default:
-                return null;
-
-        }
-    }
+    /*
+     * private static Logic getLogic(Query query) { switch (query.getLogic()) { case
+     * AMBC: return new AMBC_Logic(); case GMBC: return new GMBC_Logic(); case
+     * ZADEH: return new Zadeh_Logic(); case ACF: return new ACF_Logic(); default:
+     * return null;
+     * 
+     * } }
+     */
 
     public static void plotting(Query query, ArrayList<String> labels)
             throws OperatorException, CloneNotSupportedException, URISyntaxException, UnsupportedEncodingException {

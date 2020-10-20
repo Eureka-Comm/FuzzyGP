@@ -14,6 +14,13 @@ import java.util.List;
  * @author hp
  */
 public class GMBC_Logic extends Logic {
+    public GMBC_Logic(boolean natural_implication) {
+        super(natural_implication);
+    }
+
+    public GMBC_Logic() {
+        super(false);
+    }
 
     @Override
     public double not(double v1) {

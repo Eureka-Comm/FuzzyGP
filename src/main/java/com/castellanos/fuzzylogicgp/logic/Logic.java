@@ -15,10 +15,6 @@ import java.util.List;
 public abstract class Logic {
     protected boolean natural_implication;
 
-    public Logic() {
-        this(false);
-    }
-
     public Logic(boolean natural_implication) {
         this.natural_implication = natural_implication;
     }
@@ -55,4 +51,5 @@ public abstract class Logic {
     public abstract double forAll(List<Double> values);
 
     public abstract double exist(List<Double> values);
+
 }

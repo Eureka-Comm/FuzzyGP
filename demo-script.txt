@@ -101,6 +101,8 @@
       "description": ""
     }
   ],
-  "logic": "GMBC",
+  "logic": {
+    "type": "GMBC"
+  },
   "predicate": "\"comodin\""
 }

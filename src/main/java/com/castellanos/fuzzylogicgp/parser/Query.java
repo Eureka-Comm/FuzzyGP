@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.logic.LogicType;
+import com.castellanos.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,7 +28,7 @@ public abstract class Query implements Serializable {
     @Expose
     protected ArrayList<StateNode> states;
     @Expose
-    protected LogicType logic;
+    protected LogicBuilder logic;
     @Expose
     protected String predicate;
 
@@ -64,11 +64,11 @@ public abstract class Query implements Serializable {
         this.states = states;
     }
 
-    public LogicType getLogic() {
+    public LogicBuilder getLogic() {
         return logic;
     }
 
-    public void setLogic(LogicType logic) {
+    public void setLogic(LogicBuilder logic) {
         this.logic = logic;
     }
 
