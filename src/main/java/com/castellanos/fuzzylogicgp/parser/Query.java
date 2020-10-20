@@ -31,6 +31,16 @@ public abstract class Query implements Serializable {
     protected LogicBuilder logic;
     @Expose
     protected String predicate;
+    @Expose
+    protected String desciption;
+
+    public String getDesciption() {
+        return desciption;
+    }
+
+    public void setDesciption(String desciption) {
+        this.desciption = desciption;
+    }
 
     public TaskType getType() {
         return type;
