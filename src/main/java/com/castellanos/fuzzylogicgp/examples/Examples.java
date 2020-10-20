@@ -114,6 +114,8 @@ public class Examples {
         states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
         states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
         states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
+        states.add(new StateNode("high pH", "pH", new FPG(1.3,1.93,0.5)));
+
         states.forEach(s -> s.setDescription(Instant.now().toString()));
         query.setStates(states);
         query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");

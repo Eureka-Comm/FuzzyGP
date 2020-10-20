@@ -100,7 +100,7 @@ public class KDFLC {
                 List<StateNode> states = new ArrayList<>();
                 for (String var : gNode.getVariables()) {
                     for (StateNode s : parserPredicate.getStates()) {
-                        if (s.getLabel().equals(var)) {
+                        if (s.getLabel().trim().equals(var.trim())) {
                             StateNode ss = (StateNode) s.copy();
                             ss.setByGenerator(gNode.getId());
                             states.add(ss);

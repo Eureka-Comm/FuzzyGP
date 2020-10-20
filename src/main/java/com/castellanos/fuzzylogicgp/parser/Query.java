@@ -2,6 +2,7 @@ package com.castellanos.fuzzylogicgp.parser;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,9 +10,13 @@ import java.util.ArrayList;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
+import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.Expose;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 public abstract class Query implements Serializable {
     /**
@@ -147,10 +152,25 @@ public abstract class Query implements Serializable {
 
     public String toJSON() {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         builder.registerTypeAdapter(Query.class, new QuerySerializer());
+        builder.registerTypeAdapter(MembershipFunctionType.class, new TypeAdapter<MembershipFunctionType>() {
+
+            @Override
+            public void write(JsonWriter out, MembershipFunctionType value) throws IOException {
+                out.value(value.name().toLowerCase());
+            }
+
+            @Override
+            public MembershipFunctionType read(JsonReader in) throws IOException {
+                return MembershipFunctionType.valueOf(in.nextString().toUpperCase());
+            }
+            
+        });
+        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
+
         builder.excludeFieldsWithoutExposeAnnotation();
         builder.setPrettyPrinting();
+
         Gson print = builder.create();
         return print.toJson(this);
     }
@@ -159,8 +179,22 @@ public abstract class Query implements Serializable {
         if (path == null)
             return null;
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionDeserializer());
         builder.registerTypeAdapter(Query.class, new QueryDeserializer());
+        builder.registerTypeAdapter(MembershipFunctionType.class, new TypeAdapter<MembershipFunctionType>() {
+
+            @Override
+            public void write(JsonWriter out, MembershipFunctionType value) throws IOException {
+                out.value(value.name().toLowerCase());
+            }
+
+            @Override
+            public MembershipFunctionType read(JsonReader in) throws IOException {
+                return MembershipFunctionType.valueOf(in.nextString().toUpperCase());
+            }
+            
+        });
+        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionDeserializer());
+
         Gson read = builder.create();
         FileReader fileReader = new FileReader(path.toFile());
         return read.fromJson(fileReader, Query.class);
