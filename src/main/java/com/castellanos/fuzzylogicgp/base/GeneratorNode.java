@@ -38,15 +38,18 @@ public class GeneratorNode extends Node {
     }
 
     public GeneratorNode(String label, NodeType[] operators, List<String> variables, int depth) {
-        this(label, operators, variables, depth, operators.length / 2 + variables.size());
+        this(label, operators, variables, depth, operators.length + variables.size() / 2);
     }
 
     public GeneratorNode(String label, NodeType[] operators, List<String> variables, int depth, int max_child_number) {
         this.label = label;
         this.operators = operators;
+        if (this.operators.length == 0) {
+            this.operators = new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT };
+        }
         this.variables = variables;
         this.depth = depth;
-        this.max_child_number = (max_child_number > 0) ? max_child_number : 2;
+        this.max_child_number = Math.max(max_child_number, 3);
         this.setType(NodeType.OPERATOR);
         this.setEditable(true);
     }
@@ -73,6 +76,9 @@ public class GeneratorNode extends Node {
 
     public void setOperators(NodeType[] operators) {
         this.operators = operators;
+        if (this.operators.length == 0) {
+            this.operators = new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT };
+        }
     }
 
     public int getMax_child_number() {
@@ -80,7 +86,7 @@ public class GeneratorNode extends Node {
     }
 
     public void setMax_child_number(int max_child_number) {
-        this.max_child_number = max_child_number;
+        this.max_child_number = Math.max(max_child_number, 3);
     }
 
     public List<String> getVariables() {
@@ -141,7 +147,7 @@ public class GeneratorNode extends Node {
 
     public Node generate(List<StateNode> states, boolean balanced) throws OperatorException {
         if (max_child_number == null) {
-            max_child_number = operators.length / 2 + variables.size();
+            max_child_number = Math.max(operators.length + variables.size() / 2, 3);
         }
         return generate_child(null, states, 0, balanced);
 
@@ -149,7 +155,7 @@ public class GeneratorNode extends Node {
 
     private Node generate_child(NodeTree root, List<StateNode> states, int current_depth, boolean balanced)
             throws OperatorException {
-       
+
         if (current_depth < this.depth) {
             if (Utils.random.nextDouble() < 0.45 || balanced) {
                 NodeTree tree = new NodeTree(operators[Utils.random.nextInt(operators.length)]);
@@ -208,91 +214,7 @@ public class GeneratorNode extends Node {
         return select;
     }
 
-    /*
-     * private void complete_tree(NodeTree p, GeneratorNode gNode, Node father, int
-     * arity, int currentDepth) throws OperatorException {
-     * 
-     * boolean isToReplace = false; if (father == null &&
-     * !(p.getType().equals(NodeType.OPERATOR))) { NodeTree find =
-     * NodeTree.getNodeParent(p, gNode.getId()); if (find != null) { father = find;
-     * isToReplace = true; } }
-     * 
-     * if (currentDepth >= depth && !isToReplace) { int size =
-     * statesByGenerators.get(gNode.getId()).size(); StateNode select =
-     * statesByGenerators.get(gNode.getId()).get(rand.nextInt(size)); if (size >= 2
-     * && father != null) { ArrayList<Node> childs = ((NodeTree)
-     * father).getChildrens(); boolean contains = false; int intents = 1; do { for
-     * (Node node : childs) { if (node instanceof StateNode) { StateNode st =
-     * ((StateNode) node); if (st.getLabel().equals(select.getLabel())) { contains =
-     * true; } } } if (contains) select =
-     * statesByGenerators.get(gNode.getId()).get(rand.nextInt(size)); intents++; }
-     * while (contains && intents < size); } StateNode s = (StateNode)
-     * select.copy(); s.setByGenerator(gNode.getId()); s.setEditable(true); //
-     * s.setFather(father.getId()); ((NodeTree) father).addChild(s);
-     * 
-     * } else { int max = gNode.getVariables().size(); max = (int) (((float) max / 2
-     * >= 2) ? (float) max / 2 : max); arity = rand.nextInt(max); if (arity < 2) {
-     * arity = 2; }
-     * 
-     * Node newFather; NodeType nType =
-     * gNode.getOperators()[rand.nextInt(gNode.getOperators().length)]; switch
-     * (nType) { case AND: newFather = new NodeTree(NodeType.AND); break; case OR:
-     * newFather = new NodeTree(NodeType.OR); break; case IMP: newFather = new
-     * NodeTree(NodeType.IMP); arity = 2; break; case EQV: newFather = new
-     * NodeTree(NodeType.EQV); arity = 2; break; case NOT: newFather = new
-     * NodeTree(NodeType.NOT); arity = 1; break; default: newFather = null; }
-     * newFather.setEditable(true); newFather.setByGenerator(gNode.getId());
-     * 
-     * if (father == null || isToReplace) { NodeTree.replace(p, gNode, newFather,
-     * !isToReplace); if (!isToReplace) { newFather = p; // currentDepth=-1; }
-     * 
-     * } else ((NodeTree) father).addChild(newFather); for (int i = 0; i < arity;
-     * i++) complete_tree(p, gNode, newFather, arity, currentDepth + 1); } }
-     * 
-     * private void growTree(NodeTree p, GeneratorNode gNode, Node father, int
-     * arity, int currentDepth) throws OperatorException {
-     * 
-     * boolean isToReplace = false; if (father == null &&
-     * !p.getType().equals(NodeType.OPERATOR)) { NodeTree find =
-     * NodeTree.getNodeParent(p, gNode.getId()); if (find != null) { father = find;
-     * isToReplace = true; } }
-     * 
-     * if ((currentDepth >= depth || rand.nextDouble() < 0.65) && (father != null &&
-     * currentDepth != 0)) { int size =
-     * statesByGenerators.get(gNode.getId()).size(); StateNode select =
-     * statesByGenerators.get(gNode.getId()).get(rand.nextInt(size)); if (size >= 2
-     * && father != null) {
-     * 
-     * ArrayList<Node> childs = ((NodeTree) father).getChildrens(); boolean contains
-     * = false; int intents = 1; do { for (Node node : childs) { if (node instanceof
-     * StateNode) { StateNode st = ((StateNode) node); if
-     * (st.getLabel().equals(select.getLabel())) { contains = true; } } } if
-     * (contains) select =
-     * statesByGenerators.get(gNode.getId()).get(rand.nextInt(size)); intents++; }
-     * while (contains && intents < size); } StateNode s = (StateNode)
-     * select.copy(); s.setByGenerator(gNode.getId()); s.setEditable(true);
-     * 
-     * if (isToReplace) { NodeTree.replace(p, gNode, s, !isToReplace); } else {
-     * ((NodeTree) father).addChild(s); }
-     * 
-     * } else { int max = gNode.getVariables().size(); max = (int) (((float) max / 2
-     * >= 2) ? (float) max / 2 : max); arity = rand.nextInt(max); if (arity < 2) {
-     * arity = 2; }
-     * 
-     * Node newFather; NodeType nType =
-     * gNode.getOperators()[rand.nextInt(gNode.getOperators().length)]; switch
-     * (nType) { case AND: newFather = new NodeTree(NodeType.AND); break; case OR:
-     * newFather = new NodeTree(NodeType.OR); break; case IMP: newFather = new
-     * NodeTree(NodeType.IMP); arity = 2; break; case EQV: newFather = new
-     * NodeTree(NodeType.EQV); arity = 2; break; case NOT: newFather = new
-     * NodeTree(NodeType.NOT); arity = 1; break; default: newFather = null; }
-     * newFather.setEditable(true); newFather.setByGenerator(gNode.getId()); if
-     * (father == null || isToReplace) { NodeTree.replace(p, gNode, newFather,
-     * !isToReplace); if (!isToReplace) { newFather = p; // currentDepth=-1; }
-     * 
-     * } else ((NodeTree) father).addChild(newFather); for (int i = 0; i < arity;
-     * i++) growTree(p, gNode, newFather, arity, currentDepth + 1); } }
-     */
+  
     public static void main(String[] args) throws OperatorException {
         ArrayList<StateNode> states = new ArrayList<>();
         states.add(new StateNode("citric_acid", "citric_acid"));

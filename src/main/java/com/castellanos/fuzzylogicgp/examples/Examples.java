@@ -114,7 +114,7 @@ public class Examples {
         states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
         states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
         states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
-        states.add(new StateNode("high pH", "pH", new FPG(1.3,1.93,0.5)));
+        states.add(new StateNode("high pH", "pH", new FPG(1.3, 1.93, 0.5)));
 
         states.forEach(s -> s.setDescription(Instant.now().toString()));
         query.setStates(states);
@@ -145,16 +145,16 @@ public class Examples {
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         String predicate = "(IMP \"comodin\" \"quality\")";
-       // predicate = "\"comodin\"";
+        // predicate = "\"comodin\"";
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("comodin");
-        generator.setDepth(0);
+        generator.setDepth(2);
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
             variables.add(stateNode.getLabel());
         }
         generator.setVariables(variables);
-        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT });
+        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT, NodeType.IMP, NodeType.EQV });
         ArrayList<GeneratorNode> generators = new ArrayList<>();
         generators.add(generator);
         query.setGenerators(generators);
@@ -162,10 +162,10 @@ public class Examples {
         query.setAdj_min_truth_value(0.1f);
         query.setAdj_num_pop(10);
         query.setMut_percentage(0.05f);
-        query.setNum_iter(20);
+        query.setNum_iter(100);
         query.setMin_truth_value((float) 1.0);
         query.setNum_pop(100);
-        query.setNum_result(50);
+        query.setNum_result(25);
         query.setAdj_num_iter(2);
         return query;
     }

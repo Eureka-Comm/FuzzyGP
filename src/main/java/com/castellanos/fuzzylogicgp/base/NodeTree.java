@@ -330,6 +330,49 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         int result = 1;
         result = prime * result + ((childrens == null) ? 0 : childrens.hashCode());
         result = prime * result + ((fitness == null) ? 0 : fitness.hashCode());
+        result = prime * result + ((leftID == null) ? 0 : leftID.hashCode());
+        result = prime * result + ((righID == null) ? 0 : righID.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        NodeTree other = (NodeTree) obj;
+        if (childrens == null) {
+            if (other.childrens != null)
+                return false;
+        } else if (!childrens.equals(other.childrens))
+            return false;
+        if (fitness == null) {
+            if (other.fitness != null)
+                return false;
+        } else if (!fitness.equals(other.fitness))
+            return false;
+        if (leftID == null) {
+            if (other.leftID != null)
+                return false;
+        } else if (!leftID.equals(other.leftID))
+            return false;
+        if (righID == null) {
+            if (other.righID != null)
+                return false;
+        } else if (!righID.equals(other.righID))
+            return false;
+        return true;
+    }
+
+   /* @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((childrens == null) ? 0 : childrens.hashCode());
+        result = prime * result + ((fitness == null) ? 0 : fitness.hashCode());
         return result;
     }
 
@@ -349,6 +392,6 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
                 && !fitness.equals(other.fitness))
             return false;
         return true;
-    }
+    }*/
 
 }

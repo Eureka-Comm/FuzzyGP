@@ -35,7 +35,7 @@ import tech.tablesaw.io.json.*;
  * 
  * @author Castellanos Alvarez, Alejandro.
  * @since Oct, 19.
- * @version 0.0.1
+ * @version 0.1.0
  */
 public class KDFLC {
     private ParserPredicate parserPredicate;
@@ -91,7 +91,6 @@ public class KDFLC {
 
     public void execute() throws CloneNotSupportedException, OperatorException {
         statesByGenerators = new HashMap<>();
-        // Iterator<Node> iterator = predicatePattern.getNodes().values().iterator();
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
@@ -112,29 +111,20 @@ public class KDFLC {
             }
         }
         NodeTree[] population = makePopulation();
-        /*
-         * Arrays.parallelSetAll(population, new IntFunction<NodeTree>(){
-         * 
-         * @Override public NodeTree apply(int arg0) { GOMF gomf = new GOMF(data, logic,
-         * mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-         * gomf.optimize(population[arg0]); return population[arg0]; }
-         * 
-         * });
-         */
+
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
 
         for (int i = 0; i < population.length; i++) {
-            //System.out.print(i + " " + population[i] + " ");
             gomf.optimize(population[i]);
-           // System.out.println(population[i].getFitness());
         }
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
         ArrayList<Integer> toReplaceIndex = new ArrayList<>();
         for (int i = 0; i < population.length; i++) {
             if (isToDiscovery) {
-                if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
-                    resultList.add((NodeTree) population[i].copy());
+                if (population[i].getFitness() >= min_truth_value) {
+                    if (!check_result_contains(population[i]))
+                        resultList.add((NodeTree) population[i].copy());
                     toReplaceIndex.add(i);
                 }
             } else {
@@ -185,22 +175,19 @@ public class KDFLC {
                 for (int i = 0; i < offspring.length; i++) {
                     for (int j = lastFound; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
-                            // System.out.println(offspring[i].getFitness());
                             population[j] = (NodeTree) offspring[i].copy();
                             lastFound = j + 1;
                             break;
                         }
                     }
                 }
-                /*
-                 * for (NodeTree nodeTree : population) {
-                 * System.out.println(nodeTree.getFitness()+" "+nodeTree); }
-                 */
+
                 Arrays.sort(population, Collections.reverseOrder());
 
                 for (int i = 0; i < population.length; i++) {
-                    if (population[i].getFitness() >= min_truth_value && !resultList.contains(population[i])) {
-                        resultList.add((NodeTree) population[i].copy());
+                    if (population[i].getFitness() >= min_truth_value) {
+                        if (!check_result_contains(population[i]))
+                            resultList.add((NodeTree) population[i].copy());
                         toReplaceIndex.add(i);
                     }
                 }
@@ -216,17 +203,27 @@ public class KDFLC {
                 }
             }
             Collections.sort(resultList, Collections.reverseOrder());
-            /*
-             * System.out.println("post execution: "); for (int i = 0; i <
-             * population.length; i++) { System.out.println(i + " " + population[i] + " " +
-             * population[i].getFitness()); }
-             */
+
         }
         System.out.println("Result list " + resultList.size());
         for (int i = 0; i < resultList.size(); i++) {
             System.out.println(i + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
         }
 
+    }
+
+    private boolean check_result_contains(NodeTree nodeTree) {
+        for (int i = 0; i < resultList.size(); i++) {
+            if (resultList.get(i).toString().equals(nodeTree.toString())) {
+                if (Math.abs(nodeTree.getFitness() - resultList.get(i).getFitness()) >= 0.2
+                        || nodeTree.getFitness() == 1.0) {
+                    return resultList.contains(nodeTree);
+                }
+                if (Math.abs(nodeTree.getFitness() - resultList.get(i).getFitness()) < 0.2)
+                    return true;
+            }
+        }
+        return false;
     }
 
     private boolean isToDiscovery(NodeTree predicate) {
@@ -254,7 +251,6 @@ public class KDFLC {
             } catch (OperatorException e) {
                 e.printStackTrace();
             }
-            // System.out.printf("ind %3d: %s\n", i, pop[i]);
         }
         return pop;
     }
@@ -284,7 +280,6 @@ public class KDFLC {
         if (predicatePattern.getChildrens().size() == 1) {
             flag = predicatePattern.getChildrens().get(0) instanceof GeneratorNode;
         }
-        // Iterator<Node> iterator = p.getNodes().values().iterator();
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
@@ -294,10 +289,13 @@ public class KDFLC {
                 if (p != node && p.getType() != NodeType.OPERATOR) {
                     NodeTree.replace(p, node, generate, flag);
                 } else {
-                    if (generate.getType() == NodeType.STATE) {
+                    if (((GeneratorNode) node).getDepth() == 0) {
                         NodeTree root = new NodeTree(NodeType.NOT);
                         root.addChild(generate);
                         return root;
+                    }
+                    if (generate.getType() == NodeType.STATE) {
+                        return createRandomInd(index);
                     }
                     return (NodeTree) generate;
                 }
@@ -400,7 +398,6 @@ public class KDFLC {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         builder.excludeFieldsWithoutExposeAnnotation();
-        // builder.setPrettyPrinting();
 
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
