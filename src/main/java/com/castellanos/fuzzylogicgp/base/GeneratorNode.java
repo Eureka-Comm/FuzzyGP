@@ -35,7 +35,6 @@ public class GeneratorNode extends Node {
     public GeneratorNode() {
         this.setType(NodeType.OPERATOR);
         this.setEditable(true);
-        depth = 2;
         max_child_number = 2;
     }
 
@@ -313,6 +312,7 @@ public class GeneratorNode extends Node {
         }
         generator.setVariables(variables);
         generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT });
+        generator.setDepth(1);
         Utils.random.setSeed(1);
         for (int i = 0; i < 20; i++) {
             System.out.println(i+" "+generator.generate(states, i < 20 / 2));
