@@ -91,6 +91,7 @@ public class KDFLC {
 
     public void execute() throws CloneNotSupportedException, OperatorException {
         statesByGenerators = new HashMap<>();
+        int wasNotChanged = 0;
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
@@ -111,12 +112,13 @@ public class KDFLC {
             }
         }
         NodeTree[] population = makePopulation();
-
+        Arrays.parallelSetAll(population, _index -> {
+            GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+            _gomf.optimize(population[_index]);
+            return population[_index];
+        });
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
 
-        for (int i = 0; i < population.length; i++) {
-            gomf.optimize(population[i]);
-        }
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
         ArrayList<Integer> toReplaceIndex = new ArrayList<>();
@@ -138,14 +140,25 @@ public class KDFLC {
 
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
-                for (Integer _index : toReplaceIndex) {
+                toReplaceIndex.parallelStream().forEach(_index -> {
                     int intents = 0;
                     do {
-                        population[_index] = createRandomInd(_index);
+                        try {
+                            population[_index] = createRandomInd(_index);
+                        } catch (OperatorException e) {
+                            e.printStackTrace();
+                        }
                         intents++;
                     } while (!valid_predicate(population[_index]) && intents < 20);
-                    gomf.optimize(population[_index]);
-                }
+                    GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+                    _gomf.optimize(population[_index]);
+                });
+                /*
+                 * for (Integer _index : toReplaceIndex) { int intents = 0; do {
+                 * population[_index] = createRandomInd(_index); intents++; } while
+                 * (!valid_predicate(population[_index]) && intents < 20);
+                 * gomf.optimize(population[_index]); }
+                 */
                 toReplaceIndex.clear();
                 System.out.println("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
                 int offspring_size = population.length / 2;
@@ -183,19 +196,25 @@ public class KDFLC {
                 }
 
                 Arrays.sort(population, Collections.reverseOrder());
-
+                boolean flag = false;
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value) {
-                        if (!check_result_contains(population[i]))
+                        if (!check_result_contains(population[i])) {
                             resultList.add((NodeTree) population[i].copy());
+                            flag = true;
+                        }
                         toReplaceIndex.add(i);
                     }
                 }
+                if (!flag) {
+                    wasNotChanged++;
+                }
                 iteration++;
-                if (iteration % (num_iter / 10) == 0) {
+                if (wasNotChanged >= num_iter / 10) {
                     int n = 0;
-                    for (int i = 0; i < num_pop && n < num_pop / 10; i++) {
-                        if (rand.nextDouble() < 0.5 && !toReplaceIndex.contains(i)) {
+                    wasNotChanged = 0;
+                    for (int i = 0; i < num_pop && n < num_pop / 3; i++) {
+                        if (!toReplaceIndex.contains(i)) {
                             toReplaceIndex.add(i);
                             n++;
                         }
@@ -207,7 +226,7 @@ public class KDFLC {
         }
         System.out.println("Result list " + resultList.size());
         for (int i = 0; i < resultList.size(); i++) {
-            System.out.println(i + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
+            System.out.println((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
         }
 
     }
@@ -215,9 +234,10 @@ public class KDFLC {
     private boolean check_result_contains(NodeTree nodeTree) {
         for (int i = 0; i < resultList.size(); i++) {
             if (resultList.get(i).toString().equals(nodeTree.toString())) {
-                if (Math.abs(nodeTree.getFitness() - resultList.get(i).getFitness()) >= 0.2
-                        || nodeTree.getFitness() == 1.0) {
-                    return resultList.contains(nodeTree);
+                if (Math.abs(nodeTree.getFitness() - resultList.get(i).getFitness()) >= 0.2) {
+                    if (nodeTree.getFitness() == 1.0)
+                        return resultList.contains(nodeTree);
+                    return false;
                 }
                 if (Math.abs(nodeTree.getFitness() - resultList.get(i).getFitness()) < 0.2)
                     return true;

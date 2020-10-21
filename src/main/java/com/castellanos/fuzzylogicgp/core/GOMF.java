@@ -202,7 +202,7 @@ public class GOMF {
             prom += current;
         }
         v[1] = prom / column.size();
-        v[3] = Math.min(Math.abs(v[0] - v[1]), 0.1);
+        v[3] = Math.min(Math.abs(v[0] - v[1]) , 0.1);
         return v;
     }
 

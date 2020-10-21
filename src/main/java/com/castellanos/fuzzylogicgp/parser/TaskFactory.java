@@ -70,6 +70,12 @@ public class TaskFactory {
                         discoveryQuery.getAdj_num_pop(), discoveryQuery.getAdj_num_iter(),
                         discoveryQuery.getAdj_min_truth_value(), data);
                 discovery.execute();
+               /* for (int i = 0; i < discovery.getResultList().size(); i++) {
+                    System.out.print((i+1)+": "+discovery.getResultList().get(i).getFitness()+" ");
+                    EvaluatePredicate _evaluator = new EvaluatePredicate(discovery.getResultList().get(i), logic, data);
+                    System.out.println(_evaluator.evaluate());
+                
+                }*/
                 discovery.exportToCsv(discoveryQuery.getOut_file());
                 break;
             default:

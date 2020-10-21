@@ -148,13 +148,13 @@ public class Examples {
         // predicate = "\"comodin\"";
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("comodin");
-        generator.setDepth(2);
+        generator.setDepth(1);
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
             variables.add(stateNode.getLabel());
         }
         generator.setVariables(variables);
-        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT, NodeType.IMP, NodeType.EQV });
+        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR });
         ArrayList<GeneratorNode> generators = new ArrayList<>();
         generators.add(generator);
         query.setGenerators(generators);
@@ -162,10 +162,10 @@ public class Examples {
         query.setAdj_min_truth_value(0.1f);
         query.setAdj_num_pop(10);
         query.setMut_percentage(0.05f);
-        query.setNum_iter(100);
-        query.setMin_truth_value((float) 1.0);
+        query.setNum_iter(50);
+        query.setMin_truth_value(0.95f);
         query.setNum_pop(100);
-        query.setNum_result(25);
+        query.setNum_result(15);
         query.setAdj_num_iter(2);
         return query;
     }
