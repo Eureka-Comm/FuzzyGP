@@ -148,7 +148,7 @@ public class GeneratorNode extends Node {
     private Node generate_child(NodeTree root, List<StateNode> states, int current_depth, boolean balanced)
             throws OperatorException {
         if (current_depth < depth) {
-            if (Utils.random.nextDouble() < 0.75 || balanced) {
+            if (Utils.random.nextDouble() < 0.45 || balanced) {
                 NodeTree tree = new NodeTree(operators[Utils.random.nextInt(operators.length)]);
                 tree.setEditable(true);
                 tree.setByGenerator(this.getId());
@@ -312,9 +312,9 @@ public class GeneratorNode extends Node {
         }
         generator.setVariables(variables);
         generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT });
-        generator.setDepth(1);
+        generator.setDepth(0);
         Utils.random.setSeed(1);
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             System.out.println(i+" "+generator.generate(states, i < 20 / 2));
         }
     }
