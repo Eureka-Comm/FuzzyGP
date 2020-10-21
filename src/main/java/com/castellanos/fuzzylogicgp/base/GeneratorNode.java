@@ -26,7 +26,7 @@ public class GeneratorNode extends Node {
     @Expose
     private int depth;
     @Expose
-    private int max_child_number;
+    private Integer max_child_number;
     @Expose
     private NodeType operators[];
     @Expose
@@ -35,7 +35,6 @@ public class GeneratorNode extends Node {
     public GeneratorNode() {
         this.setType(NodeType.OPERATOR);
         this.setEditable(true);
-        max_child_number = 2;
     }
 
     public GeneratorNode(String label, NodeType[] operators, List<String> variables, int depth) {
@@ -141,13 +140,17 @@ public class GeneratorNode extends Node {
     }
 
     public Node generate(List<StateNode> states, boolean balanced) throws OperatorException {
+        if (max_child_number == null) {
+            max_child_number = operators.length / 2 + variables.size();
+        }
         return generate_child(null, states, 0, balanced);
 
     }
 
     private Node generate_child(NodeTree root, List<StateNode> states, int current_depth, boolean balanced)
             throws OperatorException {
-        if (current_depth < depth) {
+       
+        if (current_depth < this.depth) {
             if (Utils.random.nextDouble() < 0.45 || balanced) {
                 NodeTree tree = new NodeTree(operators[Utils.random.nextInt(operators.length)]);
                 tree.setEditable(true);
@@ -315,7 +318,7 @@ public class GeneratorNode extends Node {
         generator.setDepth(0);
         Utils.random.setSeed(1);
         for (int i = 0; i < 50; i++) {
-            System.out.println(i+" "+generator.generate(states, i < 20 / 2));
+            System.out.println(i + " " + generator.generate(states, i < 20 / 2));
         }
     }
 }
