@@ -22,6 +22,7 @@ import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.parser.MembershipFunctionSerializer;
 import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import tech.tablesaw.api.DoubleColumn;
@@ -402,7 +403,7 @@ public class KDFLC {
     }
 
     public void exportToJSon(String file) throws IOException {
-        outPutData();
+        outPutData(true);
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
         JsonWriter jsonWriter = new JsonWriter();
         JsonWriteOptions options = JsonWriteOptions
@@ -410,7 +411,7 @@ public class KDFLC {
         jsonWriter.write(fuzzyData, options);
     }
 
-    private void outPutData() {
+    private void outPutData(boolean isJson) {
         fuzzyData = Table.create();
         ArrayList<Double> v = new ArrayList<>();
         ArrayList<String> p = new ArrayList<>();
@@ -418,18 +419,23 @@ public class KDFLC {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         builder.excludeFieldsWithoutExposeAnnotation();
-
+        Gson gson = builder.create();
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
             p.add(resultList.get(i).toString());
-            String st = "(";
-            for (Node node : NodeTree.getNodesByType(resultList.get(i), NodeType.STATE)) {
-                if (node instanceof StateNode) {
-                    StateNode s = (StateNode) node;
-                    st += s.toString() + " ";
+            ArrayList<Node> _states = NodeTree.getNodesByType(resultList.get(i), NodeType.STATE);
+            if (!isJson) {
+                String st = "(";
+                for (Node node : _states) {
+                    if (node instanceof StateNode) {
+                        StateNode s = (StateNode) node;
+                        st += s.toString() + " ";
+                    }
                 }
+                d.add(st.trim() + ")");
+            } else {
+                d.add(gson.toJson(_states));
             }
-            d.add(st.trim() + ")");
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
 
@@ -439,7 +445,7 @@ public class KDFLC {
     }
 
     public void exportToCsv(String file) throws IOException {
-        outPutData();
+        outPutData(false);
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
         fuzzyData.write().toFile(f);
     }
