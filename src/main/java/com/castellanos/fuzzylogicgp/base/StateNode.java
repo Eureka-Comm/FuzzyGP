@@ -97,7 +97,7 @@ public class StateNode extends Node {
     @Override
     public String toString() {
         if (this.membershipFunction != null) {
-            return String.format("{:label \"%s\", :colname \"%s\", :f [%s]}", this.label, this.cname,
+            return String.format("{:label \"%s\", :colname \"%s\", :f %s}", this.label, this.cname,
                     this.membershipFunction);
         } else {
             return String.format("{:label \"%s\", :colname \"%s\"}", this.label, this.cname);
