@@ -27,14 +27,6 @@ public class GMBC_Logic extends Logic {
         return 1.0 - v1;
     }
 
-    @Override
-    public double imp(double v1, double v2) {
-        double neg = 1 - v1;
-        double aux = (1 - neg) * (1 - v2);
-        double aux2 = Math.pow(aux, 0.5);
-        double resultado = 1.0 - aux2;
-        return (resultado);
-    }
 
     @Override
     public double and(double v1, double v2) {

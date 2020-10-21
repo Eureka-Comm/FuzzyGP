@@ -134,18 +134,7 @@ public class ACF_Logic extends Logic {
         return 1 - v1;
     }
 
-    @Override
-    public double imp(final double v1, final double v2) {
-        return (1 - Mo.invf(Mo.f(1 - v1, L, m) + Mo.f(v2, L, m), L, m));
-
-    }
-
-    @Override
-    public double eqv(final double v1, final double v2) {
-        double rigth = imp(v1, v2);
-        double left = imp(v2, v1);
-        return Mo.invf(Mo.f(rigth, L, m) + Mo.f(left, L, m), L, m);
-    }
+   
 
     @Override
     public double and(final double v1, final double v2) {
