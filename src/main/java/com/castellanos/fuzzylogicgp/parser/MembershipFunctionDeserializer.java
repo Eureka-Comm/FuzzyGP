@@ -30,7 +30,7 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<Membersh
     @Override
     public MembershipFunction deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        MembershipFunctionType type = MembershipFunctionType.valueOf(json.getAsJsonObject().get("type").getAsString().toUpperCase());
+        MembershipFunctionType type = MembershipFunctionType.valueOf(json.getAsJsonObject().get("type").getAsString().toLowerCase());
         switch (type) {
             case FPG:
                 return context.deserialize(json, FPG.class);

@@ -11,9 +11,9 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
  */
 public enum MembershipFunctionType {
     GCLV("gclv"), FPG("fpg"), SIGMOID("sigmoid"), NSIGMOID("-sigmoid"), SINGLETON("singleton"),
-    MAPNOMIAL("map-nominal"), TRIANGULAR("triangular"), TRAPEZOIDAL("trapezoidal"), RTRAPEZOIDAL("Rtrapezoidal"),
-    LTRAPEZOIDAL("Ltrapezoidal"), GAMMA("gamma"), LGAMMA("Lgamma"), PSEUDOEXP("pseudo-exp"), GAUSSIAN("gaussian"),
-    ZFORM("Zform"), SFORM("Sfomr"), NOMINAL("nomial"), GBELL("gbell");
+    MAPNOMIAL("map-nominal"), TRIANGULAR("triangular"), TRAPEZOIDAL("trapezoidal"), RTRAPEZOIDAL("rtrapezoidal"),
+    LTRAPEZOIDAL("ltrapezoidal"), GAMMA("gamma"), LGAMMA("lgamma"), PSEUDOEXP("pseudo-exp"), GAUSSIAN("gaussian"),
+    ZFORM("zform"), SFORM("sform"), NOMINAL("nominal"), GBELL("gbell");
 
     private final String str;
 
