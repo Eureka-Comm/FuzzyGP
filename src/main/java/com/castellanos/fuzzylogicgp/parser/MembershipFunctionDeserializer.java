@@ -30,7 +30,13 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<Membersh
     @Override
     public MembershipFunction deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        MembershipFunctionType type = MembershipFunctionType.valueOf(json.getAsJsonObject().get("type").getAsString().toLowerCase());
+        String str = json.getAsJsonObject().get("type").getAsString().toLowerCase();
+        MembershipFunctionType type;
+        if (str.equalsIgnoreCase("-sigmoid")) {
+            type = MembershipFunctionType.NSIGMOID;
+        } else {
+            type = MembershipFunctionType.valueOf(str);
+        }
         switch (type) {
             case FPG:
                 return context.deserialize(json, FPG.class);
