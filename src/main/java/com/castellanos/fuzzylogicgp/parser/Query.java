@@ -153,7 +153,19 @@ public abstract class Query implements Serializable {
     public String toJSON() {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Query.class, new QuerySerializer());
-  
+        builder.registerTypeAdapter(MembershipFunctionType.class, new TypeAdapter<MembershipFunctionType>() {
+
+            @Override
+            public void write(JsonWriter out, MembershipFunctionType value) throws IOException {
+                out.value(value.name().toLowerCase());
+            }
+
+            @Override
+            public MembershipFunctionType read(JsonReader in) throws IOException {
+                return MembershipFunctionType.valueOf(in.nextString().toLowerCase());
+            }
+            
+        });
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
 
         builder.excludeFieldsWithoutExposeAnnotation();
@@ -168,7 +180,19 @@ public abstract class Query implements Serializable {
             return null;
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Query.class, new QueryDeserializer());
-   
+        builder.registerTypeAdapter(MembershipFunctionType.class, new TypeAdapter<MembershipFunctionType>() {
+
+            @Override
+            public void write(JsonWriter out, MembershipFunctionType value) throws IOException {
+                out.value(value.name().toLowerCase());
+            }
+
+            @Override
+            public MembershipFunctionType read(JsonReader in) throws IOException {
+                return MembershipFunctionType.valueOf(in.nextString().toLowerCase());
+            }
+            
+        });
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionDeserializer());
 
         Gson read = builder.create();
