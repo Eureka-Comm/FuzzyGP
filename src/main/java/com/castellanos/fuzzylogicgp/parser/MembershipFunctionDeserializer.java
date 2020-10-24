@@ -37,6 +37,7 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<Membersh
         } else {
             type = MembershipFunctionType.valueOf(str);
         }
+        System.out.println(type + " " + json);
         switch (type) {
             case FPG:
                 return context.deserialize(json, FPG.class);

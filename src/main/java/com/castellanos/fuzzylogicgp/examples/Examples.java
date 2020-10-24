@@ -138,6 +138,7 @@ public class Examples {
         states.add(new StateNode("quality", "quality"));
         states.add(new StateNode("density", "density"));
         states.add(new StateNode("chlorides", "chlorides"));
+        states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
 
         query.setStates(states);
         query.setDb_uri("tinto.csv");
