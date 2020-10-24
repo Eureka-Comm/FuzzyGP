@@ -24,7 +24,7 @@ public class Triangular extends MembershipFunction {
         this.setType(MembershipFunctionType.TRIANGULAR);
     }
 
-    public Triangular(Double a, Double b, Double c) {
+    public Triangular(double a, double b, double c) {
         this.a = a;
         this.b = b;
         this.c = c;

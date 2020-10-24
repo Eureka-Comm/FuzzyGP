@@ -125,7 +125,6 @@ public class StateNode extends Node {
         Layout layout = Layout.builder().title(label + "(" + cname + "): " + membershipFunction.toString()).build();
         ArrayList<Point> points = (ArrayList<Point>) membershipFunction.getPoints();
         Trace trace = null;
-
         if (points.size() <= 1000) {
             double[] x = new double[points.size()];
             double[] y = new double[points.size()];

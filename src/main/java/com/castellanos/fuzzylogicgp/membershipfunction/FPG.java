@@ -48,7 +48,7 @@ public class FPG extends MembershipFunction {
 
     @Override
     public String toString() {
-        return "[FPG " + this.gamma + " " + this.beta + " " + this.m+"]";
+        return "[FPG " + this.gamma + " " + this.beta + " " + this.m + "]";
     }
 
     @Override
@@ -137,11 +137,15 @@ public class FPG extends MembershipFunction {
             x += step;
         } while (y <= 0.98);
 
+        System.out.println(points.size() + " " + x);
+
         do {
             y = evaluate(x);
             points.add(new Point(x, y));
             x += step;
-        } while (y > Point.EPSILON);
+            System.out.println(new Point(x, y));
+        } while (y > Point.EPSILON && x < gamma * beta);
+        System.out.println(points.size());
         return points;
     }
 

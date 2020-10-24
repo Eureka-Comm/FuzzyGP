@@ -39,6 +39,8 @@ public class Examples {
         // mf = new Triangular(3.,6.,8.);
         mf = new Singleton(5);
         mf = new Nominal("a", (double) 1);
+        mf = new FPG(4, 7, 0);
+        // mf = new Triangular(1, 4, 7);
         node.setMembershipFunction(mf);
         node.plot("", "dummy");
 

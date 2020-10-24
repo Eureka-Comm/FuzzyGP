@@ -20,7 +20,7 @@ public enum MembershipFunctionType {
     private MembershipFunctionType(String str) {
         this.str = str;
     }
-
+    
     @Override
     public String toString() {
         return this.str;

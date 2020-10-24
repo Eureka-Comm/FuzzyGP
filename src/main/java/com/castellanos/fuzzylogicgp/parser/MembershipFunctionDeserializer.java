@@ -32,12 +32,59 @@ public class MembershipFunctionDeserializer implements JsonDeserializer<Membersh
             throws JsonParseException {
         String str = json.getAsJsonObject().get("type").getAsString().toLowerCase();
         MembershipFunctionType type;
-        if (str.equalsIgnoreCase("-sigmoid")) {
-            type = MembershipFunctionType.NSIGMOID;
-        } else {
-            type = MembershipFunctionType.valueOf(str);
+        switch (str) {
+            case "fpg":
+                type = MembershipFunctionType.FPG;
+                break;
+            case "sigmoid":
+                type = MembershipFunctionType.SIGMOID;
+                break;
+            case "-sigmoid":
+                type = MembershipFunctionType.NSIGMOID;
+                break;
+            case "singleton":
+                type = MembershipFunctionType.SINGLETON;
+                break;
+            case "map-nominal":
+                type = MembershipFunctionType.MAPNOMIAL;
+                break;
+            case "triangular":
+                type = MembershipFunctionType.TRIANGULAR;
+                break;
+            case "trapezoidal":
+                type = MembershipFunctionType.TRAPEZOIDAL;
+                break;
+            case "rtrapezoidal":
+                type = MembershipFunctionType.RTRAPEZOIDAL;
+                break;
+            case "ltrapezoidal":
+                type = MembershipFunctionType.LTRAPEZOIDAL;
+                break;
+            case "gamma":
+                type = MembershipFunctionType.GAMMA;
+                break;
+            case "lgamma":
+                type = MembershipFunctionType.LGAMMA;
+                break;
+            case "pseudo-exp":
+                type = MembershipFunctionType.PSEUDOEXP;
+                break;
+            case "nominal":
+                type = MembershipFunctionType.NOMINAL;
+                break;
+            case "zform":
+                type = MembershipFunctionType.ZFORM;
+                break;
+            case "sform":
+                type = MembershipFunctionType.SFORM;
+                break;
+            case "gaussian":
+                type = MembershipFunctionType.GAUSSIAN;
+                break;
+            default:
+                type = MembershipFunctionType.valueOf(str);
+
         }
-        System.out.println(type + " " + json);
         switch (type) {
             case FPG:
                 return context.deserialize(json, FPG.class);
