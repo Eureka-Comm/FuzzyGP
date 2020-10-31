@@ -226,10 +226,28 @@ public class KDFLC {
 
         }
         System.out.println("Result list " + resultList.size());
+        if (resultList.isEmpty()) {
+            if (isForEvaluate()) {
+                gomf.optimize(this.predicatePattern);
+                resultList.add(predicatePattern);
+            }
+        }
         for (int i = 0; i < resultList.size(); i++) {
             System.out.println((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
         }
 
+    }
+
+    private boolean isForEvaluate() {
+        ArrayList<Node> states = NodeTree.getNodesByType(this.predicatePattern, NodeType.STATE);
+        for (Node node : states) {
+            if (node instanceof StateNode) {
+                StateNode state = (StateNode) node;
+                if (state.getMembershipFunction() == null)
+                    return false;
+            }
+        }
+        return true;
     }
 
     private boolean check_result_contains(NodeTree nodeTree) {
