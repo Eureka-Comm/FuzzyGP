@@ -51,4 +51,10 @@ public class LogicBuilder {
                 return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "LogicBuilder [exponent=" + exponent + ", natural_implication=" + natural_implication + ", type=" + type
+                + "]";
+    }
 }
