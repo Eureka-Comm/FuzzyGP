@@ -18,7 +18,7 @@ public enum MembershipFunctionType {
     private final String str;
 
     private MembershipFunctionType(String str) {
-        this.str = str;
+        this.str = str.toLowerCase();
     }
     
     @Override
