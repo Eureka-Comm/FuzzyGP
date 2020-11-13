@@ -1,5 +1,14 @@
 package com.castellanos.fuzzylogicgp.logic;
 
+import com.google.gson.annotations.SerializedName;
+
 public enum LogicType {
-    GMBC, AMBC, ZADEH, ACF;
+    @SerializedName("gmbc")
+    GMBC, 
+    @SerializedName("ambc")
+    AMBC, 
+    @SerializedName("zadeh")
+    ZADEH, 
+    @SerializedName("acf")
+    ACF;
 }

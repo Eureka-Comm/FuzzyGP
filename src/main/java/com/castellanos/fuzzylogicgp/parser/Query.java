@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
@@ -13,6 +14,9 @@ import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.Expose;
 import com.google.gson.stream.JsonReader;
@@ -155,7 +159,7 @@ public abstract class Query implements Serializable {
         builder.registerTypeAdapter(Query.class, new QuerySerializer());
         
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
-
+        
         builder.excludeFieldsWithoutExposeAnnotation();
         builder.setPrettyPrinting();
 
@@ -168,7 +172,8 @@ public abstract class Query implements Serializable {
             return null;
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Query.class, new QueryDeserializer());
-        
+        builder.registerTypeAdapter(MembershipFunctionType.class,new MembershipTypeDeserializer());
+
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionDeserializer());
 
         Gson read = builder.create();

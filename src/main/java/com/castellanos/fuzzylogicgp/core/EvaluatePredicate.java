@@ -123,7 +123,7 @@ public class EvaluatePredicate {
     }
 
     public void exportToCsv() throws IOException {
-        fuzzyData.write().csv(outPath);
+        fuzzyData.write().csv(outPath.replace(".xlsx", ".csv").replace(".xls", ".csv"));
     }
 
     public void exportToJSON(String file) throws IOException {

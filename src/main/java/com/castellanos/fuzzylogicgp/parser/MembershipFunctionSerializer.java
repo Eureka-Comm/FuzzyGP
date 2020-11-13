@@ -9,6 +9,7 @@ import com.castellanos.fuzzylogicgp.membershipfunction.LGamma;
 import com.castellanos.fuzzylogicgp.membershipfunction.LTrapezoidal;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
+import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Nominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.PSeudoExp;
@@ -27,7 +28,7 @@ public class MembershipFunctionSerializer implements JsonSerializer<MembershipFu
 
     @Override
     public JsonElement serialize(MembershipFunction src, Type typeOfSrc, JsonSerializationContext context) {
-        switch (src.getType()) {
+        switch (src.type) {
             case FPG:
                 return context.serialize((FPG) src);
             case NSIGMOID:

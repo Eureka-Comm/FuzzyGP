@@ -5,15 +5,49 @@
  */
 package com.castellanos.fuzzylogicgp.membershipfunction;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  *
  * @author hp
  */
 public enum MembershipFunctionType {
-    GCLV("gclv"), FPG("fpg"), SIGMOID("sigmoid"), NSIGMOID("-sigmoid"), SINGLETON("singleton"),
-    MAPNOMIAL("map-nominal"), TRIANGULAR("triangular"), TRAPEZOIDAL("trapezoidal"), RTRAPEZOIDAL("rtrapezoidal"),
-    LTRAPEZOIDAL("ltrapezoidal"), GAMMA("gamma"), LGAMMA("lgamma"), PSEUDOEXP("pseudo-exp"), GAUSSIAN("gaussian"),
-    ZFORM("zform"), SFORM("sform"), NOMINAL("nominal"), GBELL("gbell");
+    @SerializedName("gclv")
+    GCLV("gclv"), 
+    @SerializedName("fpg")
+    FPG("fpg"), 
+    @SerializedName("sigmoid")
+    SIGMOID("sigmoid"), 
+    @SerializedName("-sigmoid")
+    NSIGMOID("-sigmoid"), 
+    @SerializedName("singleton")
+    SINGLETON("singleton"),
+    @SerializedName("map-nominal")
+    MAPNOMIAL("map-nominal"), 
+    @SerializedName("triangular")
+    TRIANGULAR("triangular"), 
+    @SerializedName("trapezoidal")
+    TRAPEZOIDAL("trapezoidal"), 
+    @SerializedName("rtrapezoidal")
+    RTRAPEZOIDAL("rtrapezoidal"),
+    @SerializedName("ltrapezoidal")
+    LTRAPEZOIDAL("ltrapezoidal"), 
+    @SerializedName("gamma")
+    GAMMA("gamma"), 
+    @SerializedName("lgamma")
+    LGAMMA("lgamma"), 
+    @SerializedName("pseudo-exp")
+    PSEUDOEXP("pseudo-exp"), 
+    @SerializedName("gaussian")
+    GAUSSIAN("gaussian"),
+    @SerializedName("zform")
+    ZFORM("zform"), 
+    @SerializedName("sform")
+    SFORM("sform"), 
+    @SerializedName("nominal")
+    NOMINAL("nominal"), 
+    @SerializedName("gbell")
+    GBELL("gbell");
 
     private final String str;
 
