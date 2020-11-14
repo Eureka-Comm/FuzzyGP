@@ -230,7 +230,16 @@ public class KDFLC {
             if (isForEvaluate()) {
                 gomf.optimize(this.predicatePattern);
                 resultList.add(predicatePattern);
+            } else {
+                NodeTree best = population[0];
+                for (int i = 1; i < population.length; i++) {
+                    if (best.getFitness() < population[i].getFitness()) {
+                        best = population[i];
+                    }
+                }
+                resultList.add(best);
             }
+
         }
         for (int i = 0; i < resultList.size(); i++) {
             System.out.println((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
