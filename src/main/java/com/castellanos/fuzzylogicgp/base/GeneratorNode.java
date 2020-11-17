@@ -98,7 +98,7 @@ public class GeneratorNode extends Node {
     }
 
     @Override
-    public Object copy() {
+    public GeneratorNode copy() {
         return this;
     }
 

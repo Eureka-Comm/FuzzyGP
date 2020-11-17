@@ -338,14 +338,14 @@ public class KDFLC {
         if (predicatePattern.getChildrens().size() == 1) {
             flag = predicatePattern.getChildrens().get(0) instanceof GeneratorNode;
         }
-        Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
+        Iterator<Node> iterator = NodeTree.getNodesByType(p, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
                 Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()),
                         index < num_pop / 2);
                 if (p != node && p.getType() != NodeType.OPERATOR) {
-                    NodeTree.replace(p, node, generate, flag);
+                    NodeTree.replace(NodeTree.getNodeParent(p, node.getId()), node, generate, flag);
                 } else {
                     if (((GeneratorNode) node).getDepth() == 0) {
                         NodeTree root = new NodeTree(NodeType.NOT);

@@ -140,14 +140,16 @@ public class Examples {
         states.add(new StateNode("quality", "quality"));
         states.add(new StateNode("density", "density"));
         states.add(new StateNode("chlorides", "chlorides"));
-        states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
+       // states.add(new StateNode("chlorides", "chlorides"));
+
+        //states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
 
         query.setStates(states);
         query.setDb_uri("tinto.csv");
         String out_file = "result-discovery-prop.csv";
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
-        String predicate = "(EQV \"comodin\" \"low pH\")";
+        String predicate = "(AND \"comodin\" (EQV \"comodin\" \"quality\"))";
         // predicate = "\"comodin\"";
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("comodin");
@@ -157,7 +159,7 @@ public class Examples {
             variables.add(stateNode.getLabel());
         }
         generator.setVariables(variables);
-        generator.setOperators(new NodeType[] { NodeType.AND });
+        generator.setOperators(new NodeType[] { NodeType.AND,NodeType.OR, NodeType.IMP });
         ArrayList<GeneratorNode> generators = new ArrayList<>();
         generators.add(generator);
         query.setGenerators(generators);

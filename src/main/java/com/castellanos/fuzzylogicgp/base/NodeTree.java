@@ -61,31 +61,33 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
     }
 
     public void addChild(Node node) throws OperatorException {
+        Node node_ = node;
+        
         switch (this.getType()) {
             case AND:
             case OR:
-                this.childrens.add(node);
+                this.childrens.add(node_);
                 break;
             case IMP:
             case EQV:
                 if (this.childrens.isEmpty()) {
-                    this.leftID = node.getId();
-                    this.childrens.add(node);
+                    this.leftID = node_.getId();
+                    this.childrens.add(node_);
                 } else if (childrens.size() == 1) {
-                    this.righID = node.getId();
-                    this.childrens.add(node);
+                    this.righID = node_.getId();
+                    this.childrens.add(node_);
                 } else {
                     throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
                 }
                 break;
             case NOT:
                 if (childrens.isEmpty()) {
-                    this.childrens.add(node);
+                    this.childrens.add(node_);
                     break;
                 } else
                     throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be one element.");
             case OPERATOR:
-                this.childrens.add(node);
+                this.childrens.add(node_);
                 break;
             default:
                 throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be ? element.");
