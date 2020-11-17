@@ -147,8 +147,8 @@ public class Examples {
         String out_file = "result-discovery-prop.csv";
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
-        String predicate = "(IMP \"comodin\" \"quality\")";
-         predicate = "\"comodin\"";
+        String predicate = "(EQV \"comodin\" \"low pH\")";
+        // predicate = "\"comodin\"";
         GeneratorNode generator = new GeneratorNode();
         generator.setLabel("comodin");
         generator.setDepth(1);
@@ -157,7 +157,7 @@ public class Examples {
             variables.add(stateNode.getLabel());
         }
         generator.setVariables(variables);
-        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR });
+        generator.setOperators(new NodeType[] { NodeType.AND });
         ArrayList<GeneratorNode> generators = new ArrayList<>();
         generators.add(generator);
         query.setGenerators(generators);
@@ -165,7 +165,7 @@ public class Examples {
         query.setAdj_min_truth_value(0.1f);
         query.setAdj_num_pop(10);
         query.setMut_percentage(0.05f);
-        query.setNum_iter(50);
+        query.setNum_iter(5);
         query.setMin_truth_value(0.95f);
         query.setNum_pop(100);
         query.setNum_result(15);

@@ -225,7 +225,7 @@ public class KDFLC {
             Collections.sort(resultList, Collections.reverseOrder());
 
         }
-        
+
         System.out.println("Result list " + resultList.size());
         if (resultList.isEmpty()) {
             if (isForEvaluate()) {
@@ -234,7 +234,7 @@ public class KDFLC {
             }
 
         }
-        System.out.println(resultList.isEmpty());
+        System.out.println("Added min" + resultList.isEmpty());
         if (resultList.isEmpty()) {
             NodeTree best = population[0];
 
@@ -246,7 +246,7 @@ public class KDFLC {
             resultList.add((NodeTree) best.copy());
             System.out.println("Best found " + best.getFitness());
         }
-        
+
         for (int i = 0; i < resultList.size(); i++) {
             System.out.println((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
         }
@@ -261,6 +261,10 @@ public class KDFLC {
                 if (state.getMembershipFunction() == null)
                     return false;
             }
+        }
+        ArrayList<Node> genes = NodeTree.getNodesByType(this.predicatePattern, NodeType.OPERATOR);
+        if (!genes.isEmpty()) {
+            return false;
         }
         return true;
     }
