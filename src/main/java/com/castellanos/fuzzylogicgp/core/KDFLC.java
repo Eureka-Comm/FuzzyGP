@@ -197,14 +197,15 @@ public class KDFLC {
 
                 int lastFound = 0;
                 for (int i = 0; i < offspring.length; i++) {
-                    for (int j = lastFound; j < population.length; j++) {
+                    for (int j = 0; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
                             population[j] = (NodeTree) offspring[i].copy();
-                            lastFound = j + 1;
+                            lastFound++;
                             break;
                         }
                     }
                 }
+                System.out.println("\tAdded to population " + lastFound);
 
                 Arrays.sort(population, Collections.reverseOrder());
                 boolean flag = false;
