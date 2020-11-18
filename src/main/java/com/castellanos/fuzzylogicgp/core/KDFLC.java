@@ -25,6 +25,8 @@ import com.castellanos.fuzzylogicgp.parser.ParserPredicate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.apache.commons.lang3.StringUtils;
+
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
@@ -138,7 +140,7 @@ public class KDFLC {
         }
 
         if (isToDiscovery) {
-
+            boolean isTheSameGenerator = isTheSameGenerator();
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
                 System.out.println("\tTo replace : " + toReplaceIndex.size());
@@ -168,16 +170,32 @@ public class KDFLC {
                     offspring_size++;
                 }
                 NodeTree[] offspring = new NodeTree[offspring_size];
-                TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
-                tournamentSelection.execute();
+
                 System.out.println("\tBefore crossover");
-                for (int i = 0; i < offspring.length; i++) {
-                    NodeTree a = tournamentSelection.getNext();
-                    NodeTree b = tournamentSelection.getNext();
-                    NodeTree[] cross = crossover(a, b);
-                    offspring[i] = cross[0];
-                    offspring[i + 1] = cross[1];
-                    i++;
+                if (!isTheSameGenerator) {
+                    TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
+                    tournamentSelection.execute();
+                    for (int i = 0; i < offspring.length; i++) {
+                        NodeTree a = tournamentSelection.getNext();
+                        NodeTree b = tournamentSelection.getNext();
+                        NodeTree[] cross = crossover(a, b);
+                        offspring[i] = cross[0];
+                        offspring[i + 1] = cross[1];
+                        i++;
+                    }
+                } else {
+                    for (int i = 0; i < offspring.length; i++) {
+                        try {
+                            int intents = 0;
+                            do {
+                                offspring[i] = createRandomInd(i);
+                                intents++;
+                            } while (!valid_predicate(offspring[i]) && intents < 20);
+                        } catch (OperatorException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
                 System.out.println("\tAfter crossover");
                 mutation(offspring);
@@ -262,6 +280,31 @@ public class KDFLC {
             System.out.println((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
         }
 
+    }
+
+    private boolean isTheSameGenerator() {
+        ArrayList<Node> _nodesByType = NodeTree.getNodesByType(this.predicatePattern, NodeType.OPERATOR);
+        // Filter
+        ArrayList<Node> fList = new ArrayList<>();
+        for (Node n : _nodesByType) {
+            if (!fList.contains(n))
+                fList.add(n);
+        }
+        Iterator<Node> iterator = fList.iterator();
+        ArrayList<Integer> count = new ArrayList<>();
+        String expression = this.predicatePattern.toString();
+        while (iterator.hasNext()) {
+            Node node = iterator.next();
+            if (node instanceof GeneratorNode) {
+                GeneratorNode generator = (GeneratorNode) node;
+                count.add(StringUtils.countMatches(expression, String.format("\"%s\"", generator.getLabel())));
+            }
+        }
+        for (Integer i : count) {
+            if (i > 1)
+                return true;
+        }
+        return false;
     }
 
     private boolean isForEvaluate() {
@@ -398,22 +441,45 @@ public class KDFLC {
                     intents++;
                 }
                 Node clon = (Node) n.copy();
+                Node parent = null;
                 switch (n.getType()) {
                     case OR:
                         clon.setType(NodeType.AND);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
+                        do {
+                            parent = NodeTree.getNodeParent(population[i], n.getId());
+                            if (parent != null)
+                                NodeTree.replace((NodeTree) parent, n, clon, false);
+                        } while (parent != null);
                         break;
                     case AND:
                         clon.setType(NodeType.OR);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
+                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                        // false);
+                        do {
+                            parent = NodeTree.getNodeParent(population[i], n.getId());
+                            if (parent != null)
+                                NodeTree.replace((NodeTree) parent, n, clon, false);
+                        } while (parent != null);
                         break;
                     case IMP:
                         clon.setType(NodeType.EQV);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
+                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                        // false);
+                        do {
+                            parent = NodeTree.getNodeParent(population[i], n.getId());
+                            if (parent != null)
+                                NodeTree.replace((NodeTree) parent, n, clon, false);
+                        } while (parent != null);
                         break;
                     case EQV:
                         clon.setType(NodeType.IMP);
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon, false);
+                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                        // false);
+                        do {
+                            parent = NodeTree.getNodeParent(population[i], n.getId());
+                            if (parent != null)
+                                NodeTree.replace((NodeTree) parent, n, clon, false);
+                        } while (parent != null);
                         break;
                     case STATE:
                         List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
@@ -424,7 +490,13 @@ public class KDFLC {
                         if (s.getMembershipFunction() != null) {
                             s.setMembershipFunction(state.getMembershipFunction());
                         }
-                        NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s, false);
+                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s,
+                        // false);
+                        do {
+                            parent = NodeTree.getNodeParent(population[i], n.getId());
+                            if (parent != null)
+                                NodeTree.replace((NodeTree) parent, n, s, false);
+                        } while (parent != null);
                         break;
                     default:
                         break;
