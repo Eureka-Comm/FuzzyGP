@@ -240,7 +240,7 @@ public class KDFLC {
                     wasNotChanged++;
                 }
                 iteration++;
-                if (wasNotChanged >= num_iter / 10) {
+                if (wasNotChanged >= num_iter / 10 && !isTheSameGenerator) {
                     int n = 0;
                     wasNotChanged = 0;
                     for (int i = 0; i < num_pop && n < num_pop / 3; i++) {
@@ -484,18 +484,18 @@ public class KDFLC {
                     case STATE:
                         List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
                         StateNode state = ls.get(rand.nextInt(ls.size()));
-                        StateNode s = (StateNode) clon;
+                        /*StateNode s = (StateNode) clon;
                         s.setColName(state.getColName());
                         s.setLabel(state.getLabel());
                         if (s.getMembershipFunction() != null) {
                             s.setMembershipFunction(state.getMembershipFunction());
-                        }
+                        }*/
                         // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s,
                         // false);
                         do {
                             parent = NodeTree.getNodeParent(population[i], n.getId());
                             if (parent != null)
-                                NodeTree.replace((NodeTree) parent, n, s, false);
+                                NodeTree.replace((NodeTree) parent, n, (StateNode)state.copy(), false);
                         } while (parent != null);
                         break;
                     default:
