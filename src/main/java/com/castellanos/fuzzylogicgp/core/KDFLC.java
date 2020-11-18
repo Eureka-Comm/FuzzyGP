@@ -484,19 +484,25 @@ public class KDFLC {
                     case STATE:
                         List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
                         StateNode state = ls.get(rand.nextInt(ls.size()));
-                        /*StateNode s = (StateNode) clon;
-                        s.setColName(state.getColName());
-                        s.setLabel(state.getLabel());
-                        if (s.getMembershipFunction() != null) {
-                            s.setMembershipFunction(state.getMembershipFunction());
-                        }*/
-                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, s,
-                        // false);
-                        do {
-                            parent = NodeTree.getNodeParent(population[i], n.getId());
-                            if (parent != null)
-                                NodeTree.replace((NodeTree) parent, n, (StateNode)state.copy(), false);
-                        } while (parent != null);
+                        NodeTree p = NodeTree.getNodeParent(population[i], n.getId());
+                        ArrayList<String> labels = new ArrayList<>();
+                        for (int j = 0; j < p.getChildrens().size(); j++) {
+                            Node _c = p.getChildrens().get(j);
+                            if (_c instanceof StateNode) {
+                                labels.add(((StateNode) _c).getLabel());
+                            }
+                        }
+                        int i_ = 0;
+                        while (i_ < ls.size() && labels.contains(state.getLabel())) {
+                            state = ls.get(rand.nextInt(ls.size()));
+                            i++;
+                        }
+                        if (!labels.contains(state.getLabel()))
+                            do {
+                                parent = NodeTree.getNodeParent(population[i], n.getId());
+                                if (parent != null)
+                                    NodeTree.replace((NodeTree) parent, n, (StateNode) state.copy(), false);
+                            } while (parent != null);
                         break;
                     default:
                         break;
