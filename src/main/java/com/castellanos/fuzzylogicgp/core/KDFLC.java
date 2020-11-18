@@ -495,7 +495,7 @@ public class KDFLC {
                         int i_ = 0;
                         while (i_ < ls.size() && labels.contains(state.getLabel())) {
                             state = ls.get(rand.nextInt(ls.size()));
-                            i++;
+                            i_++;
                         }
                         if (!labels.contains(state.getLabel()))
                             do {

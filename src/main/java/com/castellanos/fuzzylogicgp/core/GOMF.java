@@ -202,7 +202,7 @@ public class GOMF {
             prom += current;
         }
         v[1] = prom / column.size();
-        v[3] = Math.min(Math.abs(v[0] - v[1]) , 0.1);
+        v[3] = Math.min(Math.abs(v[0] - v[1]), 0.1);
         return v;
     }
 
@@ -264,12 +264,15 @@ public class GOMF {
                 Double[] r = minPromMaxMapValues.get(next.getElements()[index].get("owner"));
                 Double value;
                 int intents;
+                double upper, lower;
                 switch (index) {
                     case 0:
                         Double gamma = (double) element.get("gamma");
                         intents = 0;
+                        lower = Math.min(r[0], gamma);
+                        upper = Math.max(r[0], gamma);
                         do {
-                            value = randomValue(r[0], gamma);
+                            value = randomValue(lower, upper);
                             intents++;
 
                         } while ((Math.abs(gamma - value) <= r[3] || gamma == value) && intents < 100);
@@ -278,8 +281,10 @@ public class GOMF {
                     case 1:
                         Double beta = (double) element.get("beta");
                         intents = 0;
+                        lower = Math.min(beta, r[2]);
+                        upper = Math.max(beta, r[2]);
                         do {
-                            value = randomValue(beta, r[2]);
+                            value = randomValue(lower, upper);
                             intents++;
 
                         } while ((value <= beta || Math.abs(beta - value) <= r[3]) && intents < 100);
