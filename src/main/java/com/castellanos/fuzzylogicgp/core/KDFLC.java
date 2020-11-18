@@ -141,6 +141,7 @@ public class KDFLC {
 
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
+                System.out.println("\tTo replace : " + toReplaceIndex.size());
                 toReplaceIndex.parallelStream().forEach(_index -> {
                     int intents = 0;
                     do {
@@ -169,7 +170,7 @@ public class KDFLC {
                 NodeTree[] offspring = new NodeTree[offspring_size];
                 TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
                 tournamentSelection.execute();
-
+                System.out.println("\tBefore crossover");
                 for (int i = 0; i < offspring.length; i++) {
                     NodeTree a = tournamentSelection.getNext();
                     NodeTree b = tournamentSelection.getNext();
@@ -178,11 +179,20 @@ public class KDFLC {
                     offspring[i + 1] = cross[1];
                     i++;
                 }
+                System.out.println("\tAfter crossover");
                 mutation(offspring);
-                gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-                for (int i = 0; i < offspring.length; i++) {
-                    gomf.optimize(offspring[i]);
-                }
+                System.out.println("\tAfter mutation");
+                Arrays.parallelSetAll(offspring, _index -> {
+                    GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+                    _gomf.optimize(offspring[_index]);
+                    return offspring[_index];
+                });
+
+                /*
+                 * for (int i = 0; i < offspring.length; i++) { }
+                 */
+                System.out.println("\tAfter evaluate offspring");
+
                 Arrays.sort(offspring);
 
                 int lastFound = 0;
@@ -338,14 +348,26 @@ public class KDFLC {
         if (predicatePattern.getChildrens().size() == 1) {
             flag = predicatePattern.getChildrens().get(0) instanceof GeneratorNode;
         }
-        Iterator<Node> iterator = NodeTree.getNodesByType(p, NodeType.OPERATOR).iterator();
+        ArrayList<Node> _nodesByType = NodeTree.getNodesByType(p, NodeType.OPERATOR);
+        // Filter
+        ArrayList<Node> fList = new ArrayList<>();
+        for (Node n : _nodesByType) {
+            if (!fList.contains(n))
+                fList.add(n);
+        }
+        Iterator<Node> iterator = fList.iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
                 Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()),
                         index < num_pop / 2);
                 if (p != node && p.getType() != NodeType.OPERATOR) {
-                    NodeTree.replace(NodeTree.getNodeParent(p, node.getId()), node, generate, flag);
+                    NodeTree _parent = null;
+                    do {
+                        _parent = NodeTree.getNodeParent(p, node.getId());
+                        if (_parent != null)
+                            NodeTree.replace(_parent, node, generate, flag);
+                    } while (_parent != null);
                 } else {
                     if (((GeneratorNode) node).getDepth() == 0) {
                         NodeTree root = new NodeTree(NodeType.NOT);
