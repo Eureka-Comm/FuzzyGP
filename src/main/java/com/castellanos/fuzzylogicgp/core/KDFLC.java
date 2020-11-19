@@ -557,6 +557,9 @@ public class KDFLC {
 
         ArrayList<Node> a_editable = NodeTree.getEditableNodes(ac);
         ArrayList<Node> b_editable = NodeTree.getEditableNodes(bc);
+        if (a_editable.isEmpty() || b_editable.isEmpty()) {
+            return new NodeTree[] { ac, bc };
+        }
         Node cand = a_editable.get(rand.nextInt(a_editable.size()));
         int nivel = NodeTree.dfs(ac, cand);
         int nivel_b;
