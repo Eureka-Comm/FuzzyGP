@@ -44,6 +44,7 @@ public class KDFLC {
     private ParserPredicate parserPredicate;
     private NodeTree predicatePattern;
     private HashMap<String, List<StateNode>> statesByGenerators;
+    private HashMap<String, GeneratorNode> generators;
     private Logic logic;
     private int num_pop;
     private int num_iter;
@@ -90,6 +91,7 @@ public class KDFLC {
         this.resultList = new ArrayList<>();
         this.min_truth_value = (min_truth_value <= 1) ? (min_truth_value > 0.0005) ? min_truth_value - 0.005 : 0.0
                 : 0.5;
+        this.generators = new HashMap<>();
     }
 
     public void execute() throws CloneNotSupportedException, OperatorException {
@@ -112,6 +114,7 @@ public class KDFLC {
                     }
                 }
                 statesByGenerators.put(gNode.getId(), states);
+                generators.put(gNode.getId(), gNode);
             }
         }
         NodeTree[] population = makePopulation();
@@ -141,6 +144,7 @@ public class KDFLC {
 
         if (isToDiscovery) {
             boolean isTheSameGenerator = isTheSameGenerator();
+            // isTheSameGenerator = false;
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
                 System.out.println("\tTo replace : " + toReplaceIndex.size());
@@ -392,10 +396,11 @@ public class KDFLC {
         if (predicatePattern.getChildrens().size() == 1) {
             flag = predicatePattern.getChildrens().get(0) instanceof GeneratorNode;
         }
-        ArrayList<Node> _nodesByType = NodeTree.getNodesByType(p, NodeType.OPERATOR);
+        // ArrayList<Node> _nodesByType = NodeTree.getNodesByType(p, NodeType.OPERATOR);
+
         // Filter
         ArrayList<Node> fList = new ArrayList<>();
-        for (Node n : _nodesByType) {
+        for (GeneratorNode n : this.generators.values()) {
             if (!fList.contains(n))
                 fList.add(n);
         }
@@ -442,44 +447,78 @@ public class KDFLC {
                 }
                 Node clon = (Node) n.copy();
                 Node parent = null;
+                boolean isValidChange = false;
+                NodeType[] _types = this.generators.get(n.getByGenerator()).getOperators();
                 switch (n.getType()) {
                     case OR:
-                        clon.setType(NodeType.AND);
-                        do {
-                            parent = NodeTree.getNodeParent(population[i], n.getId());
-                            if (parent != null)
-                                NodeTree.replace((NodeTree) parent, n, clon, false);
-                        } while (parent != null);
+                        for (NodeType t : _types) {
+                            if (t == NodeType.AND) {
+                                isValidChange = true;
+                                break;
+                            }
+                        }
+                        if (isValidChange) {
+                            clon.setType(NodeType.AND);
+                            do {
+                                parent = NodeTree.getNodeParent(population[i], n.getId());
+                                if (parent != null)
+                                    NodeTree.replace((NodeTree) parent, n, clon, false);
+                            } while (parent != null);
+                        }
                         break;
                     case AND:
-                        clon.setType(NodeType.OR);
-                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                        // false);
-                        do {
-                            parent = NodeTree.getNodeParent(population[i], n.getId());
-                            if (parent != null)
-                                NodeTree.replace((NodeTree) parent, n, clon, false);
-                        } while (parent != null);
+                        for (NodeType t : _types) {
+                            if (t == NodeType.OR) {
+                                isValidChange = true;
+                                break;
+                            }
+                        }
+                        if (isValidChange) {
+                            clon.setType(NodeType.OR);
+                            // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                            // false);
+                            do {
+                                parent = NodeTree.getNodeParent(population[i], n.getId());
+                                if (parent != null)
+                                    NodeTree.replace((NodeTree) parent, n, clon, false);
+                            } while (parent != null);
+                        }
                         break;
                     case IMP:
-                        clon.setType(NodeType.EQV);
-                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                        // false);
-                        do {
-                            parent = NodeTree.getNodeParent(population[i], n.getId());
-                            if (parent != null)
-                                NodeTree.replace((NodeTree) parent, n, clon, false);
-                        } while (parent != null);
+                        for (NodeType t : _types) {
+                            if (t == NodeType.EQV) {
+                                isValidChange = true;
+                                break;
+                            }
+                        }
+                        if (isValidChange) {
+                            clon.setType(NodeType.EQV);
+                            // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                            // false);
+                            do {
+                                parent = NodeTree.getNodeParent(population[i], n.getId());
+                                if (parent != null)
+                                    NodeTree.replace((NodeTree) parent, n, clon, false);
+                            } while (parent != null);
+                        }
                         break;
                     case EQV:
-                        clon.setType(NodeType.IMP);
-                        // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                        // false);
-                        do {
-                            parent = NodeTree.getNodeParent(population[i], n.getId());
-                            if (parent != null)
-                                NodeTree.replace((NodeTree) parent, n, clon, false);
-                        } while (parent != null);
+                        for (NodeType t : _types) {
+                            if (t == NodeType.IMP) {
+                                isValidChange = true;
+                                break;
+                            }
+                        }
+                        if (isValidChange) {
+                            clon.setType(NodeType.IMP);
+                            // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                            // false);
+                            do {
+                                parent = NodeTree.getNodeParent(population[i], n.getId());
+                                if (parent != null)
+                                    NodeTree.replace((NodeTree) parent, n, clon, false);
+                            } while (parent != null);
+                        }
                         break;
                     case STATE:
                         List<StateNode> ls = statesByGenerators.get(n.getByGenerator());

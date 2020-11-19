@@ -29,22 +29,6 @@ import com.castellanos.fuzzylogicgp.logic.LogicType;
 import com.castellanos.fuzzylogicgp.parser.Query;
 
 public class Examples {
-    public static void main(String[] args) {
-        StateNode node = new StateNode("dummy", "dummy");
-        MembershipFunction mf = new FPG(1.9604408277229095, 1.9649108603405534, 0.4111713336297085);
-        // mf = new FPG_MF(1952.94681253064,4582.599891699062,0.26771988761419474);
-        // mf = new Sigmoid_MF(5.5,4);
-        mf = new FPG(596.4881580779418, 1512.0808103003033, 0.16039005160976927);
-        // mf = new Triangular(0.0,1.0,1.0);
-        // mf = new Triangular(3.,6.,8.);
-        mf = new Singleton(5);
-        mf = new Nominal("a", (double) 1);
-        mf = new FPG(4, 7, 0);
-        // mf = new Triangular(1, 4, 7);
-        node.setMembershipFunction(mf);
-        node.plot("", "dummy");
-
-    }
 
     public static Query irisQuery() {
         DiscoveryQuery query = new DiscoveryQuery();
