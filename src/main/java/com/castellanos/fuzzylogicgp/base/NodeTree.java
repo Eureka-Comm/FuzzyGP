@@ -1,6 +1,7 @@
 package com.castellanos.fuzzylogicgp.base;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.google.gson.GsonBuilder;
 
@@ -135,13 +136,6 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
             return String.format("(%s)", this.getType());
         }
         String st = makePrintStruct(this);
-        /*
-         * for (Node node : childrens) { if(node instanceof NodeTree){
-         * st+=" "+makePrintStruct((NodeTree) node); }else if( node instanceof
-         * StateNode){ st += String.format(" \"%s\"", ((StateNode) node).getLabel() );
-         * }else if(node instanceof GeneratorNode){ st += String.format(" \"%s\"",
-         * ((GeneratorNode)node).getLabel()); } }
-         */
         return st;
     }
 
@@ -225,19 +219,25 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
     public static ArrayList<Node> getEditableNodes(NodeTree tree) {
         ArrayList<Node> nodes = new ArrayList<>();
         getNodesByType(tree, nodes, null);
-        nodes.removeIf(node -> !node.isEditable());
+        Iterator<Node> iterator = nodes.iterator();
+        while (iterator.hasNext()) {
+            Node _n = iterator.next();
+            if (_n.isEditable() == false && _n.getByGenerator() == null) {
+                iterator.remove();
+            }
+        }
         return nodes;
     }
 
     public static void getNodesByType(NodeTree tree, ArrayList<Node> nodes, NodeType type) {
         for (Node n : tree.getChildrens()) {
-         //   if (!nodes.contains(n)) {
-                if (type == null) {
-                    nodes.add(n);
-                } else if (n.getType().equals(type)) {
-                    nodes.add(n);
-                }
-         //   }
+            // if (!nodes.contains(n)) {
+            if (type == null) {
+                nodes.add(n);
+            } else if (n.getType().equals(type)) {
+                nodes.add(n);
+            }
+            // }
             if (n instanceof NodeTree) {
                 getNodesByType((NodeTree) n, nodes, type);
             }
@@ -250,12 +250,17 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
     }
 
     @Override
-    public Object copy() {
+    public NodeTree copy() {
         try {
             NodeTree tree = new NodeTree(this.getType());
+            tree.setEditable(this.isEditable());
+            if (this.getByGenerator() != null)
+                tree.setByGenerator(this.getByGenerator());
             this.childrens.forEach(n -> {
                 try {
-                    tree.addChild((Node) n.copy());
+                    Node _n = (Node) n.copy();
+                    _n.setEditable(n.isEditable());
+                    tree.addChild(_n);
                 } catch (OperatorException e) {
                     e.printStackTrace();
                 }
@@ -322,7 +327,7 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
             throw new OperatorException(nodeTree.getId() + " is not the parent of " + toReplace.getId());
         }
     }
-    
+
     @Override
     public int compareTo(NodeTree tree) {
         return this.fitness.compareTo(tree.getFitness());

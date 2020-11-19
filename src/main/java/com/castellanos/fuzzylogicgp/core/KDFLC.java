@@ -147,7 +147,7 @@ public class KDFLC {
             // isTheSameGenerator = false;
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
-               // System.out.println("\tTo replace : " + toReplaceIndex.size());
+                // System.out.println("\tTo replace : " + toReplaceIndex.size());
                 toReplaceIndex.parallelStream().forEach(_index -> {
                     int intents = 0;
                     do {
@@ -169,7 +169,7 @@ public class KDFLC {
                 }
                 NodeTree[] offspring = new NodeTree[offspring_size];
 
-               // System.out.println("\tBefore crossover");
+                // System.out.println("\tBefore crossover");
                 if (!isTheSameGenerator) {
                     TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
                     tournamentSelection.execute();
@@ -195,9 +195,9 @@ public class KDFLC {
                     }
 
                 }
-                //System.out.println("\tAfter crossover");
+                // System.out.println("\tAfter crossover");
                 mutation(offspring);
-                //System.out.println("\tAfter mutation");
+                // System.out.println("\tAfter mutation");
                 Arrays.parallelSetAll(offspring, _index -> {
                     GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
                     _gomf.optimize(offspring[_index]);
@@ -207,9 +207,9 @@ public class KDFLC {
                 /*
                  * for (int i = 0; i < offspring.length; i++) { }
                  */
-               // System.out.println("\tAfter evaluate offspring");            
+                // System.out.println("\tAfter evaluate offspring");
 
-                //int lastFound = 0;
+                // int lastFound = 0;
                 for (int i = 0; i < offspring.length; i++) {
                     for (int j = 0; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
@@ -218,7 +218,7 @@ public class KDFLC {
                         }
                     }
                 }
-               // System.out.println("\tAdded to population " + lastFound);
+                // System.out.println("\tAdded to population " + lastFound);
                 boolean flag = false;
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value) {
@@ -399,6 +399,7 @@ public class KDFLC {
             if (node instanceof GeneratorNode) {
                 Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()),
                         index < num_pop / 2);
+                generate.setEditable(true);
                 if (p != node && p.getType() != NodeType.OPERATOR) {
                     NodeTree _parent = null;
                     do {
@@ -409,6 +410,7 @@ public class KDFLC {
                 } else {
                     if (((GeneratorNode) node).getDepth() == 0) {
                         NodeTree root = new NodeTree(NodeType.NOT);
+                        root.setEditable(true);
                         root.addChild(generate);
                         return root;
                     }
@@ -427,115 +429,121 @@ public class KDFLC {
         for (int i = 0; i < population.length; i++) {
             if (rand.nextDouble() < mut_percentage) {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
-                Node n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
+                if (!editableNode.isEmpty()) {
 
-                int intents = 0;
-                while (n.getType() == NodeType.NOT && intents < editableNode.size()) {
-                    n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
-                    intents++;
-                }
-                Node clon = (Node) n.copy();
-                Node parent = null;
-                boolean isValidChange = false;
-                NodeType[] _types = this.generators.get(n.getByGenerator()).getOperators();
-                switch (n.getType()) {
-                    case OR:
-                        for (NodeType t : _types) {
-                            if (t == NodeType.AND) {
-                                isValidChange = true;
-                                break;
-                            }
-                        }
-                        if (isValidChange) {
-                            clon.setType(NodeType.AND);
-                            do {
-                                parent = NodeTree.getNodeParent(population[i], n.getId());
-                                if (parent != null)
-                                    NodeTree.replace((NodeTree) parent, n, clon, false);
-                            } while (parent != null);
-                        }
-                        break;
-                    case AND:
-                        for (NodeType t : _types) {
-                            if (t == NodeType.OR) {
-                                isValidChange = true;
-                                break;
-                            }
-                        }
-                        if (isValidChange) {
-                            clon.setType(NodeType.OR);
-                            // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                            // false);
-                            do {
-                                parent = NodeTree.getNodeParent(population[i], n.getId());
-                                if (parent != null)
-                                    NodeTree.replace((NodeTree) parent, n, clon, false);
-                            } while (parent != null);
-                        }
-                        break;
-                    case IMP:
-                        for (NodeType t : _types) {
-                            if (t == NodeType.EQV) {
-                                isValidChange = true;
-                                break;
-                            }
-                        }
-                        if (isValidChange) {
-                            clon.setType(NodeType.EQV);
-                            // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                            // false);
-                            do {
-                                parent = NodeTree.getNodeParent(population[i], n.getId());
-                                if (parent != null)
-                                    NodeTree.replace((NodeTree) parent, n, clon, false);
-                            } while (parent != null);
-                        }
-                        break;
-                    case EQV:
-                        for (NodeType t : _types) {
-                            if (t == NodeType.IMP) {
-                                isValidChange = true;
-                                break;
-                            }
-                        }
-                        if (isValidChange) {
-                            clon.setType(NodeType.IMP);
-                            // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                            // false);
-                            do {
-                                parent = NodeTree.getNodeParent(population[i], n.getId());
-                                if (parent != null)
-                                    NodeTree.replace((NodeTree) parent, n, clon, false);
-                            } while (parent != null);
-                        }
-                        break;
-                    case STATE:
-                        List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
-                        StateNode state = ls.get(rand.nextInt(ls.size()));
-                        NodeTree p = NodeTree.getNodeParent(population[i], n.getId());
-                        ArrayList<String> labels = new ArrayList<>();
-                        for (int j = 0; j < p.getChildrens().size(); j++) {
-                            Node _c = p.getChildrens().get(j);
-                            if (_c instanceof StateNode) {
-                                labels.add(((StateNode) _c).getLabel());
-                            }
-                        }
-                        int i_ = 0;
-                        while (i_ < ls.size() && labels.contains(state.getLabel())) {
-                            state = ls.get(rand.nextInt(ls.size()));
-                            i_++;
-                        }
-                        if (!labels.contains(state.getLabel()))
-                            do {
-                                parent = NodeTree.getNodeParent(population[i], n.getId());
-                                if (parent != null)
-                                    NodeTree.replace((NodeTree) parent, n, (StateNode) state.copy(), false);
-                            } while (parent != null);
-                        break;
-                    default:
-                        break;
-                }
+                    Node n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
 
+                    int intents = 0;
+                    while (n.getType() == NodeType.NOT && intents < editableNode.size()) {
+                        n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
+                        intents++;
+                    }
+                    Node clon = (Node) n.copy();
+                    Node parent = null;
+                    boolean isValidChange = false;
+                    NodeType[] _types = this.generators.get(n.getByGenerator()).getOperators();
+                    switch (n.getType()) {
+                        case OR:
+                            for (NodeType t : _types) {
+                                if (t == NodeType.AND) {
+                                    isValidChange = true;
+                                    break;
+                                }
+                            }
+                            if (isValidChange) {
+                                clon.setType(NodeType.AND);
+                                do {
+                                    parent = NodeTree.getNodeParent(population[i], n.getId());
+                                    if (parent != null)
+                                        NodeTree.replace((NodeTree) parent, n, clon, false);
+                                } while (parent != null);
+                            }
+                            break;
+                        case AND:
+                            for (NodeType t : _types) {
+                                if (t == NodeType.OR) {
+                                    isValidChange = true;
+                                    break;
+                                }
+                            }
+                            if (isValidChange) {
+                                clon.setType(NodeType.OR);
+                                // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                                // false);
+                                do {
+                                    parent = NodeTree.getNodeParent(population[i], n.getId());
+                                    if (parent != null)
+                                        NodeTree.replace((NodeTree) parent, n, clon, false);
+                                } while (parent != null);
+                            }
+                            break;
+                        case IMP:
+                            for (NodeType t : _types) {
+                                if (t == NodeType.EQV) {
+                                    isValidChange = true;
+                                    break;
+                                }
+                            }
+                            if (isValidChange) {
+                                clon.setType(NodeType.EQV);
+                                // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                                // false);
+                                do {
+                                    parent = NodeTree.getNodeParent(population[i], n.getId());
+                                    if (parent != null)
+                                        NodeTree.replace((NodeTree) parent, n, clon, false);
+                                } while (parent != null);
+                            }
+                            break;
+                        case EQV:
+                            for (NodeType t : _types) {
+                                if (t == NodeType.IMP) {
+                                    isValidChange = true;
+                                    break;
+                                }
+                            }
+                            if (isValidChange) {
+                                clon.setType(NodeType.IMP);
+                                // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
+                                // false);
+                                do {
+                                    parent = NodeTree.getNodeParent(population[i], n.getId());
+                                    if (parent != null)
+                                        NodeTree.replace((NodeTree) parent, n, clon, false);
+                                } while (parent != null);
+                            }
+                            break;
+                        case STATE:
+                            List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
+                            StateNode state = ls.get(rand.nextInt(ls.size()));
+                            NodeTree p = NodeTree.getNodeParent(population[i], n.getId());
+                            ArrayList<String> labels = new ArrayList<>();
+                            for (int j = 0; j < p.getChildrens().size(); j++) {
+                                Node _c = p.getChildrens().get(j);
+                                if (_c instanceof StateNode) {
+                                    labels.add(((StateNode) _c).getLabel());
+                                }
+                            }
+                            int i_ = 0;
+                            while (i_ < ls.size() && labels.contains(state.getLabel())) {
+                                state = ls.get(rand.nextInt(ls.size()));
+                                i_++;
+                            }
+                            if (!labels.contains(state.getLabel()))
+                                do {
+                                    parent = NodeTree.getNodeParent(population[i], n.getId());
+                                    if (parent != null)
+                                        NodeTree.replace((NodeTree) parent, n, (StateNode) state.copy(), false);
+                                } while (parent != null);
+                            break;
+                        default:
+                            break;
+                    }
+
+                } else {
+                    System.out.println("\t? " + editableNode.size());
+                    System.out.println("\t" + population[i]);
+                }
             }
         }
     }
@@ -547,6 +555,11 @@ public class KDFLC {
         ArrayList<Node> a_editable = NodeTree.getEditableNodes(ac);
         ArrayList<Node> b_editable = NodeTree.getEditableNodes(bc);
         if (a_editable.isEmpty() || b_editable.isEmpty()) {
+            System.out.println("\tCrossover? " + a_editable.size() + ", " + b_editable.size());
+            System.out.println("\tCrossover " + ac + ", " + bc);
+            System.out.println("\tCrossover Parents? " + NodeTree.getEditableNodes(a).size() + ", "
+                    + NodeTree.getEditableNodes(b).size());
+            System.out.println("\tCrossover Parents? " + a + ", " + b);
             return new NodeTree[] { ac, bc };
         }
         Node cand = a_editable.get(rand.nextInt(a_editable.size()));

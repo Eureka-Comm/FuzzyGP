@@ -105,7 +105,7 @@ public class StateNode extends Node {
     }
 
     @Override
-    public Object copy() {
+    public StateNode copy() {
         StateNode state = new StateNode();
         if (this.getLabel() != null)
             state.setLabel(label);

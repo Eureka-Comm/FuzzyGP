@@ -155,36 +155,47 @@ public class GeneratorNode extends Node {
 
     private Node generate_child(NodeTree root, List<StateNode> states, int current_depth, boolean balanced)
             throws OperatorException {
-
+        Node _child = null;
         if (current_depth < this.depth) {
             if (Utils.random.nextDouble() < 0.45 || balanced) {
                 NodeTree tree = new NodeTree(operators[Utils.random.nextInt(operators.length)]);
                 tree.setEditable(true);
                 tree.setByGenerator(this.getId());
+
                 switch (tree.getType()) {
                     case AND:
                     case OR:
                         for (int i = 0; i < Utils.randInt(2, max_child_number); i++) {
-                            tree.addChild(this.generate_child(tree, states, current_depth + 1, balanced));
+                            _child = this.generate_child(tree, states, current_depth + 1, balanced);
+                            _child.setEditable(true);
+                            tree.addChild(_child);
                         }
                         return tree;
                     case IMP:
                     case EQV:
                         for (int i = 0; i < 2; i++) {
-                            tree.addChild(this.generate_child(tree, states, current_depth + 1, balanced));
+                            _child = this.generate_child(tree, states, current_depth + 1, balanced);
+                            _child.setEditable(true);
+                            tree.addChild(_child);
                         }
                         return tree;
                     case NOT:
-                        tree.addChild(this.generate_child(tree, states, current_depth + 1, balanced));
+                        _child = this.generate_child(tree, states, current_depth + 1, balanced);
+                        _child.setEditable(true);
+                        tree.addChild(_child);
                         return tree;
                     default:
                         throw new IllegalArgumentException("Unsupported type: " + tree.getType());
                 }
             } else {
-                return this.generate_state(root, states);
+                _child = this.generate_state(root, states);
+                _child.setEditable(true);
+                return _child;
             }
         }
-        return this.generate_state(root, states);
+        _child = this.generate_state(root, states);
+        _child.setEditable(true);
+        return _child;
     }
 
     private Node generate_state(NodeTree root, List<StateNode> states) {
@@ -214,7 +225,6 @@ public class GeneratorNode extends Node {
         return select;
     }
 
-  
     public static void main(String[] args) throws OperatorException {
         ArrayList<StateNode> states = new ArrayList<>();
         states.add(new StateNode("citric_acid", "citric_acid"));
@@ -237,10 +247,35 @@ public class GeneratorNode extends Node {
         }
         generator.setVariables(variables);
         generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT });
-        generator.setDepth(0);
-        Utils.random.setSeed(1);
-        for (int i = 0; i < 50; i++) {
-            System.out.println(i + " " + generator.generate(states, i < 20 / 2));
+        generator.setDepth(2);
+        // Utils.random.setSeed(1);
+        ArrayList<Node> trees = new ArrayList<>();
+        for (int i = 0; i < 50000; i++) {
+            Node _g = generator.generate(states, i < 50000 / 2);
+            trees.add(_g);
+        }
+        ArrayList<Node> copies = new ArrayList<>();
+
+        for (int i = 0; i < trees.size(); i++) {
+            Node n = trees.get(i);
+            
+            copies.add((Node) n.copy());
+        }
+        System.out.println("check copy");
+        
+        for (int i = 0; i < copies.size(); i++) {
+            Node c = copies.get(i);
+            Node o = trees.get(i);
+
+            if (o instanceof NodeTree) {
+                ArrayList<Node> a = NodeTree.getEditableNodes((NodeTree) o);
+                ArrayList<Node> a_c = NodeTree.getEditableNodes((NodeTree) c);
+                if (a.size() != a_c.size()) {
+                    System.out.println(a.size() + " " + a_c.size());
+                    System.out.println(o + " <> " + c);
+                }
+
+            }
         }
     }
 }
