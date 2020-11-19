@@ -147,7 +147,7 @@ public class KDFLC {
             // isTheSameGenerator = false;
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
-                System.out.println("\tTo replace : " + toReplaceIndex.size());
+               // System.out.println("\tTo replace : " + toReplaceIndex.size());
                 toReplaceIndex.parallelStream().forEach(_index -> {
                     int intents = 0;
                     do {
@@ -161,12 +161,6 @@ public class KDFLC {
                     GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
                     _gomf.optimize(population[_index]);
                 });
-                /*
-                 * for (Integer _index : toReplaceIndex) { int intents = 0; do {
-                 * population[_index] = createRandomInd(_index); intents++; } while
-                 * (!valid_predicate(population[_index]) && intents < 20);
-                 * gomf.optimize(population[_index]); }
-                 */
                 toReplaceIndex.clear();
                 System.out.println("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
                 int offspring_size = population.length / 2;
@@ -175,7 +169,7 @@ public class KDFLC {
                 }
                 NodeTree[] offspring = new NodeTree[offspring_size];
 
-                System.out.println("\tBefore crossover");
+               // System.out.println("\tBefore crossover");
                 if (!isTheSameGenerator) {
                     TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
                     tournamentSelection.execute();
@@ -201,9 +195,9 @@ public class KDFLC {
                     }
 
                 }
-                System.out.println("\tAfter crossover");
+                //System.out.println("\tAfter crossover");
                 mutation(offspring);
-                System.out.println("\tAfter mutation");
+                //System.out.println("\tAfter mutation");
                 Arrays.parallelSetAll(offspring, _index -> {
                     GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
                     _gomf.optimize(offspring[_index]);
@@ -213,23 +207,18 @@ public class KDFLC {
                 /*
                  * for (int i = 0; i < offspring.length; i++) { }
                  */
-                System.out.println("\tAfter evaluate offspring");
+               // System.out.println("\tAfter evaluate offspring");            
 
-                Arrays.sort(offspring);
-
-                int lastFound = 0;
+                //int lastFound = 0;
                 for (int i = 0; i < offspring.length; i++) {
                     for (int j = 0; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
                             population[j] = (NodeTree) offspring[i].copy();
-                            lastFound++;
                             break;
                         }
                     }
                 }
-                System.out.println("\tAdded to population " + lastFound);
-
-                Arrays.sort(population, Collections.reverseOrder());
+               // System.out.println("\tAdded to population " + lastFound);
                 boolean flag = false;
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value) {
