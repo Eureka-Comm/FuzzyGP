@@ -27,7 +27,6 @@ public class GMBC_Logic extends Logic {
         return 1.0 - v1;
     }
 
-
     @Override
     public double and(double v1, double v2) {
         return (Math.pow(v1 * v2, 0.5));
@@ -55,8 +54,17 @@ public class GMBC_Logic extends Logic {
     @Override
     public double forAll(List<Double> values) {
         double result = 0.0;
-        result = values.stream().filter((value) -> (value != 0)).map((value) -> Math.log(value)).reduce(result,
-                (accumulator, _item) -> accumulator + _item);
+        /*
+         * result = values.stream().filter((value) -> (value != 0)).map((value) ->
+         * Math.log(value)).reduce(result, (accumulator, _item) -> accumulator + _item);
+         */
+        for (Double d : values) {
+            if (d == 0) {
+                return 0;
+            } else {
+                result += Math.log(d);
+            }
+        }
         if (result == 0)
             return 0;
         return Math.pow(Math.E, ((1.0 / values.size()) * result));
