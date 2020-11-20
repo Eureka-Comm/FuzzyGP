@@ -10,5 +10,7 @@ public enum LogicType {
     @SerializedName("zadeh")
     ZADEH, 
     @SerializedName("acf")
-    ACF;
+    ACF,
+    @SerializedName("gmbcv")
+    GMBCV;
 }

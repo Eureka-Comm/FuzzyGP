@@ -47,6 +47,8 @@ public class LogicBuilder {
                 return new Zadeh_Logic();
             case AMBC:
                 return new AMBC_Logic(natural_implication);
+            case GMBCV:
+                return new GMBC_FA_Logic(exponent, natural_implication);
             default:
                 return null;
         }
