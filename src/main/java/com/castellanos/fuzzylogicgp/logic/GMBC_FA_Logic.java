@@ -23,12 +23,14 @@ public class GMBC_FA_Logic extends GMBC_Logic {
         for (double v : values) {
             if (v != 0) {
                 pe += Math.log(v);
+            } else {
+                return 0;
             }
         }
         pe /= values.size();
         double r = 0;
         for (double v : values) {
-            r += (v - pe) * (v - pe);
+                r += (v - pe) * (v - pe);
         }
         r = Math.sqrt(r / values.size());
         return Math.exp(pe - exponent * r);
