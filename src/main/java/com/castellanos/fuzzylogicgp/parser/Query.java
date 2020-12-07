@@ -172,7 +172,7 @@ public abstract class Query implements Serializable {
             return null;
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(Query.class, new QueryDeserializer());
-        builder.registerTypeAdapter(MembershipFunctionType.class,new MembershipTypeDeserializer());
+        //builder.registerTypeAdapter(MembershipFunctionType.class,new MembershipTypeDeserializer());
 
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionDeserializer());
 

@@ -18,6 +18,7 @@ import com.castellanos.fuzzylogicgp.base.OperatorException;
 import com.castellanos.fuzzylogicgp.base.StateNode;
 import com.castellanos.fuzzylogicgp.base.TournamentSelection;
 import com.castellanos.fuzzylogicgp.base.Utils;
+import com.castellanos.fuzzylogicgp.logic.GMBC_FA_Logic;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos.fuzzylogicgp.parser.MembershipFunctionSerializer;
@@ -555,11 +556,14 @@ public class KDFLC {
         ArrayList<Node> a_editable = NodeTree.getEditableNodes(ac);
         ArrayList<Node> b_editable = NodeTree.getEditableNodes(bc);
         if (a_editable.isEmpty() || b_editable.isEmpty()) {
-            System.out.println("\tCrossover? " + a_editable.size() + ", " + b_editable.size());
-            System.out.println("\tCrossover " + ac + ", " + bc);
-            System.out.println("\tCrossover Parents? " + NodeTree.getEditableNodes(a).size() + ", "
-                    + NodeTree.getEditableNodes(b).size());
-            System.out.println("\tCrossover Parents? " + a + ", " + b);
+            /*
+             * System.out.println("\tCrossover? " + a_editable.size() + ", " +
+             * b_editable.size()); System.out.println("\tCrossover " + ac + ", " + bc);
+             * System.out.println("\tCrossover Parents? " +
+             * NodeTree.getEditableNodes(a).size() + ", " +
+             * NodeTree.getEditableNodes(b).size());
+             * System.out.println("\tCrossover Parents? " + a + ", " + b);
+             */
             return new NodeTree[] { ac, bc };
         }
         Node cand = a_editable.get(rand.nextInt(a_editable.size()));
@@ -602,8 +606,18 @@ public class KDFLC {
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         builder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = builder.create();
+        ArrayList<Double> f0 = null;
+        GOMF gomf = null;
+
+        if (this.logic instanceof GMBC_FA_Logic) {
+            f0 = new ArrayList<>();
+            GMBC_FA_Logic lFa_Logic = (GMBC_FA_Logic) this.logic;
+            lFa_Logic.setExponent(0);
+            gomf = new GOMF(data, lFa_Logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+        }
         for (int i = 0; i < resultList.size(); i++) {
             v.add(resultList.get(i).getFitness());
+
             p.add(resultList.get(i).toString());
             ArrayList<Node> _states = NodeTree.getNodesByType(resultList.get(i), NodeType.STATE);
             if (!isJson) {
@@ -618,12 +632,25 @@ public class KDFLC {
             } else {
                 d.add(gson.toJson(_states));
             }
+            if (f0 != null) {
+                NodeTree nodeTree = resultList.get(i).copy();
+                gomf.optimize(nodeTree);
+                f0.add(nodeTree.getFitness());
+            }
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
+        DoubleColumn f1 = null;
 
+        if (f0 != null) {
+            f1 = DoubleColumn.create("truth-value-f", f0.toArray(new Double[f0.size()]));
+        }
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
-        fuzzyData.addColumns(value, predicates, data);
+        if (f0 == null)
+            fuzzyData.addColumns(value, predicates, data);
+        else
+            fuzzyData.addColumns(value, f1, predicates, data);
+
     }
 
     public void exportToCsv(String file) throws IOException {

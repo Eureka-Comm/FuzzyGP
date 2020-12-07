@@ -8,6 +8,10 @@ public class GMBC_FA_Logic extends GMBC_Logic {
     @Expose
     private int exponent;
 
+    public void setExponent(int exponent) {
+        this.exponent = exponent;
+    }
+
     public GMBC_FA_Logic(int coefficient, boolean natural_implication) {
         super(natural_implication);
         this.exponent = coefficient;
@@ -30,7 +34,7 @@ public class GMBC_FA_Logic extends GMBC_Logic {
         pe /= values.size();
         double r = 0;
         for (double v : values) {
-                r += (v - pe) * (v - pe);
+            r += (v - pe) * (v - pe);
         }
         r = Math.sqrt(r / values.size());
         return Math.exp(pe - exponent * r);
