@@ -8,7 +8,6 @@ package com.castellanos.fuzzylogicgp.parser;
 import com.castellanos.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos.fuzzylogicgp.base.NodeType;
 import com.castellanos.fuzzylogicgp.base.StateNode;
-import com.castellanos.fuzzylogicgp.logic.Logic;
 import com.castellanos.fuzzylogicgp.logic.LogicType;
 import com.castellanos.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos.fuzzylogicgp.membershipfunction.FPG;

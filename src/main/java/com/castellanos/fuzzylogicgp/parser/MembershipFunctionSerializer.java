@@ -9,7 +9,6 @@ import com.castellanos.fuzzylogicgp.membershipfunction.LGamma;
 import com.castellanos.fuzzylogicgp.membershipfunction.LTrapezoidal;
 import com.castellanos.fuzzylogicgp.membershipfunction.MapNominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunction;
-import com.castellanos.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 import com.castellanos.fuzzylogicgp.membershipfunction.NSigmoid;
 import com.castellanos.fuzzylogicgp.membershipfunction.Nominal;
 import com.castellanos.fuzzylogicgp.membershipfunction.PSeudoExp;
