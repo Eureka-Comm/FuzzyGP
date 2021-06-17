@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import com.google.gson.GsonBuilder;
 
-public class NodeTree extends Node implements Comparable<NodeTree> {
+public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Node> {
     /**
      *
      */
@@ -61,6 +61,12 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         return childrens;
     }
 
+    /**
+     * Added a node to the father
+     * 
+     * @param node to add
+     * @throws OperatorException
+     */
     public void addChild(Node node) throws OperatorException {
         Node node_ = node;
 
@@ -376,19 +382,9 @@ public class NodeTree extends Node implements Comparable<NodeTree> {
         return true;
     }
 
-    /*
-     * @Override public int hashCode() { final int prime = 31; int result = 1;
-     * result = prime * result + ((childrens == null) ? 0 : childrens.hashCode());
-     * result = prime * result + ((fitness == null) ? 0 : fitness.hashCode());
-     * return result; }
-     * 
-     * @Override public boolean equals(Object obj) { if (this == obj) return true;
-     * if (obj == null) return false; if (getClass() != obj.getClass()) return
-     * false; NodeTree other = (NodeTree) obj; if (childrens == null) { if
-     * (other.childrens != null) return false; } else if
-     * (!this.toString().equals(other.toString()) && fitness != null &&
-     * other.fitness != null && !fitness.equals(other.fitness)) return false; return
-     * true; }
-     */
+    @Override
+    public Iterator<Node> iterator() {
+        return this.childrens.iterator();
+    }
 
 }
