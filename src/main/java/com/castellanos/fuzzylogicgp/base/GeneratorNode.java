@@ -206,9 +206,9 @@ public class GeneratorNode extends Node {
             do {
                 select = states.get(Utils.random.nextInt(states.size()));
                 isValid = true;
-                for (int i = 0; i < root.getChildrens().size(); i++) {
-                    if (root.getChildrens().get(i).getType() == NodeType.STATE) {
-                        if (((StateNode) root.getChildrens().get(i)).getLabel().equals(select.getLabel())) {
+                for(Node node :root){
+                    if(node.getType() == NodeType.STATE){
+                        if (((StateNode) node).getLabel().equals(select.getLabel())) {
                             isValid = false;
                             break;
                         }

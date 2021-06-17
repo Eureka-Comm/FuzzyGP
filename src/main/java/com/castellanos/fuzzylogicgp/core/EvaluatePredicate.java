@@ -8,6 +8,7 @@ package com.castellanos.fuzzylogicgp.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -158,31 +159,29 @@ public class EvaluatePredicate {
     }
 
     private double fitValue(Node node, int index) throws OperatorException {
-        List<Node> child;
         NodeTree nodeTree;
         ArrayList<Double> values;
         switch (node.getType()) {
             case AND:
                 nodeTree = (NodeTree) node;
-                child = nodeTree.getChildrens();
                 values = new ArrayList<>();
-                for (int i = 0; i < child.size(); i++) {
-                    values.add(fitValue(child.get(i), index));
+                for (Node child : nodeTree) {
+                    values.add(fitValue(child, index));
                 }
 
                 nodeTree.setFitness(logic.and(values));
                 return nodeTree.getFitness();
             case OR:
                 nodeTree = (NodeTree) node;
-                child = nodeTree.getChildrens();
+
                 /*
                  * for (int i = 0; i < child.size(); i++) { aux *= (1 - fitValue(child.get(i),
                  * index)); // aux = aux.multiply(BigDecimal.ONE.subtract(fitValue(child.get(i),
                  * index))); }
                  */
                 values = new ArrayList<>();
-                for (int i = 0; i < child.size(); i++) {
-                    values.add(fitValue(child.get(i), index));
+                for (Node child : nodeTree) {
+                    values.add(fitValue(child, index));
                 }
                 nodeTree.setFitness(logic.or(values));
                 return nodeTree.getFitness();
@@ -190,8 +189,8 @@ public class EvaluatePredicate {
             case NOT:
                 // return logic.not(fitValue(((NodeTree) p).getChildrens().get(0), index));
                 nodeTree = (NodeTree) node;
-                child = nodeTree.getChildrens();
-                nodeTree.setFitness(logic.not(fitValue(child.get(0), index)));
+
+                nodeTree.setFitness(logic.not(fitValue(nodeTree.iterator().next(), index)));
                 return nodeTree.getFitness();
             case IMP:
                 nodeTree = (NodeTree) node;
@@ -201,8 +200,8 @@ public class EvaluatePredicate {
                 return nodeTree.getFitness();
             case EQV:
                 nodeTree = (NodeTree) node;
-                child = nodeTree.getChildrens();
-                nodeTree.setFitness(logic.eqv(fitValue(child.get(0), index), fitValue(child.get(1), index)));
+                Iterator<Node> iterator = nodeTree.iterator();
+                nodeTree.setFitness(logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index)));
                 return nodeTree.getFitness();
             case STATE:
                 StateNode st = (StateNode) node;
@@ -211,7 +210,7 @@ public class EvaluatePredicate {
             // st.getLabel()),MathContext.DECIMAL64);
             case OPERATOR:
                 nodeTree = (NodeTree) node;
-                return fitValue(nodeTree.getChildrens().get(0), index);
+                return fitValue(nodeTree.iterator().next(), index);
             default:
                 throw new UnsupportedOperationException("Dont supported: " + node.getType() + " : " + node.getId());
         }

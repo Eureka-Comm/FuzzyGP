@@ -11,17 +11,17 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
      */
     private static final long serialVersionUID = 7984595590989290929L;
     private Double fitness;
-    private ArrayList<Node> childrens;
+    private ArrayList<Node> children;
     private String leftID;
     private String righID;
 
     public NodeTree() {
         setType(NodeType.OPERATOR);
-        this.childrens = new ArrayList<>();
+        this.children = new ArrayList<>();
     }
 
     public NodeTree(NodeType type) throws OperatorException {
-        this.childrens = new ArrayList<>();
+        this.children = new ArrayList<>();
         switch (type) {
             case AND:
                 setType(type);
@@ -55,10 +55,11 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     }
 
     /**
-     * @return the childrens
+     * @return the children
+     *
      */
-    public ArrayList<Node> getChildrens() {
-        return childrens;
+    public ArrayList<Node> getChildren() {
+        return children;
     }
 
     /**
@@ -73,28 +74,28 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         switch (this.getType()) {
             case AND:
             case OR:
-                this.childrens.add(node_);
+                this.children.add(node_);
                 break;
             case IMP:
             case EQV:
-                if (this.childrens.isEmpty()) {
+                if (this.children.isEmpty()) {
                     this.leftID = node_.getId();
-                    this.childrens.add(node_);
-                } else if (childrens.size() == 1) {
+                    this.children.add(node_);
+                } else if (children.size() == 1) {
                     this.righID = node_.getId();
-                    this.childrens.add(node_);
+                    this.children.add(node_);
                 } else {
                     throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
                 }
                 break;
             case NOT:
-                if (childrens.isEmpty()) {
-                    this.childrens.add(node_);
+                if (children.isEmpty()) {
+                    this.children.add(node_);
                     break;
                 } else
                     throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be one element.");
             case OPERATOR:
-                this.childrens.add(node_);
+                this.children.add(node_);
                 break;
             default:
                 throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be ? element.");
@@ -138,7 +139,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
 
     @Override
     public String toString() {
-        if (childrens.isEmpty()) {
+        if (children.isEmpty()) {
             return String.format("(%s)", this.getType());
         }
         String st = makePrintStruct(this);
@@ -146,7 +147,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     }
 
     public Node findById(String id) {
-        for (Node node : childrens) {
+        for (Node node : children) {
             if (node.getId().equals(id))
                 return node;
 
@@ -165,7 +166,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         String st = "";
         if (node instanceof NodeTree) {
             NodeTree nodeTree = (NodeTree) node;
-            if (nodeTree.getChildrens().isEmpty()) {
+            if (nodeTree.children.isEmpty()) {
                 return "(" + nodeTree.getType() + ")";
             } else {
                 st += "(" + nodeTree.getType();
@@ -177,7 +178,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
                         st += " " + makePrintStruct(nodeTree.findById(nodeTree.getRighID()));
                     }
                 } else {
-                    for (Node chilNode : nodeTree.getChildrens()) {
+                    for (Node chilNode : nodeTree) {
                         st += " " + makePrintStruct(chilNode);
                     }
                 }
@@ -203,7 +204,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         }
         if (root == null)
             return null;
-        for (Node node : root.getChildrens()) {
+        for (Node node : root) {
             if (node.getId().equals(idChild)) {
                 return root;
             } else if (node instanceof NodeTree) {
@@ -236,7 +237,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     }
 
     public static void getNodesByType(NodeTree tree, ArrayList<Node> nodes, NodeType type) {
-        for (Node n : tree.getChildrens()) {
+        for (Node n : tree) {
             // if (!nodes.contains(n)) {
             if (type == null) {
                 nodes.add(n);
@@ -262,7 +263,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
             tree.setEditable(this.isEditable());
             if (this.getByGenerator() != null)
                 tree.setByGenerator(this.getByGenerator());
-            this.childrens.forEach(n -> {
+            this.children.forEach(n -> {
                 try {
                     Node _n = (Node) n.copy();
                     _n.setEditable(n.isEditable());
@@ -288,7 +289,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         if (node.getId().equals(node.getId())) {
             return pos;
         }
-        for (Node n : root.getChildrens()) {
+        for (Node n : root) {
             if (n.getId().equals(node.getId())) {
                 return pos + 1;
             } else if (n instanceof GeneratorNode) {
@@ -310,18 +311,18 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
             if (toReplace instanceof GeneratorNode) {
                 nodeTree.setByGenerator(toReplace.getId());
             }
-            nodeTree.getChildrens().clear();
+            nodeTree.children.clear();
             return;
         }
         int pos = -1;
-        for (int i = 0; i < nodeTree.getChildrens().size(); i++) {
-            if (nodeTree.getChildrens().get(i).getId().equals(toReplace.getId())) {
+        for (int i = 0; i < nodeTree.children.size(); i++) {
+            if (nodeTree.getChildren().get(i).getId().equals(toReplace.getId())) {
                 pos = i;
                 break;
             }
         }
         if (pos != -1) {
-            nodeTree.getChildrens().set(pos, newNode);
+            nodeTree.getChildren().set(pos, newNode);
             if (nodeTree.getType() == NodeType.EQV || nodeTree.getType() == NodeType.IMP) {
                 if (nodeTree.getLeftID().equals(toReplace.getId())) {
                     nodeTree.setLeftID(newNode.getId());
@@ -343,7 +344,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((childrens == null) ? 0 : childrens.hashCode());
+        result = prime * result + ((children == null) ? 0 : children.hashCode());
         result = prime * result + ((fitness == null) ? 0 : fitness.hashCode());
         result = prime * result + ((leftID == null) ? 0 : leftID.hashCode());
         result = prime * result + ((righID == null) ? 0 : righID.hashCode());
@@ -359,10 +360,10 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         if (getClass() != obj.getClass())
             return false;
         NodeTree other = (NodeTree) obj;
-        if (childrens == null) {
-            if (other.childrens != null)
+        if (children == null) {
+            if (other.children != null)
                 return false;
-        } else if (!childrens.equals(other.childrens))
+        } else if (!children.equals(other.children))
             return false;
         if (fitness == null) {
             if (other.fitness != null)
@@ -384,7 +385,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
 
     @Override
     public Iterator<Node> iterator() {
-        return this.childrens.iterator();
+        return this.children.iterator();
     }
 
 }

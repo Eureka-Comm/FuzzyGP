@@ -363,7 +363,7 @@ public class KDFLC {
 
     private boolean valid_predicate(NodeTree nodeTree) {
         ArrayList<String> labels = new ArrayList<>();
-        for (Node node : nodeTree.getChildrens()) {
+        for (Node node : nodeTree) {
             if (node instanceof NodeTree) {
                 if (!valid_predicate((NodeTree) node)) {
                     return false;
@@ -383,8 +383,9 @@ public class KDFLC {
     private NodeTree createRandomInd(int index) throws OperatorException {
         NodeTree p = (NodeTree) predicatePattern.copy();
         boolean flag = false;
-        if (predicatePattern.getChildrens().size() == 1) {
-            flag = predicatePattern.getChildrens().get(0) instanceof GeneratorNode;
+
+        if (predicatePattern.getChildren().size() == 1) {
+            flag = predicatePattern.getChildren().get(0) instanceof GeneratorNode;
         }
         // ArrayList<Node> _nodesByType = NodeTree.getNodesByType(p, NodeType.OPERATOR);
 
@@ -519,8 +520,7 @@ public class KDFLC {
                             StateNode state = ls.get(rand.nextInt(ls.size()));
                             NodeTree p = NodeTree.getNodeParent(population[i], n.getId());
                             ArrayList<String> labels = new ArrayList<>();
-                            for (int j = 0; j < p.getChildrens().size(); j++) {
-                                Node _c = p.getChildrens().get(j);
+                            for (Node _c : p) {
                                 if (_c instanceof StateNode) {
                                     labels.add(((StateNode) _c).getLabel());
                                 }
