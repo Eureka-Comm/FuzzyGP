@@ -100,7 +100,26 @@ public class Main {
     private static Query demoToFile(Query query) throws IOException {
         InputStream resourceAsStream = ClassLoader.getSystemClassLoader()
                 .getResourceAsStream("datasets" + File.separator + query.getDb_uri());
+            System.out.println("Relative path: "+"datasets" + File.separator + query.getDb_uri());
+            if(resourceAsStream== null){
+                resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
+            }
+            if(resourceAsStream== null){
+                resourceAsStream = Main.class.getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());//ClassLoader.getSystemClassLoader().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
+            }
+            if(resourceAsStream==null){
+                resourceAsStream = Main.class.getResourceAsStream("datasets" + File.separator + query.getDb_uri());//ClassLoader.getSystemClassLoader().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
+            }
+            if(resourceAsStream==null){
+                resourceAsStream = Main.class.getClass().getResourceAsStream("datasets" + File.separator + query.getDb_uri());
+            }
+            if(resourceAsStream==null){
+                resourceAsStream = Main.class.getClass().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
+            }
+            
+        System.out.println(resourceAsStream.toString());
         Path path = Paths.get("dataset.csv");
+        System.out.println("Path: "+path);
         Files.copy(resourceAsStream, path, StandardCopyOption.REPLACE_EXISTING);
         query.setDb_uri(path.toFile().getAbsolutePath());
         Path p = Paths.get("demo-script.txt");

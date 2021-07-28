@@ -1,22 +1,20 @@
 {
-  "depth": 2,
-  "num_pop": 50,
-  "num_iter": 100,
-  "num_result": 20,
-  "min_truth_value": 0.9,
+  "num_pop": 100,
+  "num_iter": 5,
+  "num_result": 15,
+  "min_truth_value": 0.95,
   "mut_percentage": 0.05,
-  "adj_num_pop": 100,
+  "adj_num_pop": 10,
   "adj_min_truth_value": 0.1,
-  "adj_num_iter": 1,
+  "adj_num_iter": 2,
   "generators": [
     {
       "label": "comodin",
+      "depth": 1,
       "operators": [
         "AND",
         "OR",
-        "IMP",
-        "EQV",
-        "NOT"
+        "IMP"
       ],
       "variables": [
         "citric_acid",
@@ -31,62 +29,77 @@
         "quality",
         "density",
         "chlorides"
-      ]
+      ],
+      "description": ""
     }
   ],
   "type": "DISCOVERY",
-  "db_uri": "src/main/resources/datasets/tinto.csv",
+  "db_uri": "datasets/tinto.csv",
   "out_file": "result-discovery-prop.csv",
   "states": [
     {
       "label": "citric_acid",
-      "colName": "citric_acid"
+      "cname": "citric_acid",
+      "description": ""
     },
     {
       "label": "volatile_acidity",
-      "colName": "volatile_acidity"
+      "cname": "volatile_acidity",
+      "description": ""
     },
     {
       "label": "fixed_acidity",
-      "colName": "fixed_acidity"
+      "cname": "fixed_acidity",
+      "description": ""
     },
     {
       "label": "free_sulfur_dioxide",
-      "colName": "free_sulfur_dioxide"
+      "cname": "free_sulfur_dioxide",
+      "description": ""
     },
     {
       "label": "sulphates",
-      "colName": "sulphates"
+      "cname": "sulphates",
+      "description": ""
     },
     {
       "label": "alcohol",
-      "colName": "alcohol"
+      "cname": "alcohol",
+      "description": ""
     },
     {
       "label": "residual_sugar",
-      "colName": "residual_sugar"
+      "cname": "residual_sugar",
+      "description": ""
     },
     {
       "label": "pH",
-      "colName": "pH"
+      "cname": "pH",
+      "description": ""
     },
     {
       "label": "total_sulfur_dioxide",
-      "colName": "total_sulfur_dioxide"
+      "cname": "total_sulfur_dioxide",
+      "description": ""
     },
     {
       "label": "quality",
-      "colName": "quality"
+      "cname": "quality",
+      "description": ""
     },
     {
       "label": "density",
-      "colName": "density"
+      "cname": "density",
+      "description": ""
     },
     {
       "label": "chlorides",
-      "colName": "chlorides"
+      "cname": "chlorides",
+      "description": ""
     }
   ],
-  "logic": "GMBC",
-  "predicate": "(IMP \"comodin\" \"quality\")"
+  "logic": {
+    "type": "gmbc"
+  },
+  "predicate": "(AND \"comodin\" (EQV \"comodin\" \"quality\"))"
 }

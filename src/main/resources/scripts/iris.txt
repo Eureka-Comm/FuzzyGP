@@ -1,0 +1,104 @@
+{
+  "num_pop": 100,
+  "num_iter": 30,
+  "num_result": 25,
+  "min_truth_value": 0.95,
+  "mut_percentage": 0.05,
+  "adj_num_pop": 10,
+  "adj_min_truth_value": 0.1,
+  "adj_num_iter": 2,
+  "generators": [
+    {
+      "label": "properties",
+      "depth": 0,
+      "operators": [
+        "AND",
+        "OR",
+        "NOT"
+      ],
+      "variables": [
+        "sepal lenght",
+        "sepal width",
+        "petal lenght",
+        "petal width"
+      ],
+      "description": ""
+    },
+    {
+      "label": "class",
+      "depth": 2,
+      "max_child_number": 3,
+      "operators": [
+        "NOT"
+      ],
+      "variables": [
+        "Setosa",
+        "Versicolor",
+        "Virginica"
+      ],
+      "description": ""
+    }
+  ],
+  "type": "DISCOVERY",
+  "db_uri": "datasets/iris.csv",
+  "out_file": "result-discovery-irs.csv",
+  "states": [
+    {
+      "label": "sepal lenght",
+      "cname": "sepal.length",
+      "description": ""
+    },
+    {
+      "label": "sepal width",
+      "cname": "sepal.width",
+      "description": ""
+    },
+    {
+      "label": "petal lenght",
+      "cname": "petal.length",
+      "description": ""
+    },
+    {
+      "label": "petal width",
+      "cname": "petal.width",
+      "description": ""
+    },
+    {
+      "label": "Setosa",
+      "cname": "variety",
+      "f": {
+        "key": "Setosa",
+        "value": 1.0,
+        "notFoundValue": 0.0,
+        "type": "nominal"
+      },
+      "description": ""
+    },
+    {
+      "label": "Versicolor",
+      "cname": "variety",
+      "f": {
+        "key": "Versicolor",
+        "value": 1.0,
+        "notFoundValue": 0.0,
+        "type": "nominal"
+      },
+      "description": ""
+    },
+    {
+      "label": "Virginica",
+      "cname": "variety",
+      "f": {
+        "key": "Virginica",
+        "value": 1.0,
+        "notFoundValue": 0.0,
+        "type": "nominal"
+      },
+      "description": ""
+    }
+  ],
+  "logic": {
+    "type": "gmbc"
+  },
+  "predicate": "(EQV \"properties\" \"class\")"
+}

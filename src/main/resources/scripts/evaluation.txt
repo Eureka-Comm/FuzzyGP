@@ -1,36 +1,53 @@
 {
+  "showTree": true,
   "type": "EVALUATION",
-  "db_uri": "src/main/resources/datasets/tinto.csv",
+  "db_uri": "datasets/tinto.csv",
   "out_file": "result-evaluation-prop.csv",
   "states": [
     {
       "label": "high alcohol",
-      "colName": "alcohol",
+      "cname": "alcohol",
       "f": {
         "center": 11.65,
         "beta": 9.0,
-        "type": "SIGMOID"
-      }
+        "type": "sigmoid"
+      },
+      "description": "2021-07-28T05:10:01.929364Z"
     },
     {
       "label": "low pH",
-      "colName": "pH",
+      "cname": "pH",
       "f": {
         "center": 3.375,
         "beta": 2.93,
-        "type": "NSIGMOID"
-      }
+        "type": "-sigmoid"
+      },
+      "description": "2021-07-28T05:10:01.929699Z"
     },
     {
       "label": "high quality",
-      "colName": "quality",
+      "cname": "quality",
       "f": {
         "center": 5.5,
         "beta": 4.0,
-        "type": "SIGMOID"
-      }
+        "type": "sigmoid"
+      },
+      "description": "2021-07-28T05:10:01.929730Z"
+    },
+    {
+      "label": "high pH",
+      "cname": "pH",
+      "f": {
+        "gamma": 1.93,
+        "beta": 1.3,
+        "m": 0.5,
+        "type": "fpg"
+      },
+      "description": "2021-07-28T05:10:01.929756Z"
     }
   ],
-  "logic": "GMBC",
+  "logic": {
+    "type": "gmbc"
+  },
   "predicate": "(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")"
 }
