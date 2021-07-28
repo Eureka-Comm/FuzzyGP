@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.castellanos.fuzzylogicgp.base.NodeTree;
 import com.castellanos.fuzzylogicgp.base.OperatorException;
@@ -18,6 +19,8 @@ import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 
 import tech.tablesaw.api.Table;
+import tech.tablesaw.io.ReadOptions;
+import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReader;
 
@@ -57,10 +60,12 @@ public class TaskFactory {
                         discoveryQuery.getGenerators());
                 Table data;
                 if (discoveryQuery.getDb_uri().contains(".csv")) {
-                    data = Table.read().file(new File(discoveryQuery.getDb_uri()));
+                    CsvReadOptions build = CsvReadOptions.builder(new File(discoveryQuery.getDb_uri())).locale(Locale.US).header(true).build();
+                    data = Table.read().csv(build);
+                
                 } else {
                     XlsxReader reader = new XlsxReader();
-                    XlsxReadOptions options = XlsxReadOptions.builder(discoveryQuery.getDb_uri()).build();
+                    XlsxReadOptions options = XlsxReadOptions.builder(discoveryQuery.getDb_uri()).locale(Locale.US).build();
                     data = reader.read(options);
                 }
 

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,7 +26,10 @@ import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
+import tech.tablesaw.columns.numbers.NumberColumnFormatter;
 import tech.tablesaw.io.Destination;
+import tech.tablesaw.io.csv.CsvReadOptions;
+import tech.tablesaw.io.csv.CsvWriteOptions;
 import tech.tablesaw.io.json.JsonWriteOptions;
 import tech.tablesaw.io.json.JsonWriter;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
@@ -61,7 +65,8 @@ public class EvaluatePredicate {
         this.logic = logic;
         try {
             if (path.contains(".csv")) {
-                data = Table.read().file(new File(path));
+                CsvReadOptions build = CsvReadOptions.builder(new File(path)).header(true).locale(Locale.US).build();
+                data = Table.read().csv(build);
             } else {
                 XlsxReader reader = new XlsxReader();
                 XlsxReadOptions options = XlsxReadOptions.builder(path).build();
@@ -78,13 +83,14 @@ public class EvaluatePredicate {
         this.outPath = outPath;
         if (path.contains(".csv")) {
             try {
-                data = Table.read().file(new File(path));
+                CsvReadOptions build = CsvReadOptions.builder(new File(path)).header(true).locale(Locale.US).build();
+                data = Table.read().csv(build);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             XlsxReader reader = new XlsxReader();
-            XlsxReadOptions options = XlsxReadOptions.builder(path).build();
+            XlsxReadOptions options = XlsxReadOptions.builder(path).locale(Locale.US).build();
             try {
                 data = reader.read(options);
             } catch (IOException e) {
@@ -124,7 +130,8 @@ public class EvaluatePredicate {
     }
 
     public void exportToCsv() throws IOException {
-        fuzzyData.write().csv(outPath.replace(".xlsx", ".csv").replace(".xls", ".csv"));
+        fuzzyData.write().csv(CsvWriteOptions.builder(outPath.replace(".xlsx", ".csv").replace(".xls", ".csv"))
+                .header(true).separator(',').quoteChar('"').build());
     }
 
     public void exportToJSON(String file) throws IOException {
@@ -227,6 +234,7 @@ public class EvaluatePredicate {
                 ColumnType type = data.column(s.getColName()).type();
 
                 DoubleColumn dc = DoubleColumn.create(s.getLabel());
+                dc.setPrintFormatter(NumberColumnFormatter.standard());
 
                 if (type == ColumnType.DOUBLE) {
                     Column<Double> column = (Column<Double>) data.column(s.getColName());
