@@ -6,7 +6,7 @@ public class MembershipFunctionFactory {
     private Double gamma = 0.;
     private double center = 0;
     private double deviation = 0;
-    private Double beta;
+    private Double beta = 0.;
     private Double m;
     private double a = 0;
     private double b = 0;
