@@ -19,9 +19,13 @@ public class MembershipFunctionFactory {
     private HashMap<String, Double> map;
     private double notFoundValue = 0;
 
-    public MembershipFunctionFactory(MembershipFunctionType type) {
+    private MembershipFunctionFactory(MembershipFunctionType type) {
         this.type = type;
         this.map = new HashMap<>();
+    }
+
+    public static MembershipFunctionFactory builder(MembershipFunctionType type) {
+        return new MembershipFunctionFactory(type);
     }
 
     public MembershipFunction build() {
