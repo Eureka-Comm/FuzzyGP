@@ -3,7 +3,7 @@ package com.castellanos.fuzzylogicgp.membershipfunction;
 import java.util.HashMap;
 
 public class MembershipFunctionFactory {
-    private Double gamma;
+    private Double gamma = 0.;
     private double center = 0;
     private double deviation = 0;
     private Double beta;
@@ -14,7 +14,7 @@ public class MembershipFunctionFactory {
     private double d = 0;
     private double width = 0;
     private double slope = 0;
-    private double L;
+    private double L = 0;
     private MembershipFunctionType type;
     private HashMap<String, Double> map;
     private double notFoundValue = 0;
