@@ -71,8 +71,13 @@ public class MembershipFunctionFactory {
                 map.forEach((k, v) -> mapN.addParameter(k, v));
                 return mapN;
             case NOMINAL:
-                String key = map.keySet().iterator().next();
-                Nominal m = new Nominal(key, map.get(key));
+                Nominal m;
+                if (map.keySet().size() > 0) {
+                    String key = map.keySet().iterator().next();
+                    m = new Nominal(key, map.get(key));
+                } else {
+                    m = new Nominal();
+                }
                 m.setNotFoundValue(notFoundValue);
                 return m;
             default:
