@@ -21,7 +21,7 @@ public class LTrapezoidal extends MembershipFunction {
     }
 
     public LTrapezoidal(double a, double b) {
-        super(MembershipFunctionType.TRAPEZOIDAL);
+        super(MembershipFunctionType.LTRAPEZOIDAL);
         this.a = a;
         this.b = b;
     }
