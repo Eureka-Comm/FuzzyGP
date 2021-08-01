@@ -60,7 +60,7 @@ public class MembershipFunctionFactory {
             case SINGLETON:
                 return new Singleton(a);
             case TRIANGULAR:
-                return new Trapezoidal(a, b, c, d);
+                return new Triangular(a, b, c);
             case TRAPEZOIDAL:
                 return new Trapezoidal(a, b, c, d);
             case ZFORM:
