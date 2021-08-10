@@ -19,7 +19,6 @@ import com.castellanos.fuzzylogicgp.core.KDFLC;
 import com.castellanos.fuzzylogicgp.logic.Logic;
 
 import tech.tablesaw.api.Table;
-import tech.tablesaw.io.ReadOptions;
 import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReader;
