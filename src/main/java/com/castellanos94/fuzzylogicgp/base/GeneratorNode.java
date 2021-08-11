@@ -8,6 +8,7 @@ package com.castellanos94.fuzzylogicgp.base;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -145,16 +146,16 @@ public class GeneratorNode extends Node {
                 + ", variables=" + variables + "]";
     }
 
-    public Node generate(List<StateNode> states, boolean balanced) throws OperatorException {
+    public Node generate(List<StateNode> states, List<GeneratorNode> generators, boolean balanced)
+            throws OperatorException {
         if (max_child_number == null) {
-            max_child_number = Math.max(operators.length + variables.size() / 2, 3);
+            max_child_number = Math.max(operators.length + variables.size() / 2, 2);
         }
-        return generate_child(null, states, 0, balanced);
-
+        return generate_child(null, states, generators, 0, balanced);
     }
 
-    private Node generate_child(NodeTree root, List<StateNode> states, int current_depth, boolean balanced)
-            throws OperatorException {
+    private Node generate_child(NodeTree root, List<StateNode> states, List<GeneratorNode> generatorNodes,
+            int current_depth, boolean balanced) throws OperatorException {
         Node _child = null;
         if (current_depth < this.depth) {
             if (Utils.random.nextDouble() < 0.45 || balanced) {
@@ -166,7 +167,7 @@ public class GeneratorNode extends Node {
                     case AND:
                     case OR:
                         for (int i = 0; i < Utils.randInt(2, max_child_number); i++) {
-                            _child = this.generate_child(tree, states, current_depth + 1, balanced);
+                            _child = this.generate_child(tree, states, generatorNodes, current_depth + 1, balanced);
                             _child.setEditable(true);
                             tree.addChild(_child);
                         }
@@ -174,13 +175,13 @@ public class GeneratorNode extends Node {
                     case IMP:
                     case EQV:
                         for (int i = 0; i < 2; i++) {
-                            _child = this.generate_child(tree, states, current_depth + 1, balanced);
+                            _child = this.generate_child(tree, states, generatorNodes, current_depth + 1, balanced);
                             _child.setEditable(true);
                             tree.addChild(_child);
                         }
                         return tree;
                     case NOT:
-                        _child = this.generate_child(tree, states, current_depth + 1, balanced);
+                        _child = this.generate_child(tree, states, generatorNodes, current_depth + 1, balanced);
                         _child.setEditable(true);
                         tree.addChild(_child);
                         return tree;
@@ -188,26 +189,40 @@ public class GeneratorNode extends Node {
                         throw new IllegalArgumentException("Unsupported type: " + tree.getType());
                 }
             } else {
-                _child = this.generate_state(root, states);
+                _child = this.generate_state(root, states, generatorNodes, balanced);
                 _child.setEditable(true);
                 return _child;
             }
         }
-        _child = this.generate_state(root, states);
+        _child = this.generate_state(root, states, generatorNodes, balanced);
         _child.setEditable(true);
         return _child;
     }
 
-    private Node generate_state(NodeTree root, List<StateNode> states) {
+    private Node generate_state(NodeTree root, List<StateNode> states, List<GeneratorNode> generators, boolean balanced)
+            throws OperatorException {
         StateNode select;
         boolean isValid;
         int intents = 0;
+        if (generators != null && !generators.isEmpty() && Utils.random.nextDouble() >= 0.5
+                && checkIfGeneratorExistsInVars(generators)) {
+            // filter and select candidate
+            List<GeneratorNode> collect = generators.stream()
+                    .filter(generator -> variables.contains(generator.getLabel())).collect(Collectors.toList());
+            GeneratorNode generatorNode = collect.get(Utils.random.nextInt(collect.size()));
+            Node generate = generatorNode.generate(states, generators, balanced);
+            generate.setByGenerator(this.getId());
+            generate.setEditable(true);
+            return generate;
+        }
+        List<StateNode> filteredStates = states.stream().filter(state -> variables.contains(state.getLabel()))
+                .collect(Collectors.toList());
         if (root != null) {
             do {
-                select = states.get(Utils.random.nextInt(states.size()));
+                select = filteredStates.get(Utils.random.nextInt(filteredStates.size()));
                 isValid = true;
-                for(Node node :root){
-                    if(node.getType() == NodeType.STATE){
+                for (Node node : root) {
+                    if (node.getType() == NodeType.STATE) {
                         if (((StateNode) node).getLabel().equals(select.getLabel())) {
                             isValid = false;
                             break;
@@ -217,12 +232,21 @@ public class GeneratorNode extends Node {
                 intents++;
             } while (!isValid && intents < states.size());
         } else {
-            select = states.get(Utils.random.nextInt(states.size()));
+            select = filteredStates.get(Utils.random.nextInt(filteredStates.size()));
         }
         select = (StateNode) select.copy();
         select.setEditable(true);
         select.setByGenerator(this.getId());
         return select;
+    }
+
+    private boolean checkIfGeneratorExistsInVars(List<GeneratorNode> generators) {
+        for (GeneratorNode generatorNode : generators) {
+            if (variables.contains(generatorNode.getLabel())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void main(String[] args) throws OperatorException {
@@ -239,30 +263,40 @@ public class GeneratorNode extends Node {
         states.add(new StateNode("quality", "quality"));
         states.add(new StateNode("density", "density"));
         states.add(new StateNode("chlorides", "chlorides"));
-        GeneratorNode generator = new GeneratorNode();
-        generator.setLabel("todos los estados");
+
+        ArrayList<String> var_acid = new ArrayList<>();
+        var_acid.add("citric_acid");
+        var_acid.add("volatile_acidity");
+        var_acid.add("fixed_acidity");
+        GeneratorNode acidos = new GeneratorNode("acidos", new NodeType[] { NodeType.AND, NodeType.EQV }, var_acid, 1);
+
+        Utils.random.setSeed(1);
         ArrayList<String> variables = new ArrayList<>();
+        variables.add(acidos.getLabel());
         for (StateNode stateNode : states) {
-            variables.add(stateNode.getLabel());
+            if (!var_acid.contains(stateNode.getLabel()))
+                variables.add(stateNode.getLabel());
         }
-        generator.setVariables(variables);
-        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT });
-        generator.setDepth(2);
-        // Utils.random.setSeed(1);
+        GeneratorNode all = new GeneratorNode("todos los estados",
+                new NodeType[] { NodeType.IMP, NodeType.OR, NodeType.NOT }, variables, 2);
+
+        ArrayList<GeneratorNode> generatorNodes = new ArrayList<>();
+        generatorNodes.add(all);
+        generatorNodes.add(acidos);
         ArrayList<Node> trees = new ArrayList<>();
-        for (int i = 0; i < 50000; i++) {
-            Node _g = generator.generate(states, i < 50000 / 2);
+        for (int i = 0; i < 10; i++) {
+            Node _g = all.generate(states, generatorNodes, i < 2 / 2);
             trees.add(_g);
         }
         ArrayList<Node> copies = new ArrayList<>();
 
         for (int i = 0; i < trees.size(); i++) {
             Node n = trees.get(i);
-            
+            System.out.println(n);
             copies.add((Node) n.copy());
         }
         System.out.println("check copy");
-        
+
         for (int i = 0; i < copies.size(); i++) {
             Node c = copies.get(i);
             Node o = trees.get(i);

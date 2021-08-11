@@ -46,6 +46,7 @@ public class KDFLC {
     private NodeTree predicatePattern;
     private HashMap<String, List<StateNode>> statesByGenerators;
     private HashMap<String, GeneratorNode> generators;
+    private ArrayList<GeneratorNode> generatorNodes;
     private Logic logic;
     private int num_pop;
     private int num_iter;
@@ -93,6 +94,7 @@ public class KDFLC {
         this.min_truth_value = (min_truth_value <= 1) ? (min_truth_value > 0.0005) ? min_truth_value - 0.005 : 0.0
                 : 0.5;
         this.generators = new HashMap<>();
+        this.generatorNodes = new ArrayList<>();
     }
 
     public void execute() throws CloneNotSupportedException, OperatorException {
@@ -116,6 +118,7 @@ public class KDFLC {
                 }
                 statesByGenerators.put(gNode.getId(), states);
                 generators.put(gNode.getId(), gNode);
+                generatorNodes.add(gNode);
             }
         }
         NodeTree[] population = makePopulation();
@@ -399,7 +402,7 @@ public class KDFLC {
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
-                Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()),
+                Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()), generatorNodes,
                         index < num_pop / 2);
                 generate.setEditable(true);
                 if (p != node && p.getType() != NodeType.OPERATOR) {
