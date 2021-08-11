@@ -184,7 +184,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
                 }
             }
         } else if (node instanceof StateNode) {
-            st += String.format(" \"%s\"", ((StateNode) node).getLabel());
+            st += String.format("\"%s\"", ((StateNode) node).getLabel());
             return st;
         } else if (node instanceof GeneratorNode) {
             st += String.format(" \"%s\"", ((GeneratorNode) node).getLabel());

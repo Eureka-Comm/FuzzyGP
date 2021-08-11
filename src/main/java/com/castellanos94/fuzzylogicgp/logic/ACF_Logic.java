@@ -134,8 +134,6 @@ public class ACF_Logic extends Logic {
         return 1 - v1;
     }
 
-   
-
     @Override
     public double and(final double v1, final double v2) {
         return Mo.invf((Mo.f(v1, L, m) + Mo.f(v2, L, m)) / 2, L, m);
@@ -148,26 +146,22 @@ public class ACF_Logic extends Logic {
 
     @Override
     public double or(final double v1, final double v2) {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public double or(final ArrayList<Double> values) {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public double forAll(final List<Double> values) {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public double exist(final List<Double> values) {
-        // TODO Auto-generated method stub
-        return 0;
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
 }
