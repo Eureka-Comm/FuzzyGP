@@ -11,6 +11,11 @@ import com.castellanos94.fuzzylogicgp.base.StateNode;
 
 import org.junit.Test;
 
+/**
+ * Unit test for operator operation
+ * 
+ */
+
 public class OperatorTest {
     @Test
     public void toStringOperatorTest() throws OperatorException {
@@ -28,6 +33,21 @@ public class OperatorTest {
         and.addChild(fa);
         assertEquals("(AND \"high alcohol\" \"citric_acid\" \"fixed_acidity\")", and.toString());
 
+        NodeTree or = new NodeTree(NodeType.OR);
+        or.addChild(ha);
+        or.addChild(ca);
+        or.addChild(fa);
+        assertEquals("(OR \"high alcohol\" \"citric_acid\" \"fixed_acidity\")", or.toString());
+
+        NodeTree imp = new NodeTree(NodeType.IMP);
+        imp.addChild(ha);
+        imp.addChild(ca);
+        assertEquals("(IMP \"high alcohol\" \"citric_acid\")", imp.toString());
+
+        NodeTree eqv = new NodeTree(NodeType.EQV);
+        eqv.addChild(ha);
+        eqv.addChild(ca);
+        assertEquals("(EQV \"high alcohol\" \"citric_acid\")", eqv.toString());
     }
 
     @Test(expected = OperatorException.class)
@@ -37,6 +57,7 @@ public class OperatorTest {
             not.addChild(stateNode);
         }
     }
+
     @Test(expected = OperatorException.class)
     public void impExpectionTest() throws OperatorException {
         NodeTree not = new NodeTree(NodeType.IMP);
@@ -44,6 +65,7 @@ public class OperatorTest {
             not.addChild(stateNode);
         }
     }
+
     @Test(expected = OperatorException.class)
     public void eqvExpectionTest() throws OperatorException {
         NodeTree not = new NodeTree(NodeType.EQV);
