@@ -2,7 +2,6 @@ package com.castellanos94.fuzzylogicgp.membershipfunction;
 
 import com.google.gson.annotations.Expose;
 
-
 import static java.lang.Math.*;
 
 import java.util.ArrayList;
@@ -135,13 +134,13 @@ public class Gaussian extends MembershipFunction {
                 points.add(new Point(x, y));
             }
             x += step;
-        } while (y <= 0.98);
+        } while (y <= 0.98 && points.size() < 500);
 
         do {
             y = evaluate(x);
             points.add(new Point(x, y));
             x += step;
-        } while (y > Point.EPSILON);
+        } while (y > Point.EPSILON && points.size() < 999);
         return points;
     }
 

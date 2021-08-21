@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-
 /**
  * Z-shaped memberhip function MathWorks-based implementation
  * 
@@ -111,13 +110,13 @@ public class ZForm extends MembershipFunction {
                 points.add(new Point(x, y));
             }
             x += step;
-        } while (y <= 0.98);
+        } while (y <= 0.98 && points.size() < 500);
 
         do {
             y = evaluate(x);
             points.add(new Point(x, y));
             x += step;
-        } while (y > Point.EPSILON);
+        } while (y > Point.EPSILON && points.size() < 999);
         return points;
     }
 

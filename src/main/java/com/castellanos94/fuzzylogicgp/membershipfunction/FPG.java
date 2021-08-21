@@ -135,13 +135,13 @@ public class FPG extends MembershipFunction {
                 points.add(new Point(x, y));
             }
             x += step;
-        } while (y <= 0.98);
+        } while (y <= 0.98 && points.size() < 500);
 
         do {
             y = evaluate(x);
             points.add(new Point(x, y));
             x += step;
-        } while (y > Point.EPSILON && x < gamma * beta);
+        } while (y > Point.EPSILON && x < gamma * beta && points.size() < 999);
         return points;
     }
 
