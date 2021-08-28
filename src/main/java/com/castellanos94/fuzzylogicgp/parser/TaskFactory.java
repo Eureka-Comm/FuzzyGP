@@ -28,6 +28,7 @@ import tech.tablesaw.io.xlsx.XlsxReader;
 
 public class TaskFactory {
     private static final Logger logger = LogManager.getLogger(TaskFactory.class);
+    public static boolean parallelSupport = true;
 
     public static void execute(Query query) throws OperatorException, CloneNotSupportedException, IOException {
         ParserPredicate parserPredicate;
@@ -81,6 +82,8 @@ public class TaskFactory {
                         discoveryQuery.getNum_result(), discoveryQuery.getMin_truth_value(),
                         discoveryQuery.getMut_percentage(), discoveryQuery.getAdj_num_pop(),
                         discoveryQuery.getAdj_num_iter(), discoveryQuery.getAdj_min_truth_value(), data);
+                discovery.setParallelSupport(parallelSupport);
+                logger.info("Parallel support : " + parallelSupport);
                 discovery.execute(p);
                 discovery.exportToCsv(discoveryQuery.getOut_file());
                 break;

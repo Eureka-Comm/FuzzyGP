@@ -67,6 +67,7 @@ public class Main {
                 Utils.random.setSeed(main.seed);
                 main.parallelSupport = false;
             }
+            TaskFactory.parallelSupport = main.parallelSupport;
             if (main.fileName != null) {
 
                 if (main.formatEdn) {
