@@ -155,4 +155,35 @@ public class StateNode extends Node {
 
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((cname == null) ? 0 : cname.hashCode());
+        result = prime * result + ((membershipFunction == null) ? 0 : membershipFunction.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        StateNode other = (StateNode) obj;
+        if (cname == null) {
+            if (other.cname != null)
+                return false;
+        } else if (!cname.equals(other.cname))
+            return false;
+        if (membershipFunction == null) {
+            if (other.membershipFunction != null)
+                return false;
+        } else if (!membershipFunction.equals(other.membershipFunction))
+            return false;
+        return true;
+    }
+
 }
