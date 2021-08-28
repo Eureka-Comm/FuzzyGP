@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.castellanos94.fuzzylogicgp.core;
 
 import java.util.ArrayList;
@@ -56,17 +52,11 @@ public class GOMF {
         this.adj_iter = adj_iter;
         this.adj_truth_value = adj_truth_value;
         this.minPromMaxMapValues = new HashMap<>();
-
     }
 
     public void optimize(NodeTree p) {
         this.predicatePattern = p;
         sns = new ArrayList<>();
-        /*
-         * predicatePattern.getNodes().forEach((k, v) -> { if
-         * (v.getType().equals(NodeType.STATE)) { StateNode c = (StateNode) v; if
-         * (c.getMembershipFunction() == null) { sns.add(c); } } });
-         */
         NodeTree.getNodesByType(predicatePattern, NodeType.STATE).forEach(v -> {
             if (v instanceof StateNode) {
                 StateNode c = (StateNode) v;
@@ -85,22 +75,14 @@ public class GOMF {
     }
 
     private void genetic() {
-        // ChromosomePojo[] currentPop;
         ArrayList<ChromosomePojo> currentPop;
         int iteration = 0;
         currentPop = makePop();
         evaluatePredicate(currentPop);
-
-        // chromosomePrint(iteration, currentPop);
-        // BigDecimal truth_value = new BigDecimal(adj_truth_value);
         while (iteration < adj_iter
                 && currentPop.get(currentPop.size() - 1).getFitness().compareTo(adj_truth_value) < 0) {
-            // while (iteration < adj_iter) {
             iteration++;
             ArrayList<ChromosomePojo> childList = chromosomeCrossover(currentPop);
-
-            // Replace best
-            // System.out.println("child crossover: " + childList.size());
             if (childList != null) {
                 evaluatePredicate(childList);
                 for (int i = 0; i < childList.size(); i++) {
@@ -108,8 +90,6 @@ public class GOMF {
                     for (int j = 0; j < currentPop.size(); j++) {
                         ChromosomePojo parent = currentPop.get(i);
                         if (get.getFitness().compareTo(parent.getFitness()) > 0) {
-                            // System.out.println("Replace " + j + " > " + get.getFitness() + " - " +
-                            // parent.getFitness());
                             currentPop.set(j, get);
                             break;
                         }
@@ -119,10 +99,7 @@ public class GOMF {
             }
             chromosomeMutation(currentPop);
             evaluatePredicate(currentPop);
-
-            // Arrays.sort(currentPop, chromosomeComparator);
             currentPop.sort(chromosomeComparator);
-            // chromosomePrint(iteration, currentPop);
         }
 
         ChromosomePojo bestFound = currentPop.get(0);
@@ -131,18 +108,12 @@ public class GOMF {
                 bestFound = chromosomePojo;
             }
         }
-        // System.out.println("Best solution: " + bestFound.getFitness() + " := " +
-        // Arrays.toString(bestFound.getElements()));
         predicatePattern.setFitness(bestFound.getFitness());
         for (HashMap<String, Object> k : bestFound.getElements()) {
-            // Node node = predicatePattern.getNode(k.getOwner());
             Node node = predicatePattern.findById(k.get("owner").toString());
             if (node instanceof StateNode) {
                 StateNode st = (StateNode) node;
-
                 st.setMembershipFunction(new FPG((double) k.get("beta"), (double) k.get("gamma"), (double) k.get("m")));
-
-                // System.out.println(st);
             }
         }
 
@@ -153,7 +124,6 @@ public class GOMF {
         ArrayList<ChromosomePojo> pop = new ArrayList<>();
         for (int i = 0; i < adj_num_pop; i++) {
             HashMap<String, Object>[] m = new HashMap[sns.size()];
-
             for (int j = 0; j < sns.size(); j++) {
                 m[j] = randomChromosome(sns.get(j));
             }
@@ -211,7 +181,6 @@ public class GOMF {
     }
 
     private void evaluatePredicate(ArrayList<ChromosomePojo> currentPop) {
-        // System.out.println(currentPop);
         currentPop.forEach(mf -> {
             ArrayList<StateNode> toclean = new ArrayList<>();
             for (HashMap<String, Object> k : mf.getElements()) {
@@ -223,12 +192,10 @@ public class GOMF {
                     toclean.add(st);
                 }
             }
-
             EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
             evaluator.setPredicate(predicatePattern);
             mf.setFitness(evaluator.evaluate());
             toclean.forEach(s -> s.setMembershipFunction(null));
-
         });
 
     }
@@ -258,8 +225,6 @@ public class GOMF {
 
             if (rand.nextFloat() < mut_percentage && next.getElements().length >= 1) {
                 int index = (int) Math.floor(randomValue(0, next.getElements().length - 1).doubleValue());
-                // System.out.println("Element <" + i + ">mutated: " + index + " Param : " +
-                // indexParam);
                 HashMap<String, Object> element = next.getElements()[index];
                 Double[] r = minPromMaxMapValues.get(next.getElements()[index].get("owner"));
                 Double value;
@@ -306,8 +271,6 @@ public class GOMF {
         ChromosomePojo[] child = new ChromosomePojo[(parentSize % 2 == 0) ? parentSize / 2 : (parentSize + 1) / 2];
         ChromosomePojo[] otherChild = new ChromosomePojo[(parents.length % 2 == 0) ? parents.length / 2
                 : (parents.length + 1) / 2];
-        // System.out.println("Crossover with best parents: " + parentSize + ", other
-        // parents : " + parents.length);
 
         for (int i = 0; i < bestParents.length; i++) {
             bestParents[i] = pop.get(pop.size() - i - 1);
@@ -335,7 +298,6 @@ public class GOMF {
             }
             return list;
         } else if (bestParents.length == 1) {
-            // System.out.println("Nothing to do.");
             return null;
         }
         return null;
