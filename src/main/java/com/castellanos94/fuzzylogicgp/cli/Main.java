@@ -33,6 +33,9 @@ public class Main {
     private String fileName;
     @Option(names = { "--seed" }, description = "Seed random")
     private Long seed;
+    @Option(names = {
+            "--parallel" }, description = "Parallel support, if seed is set then sequential process is active.")
+    private boolean parallelSupport = true;
 
     @Option(names = { "-h", "--help" }, description = "Display help/usage.", help = true)
     private boolean help;
@@ -62,6 +65,7 @@ public class Main {
             Query query = null;
             if (main.seed != null) {
                 Utils.random.setSeed(main.seed);
+                main.parallelSupport = false;
             }
             if (main.fileName != null) {
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import com.castellanos94.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.base.Node;
@@ -70,9 +71,10 @@ public class KDFLC {
     private ArrayList<NodeTree> resultList;
 
     private Table fuzzyData;
+    private boolean parallelSupport = true;
 
-    public KDFLC( Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value,
-            double mut_percentage, int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data){
+    public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
+            int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data) {
 
         if (min_truth_value < 0.0 || min_truth_value > 1.0)
             throw new IllegalArgumentException("Min truth value must be in [0,1].");
@@ -99,7 +101,7 @@ public class KDFLC {
         this.generatorNodes = new ArrayList<>();
     }
 
-    public void execute(NodeTree predicate) throws CloneNotSupportedException, OperatorException {        
+    public void execute(NodeTree predicate) throws CloneNotSupportedException, OperatorException {
         this.predicatePattern = predicate;
         statesByGenerators = new HashMap<>();
         int wasNotChanged = 0;
@@ -125,11 +127,19 @@ public class KDFLC {
             }
         }
         NodeTree[] population = makePopulation();
-        Arrays.parallelSetAll(population, _index -> {
-            GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-            _gomf.optimize(population[_index]);
-            return population[_index];
-        });
+        if (parallelSupport) {
+            Arrays.parallelSetAll(population, _index -> {
+                GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+                _gomf.optimize(population[_index]);
+                return population[_index];
+            });
+        } else {
+            Arrays.setAll(population, _index -> {
+                GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+                _gomf.optimize(population[_index]);
+                return population[_index];
+            });
+        }
         GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
 
         Arrays.sort(population, Collections.reverseOrder());
@@ -153,7 +163,8 @@ public class KDFLC {
             boolean isTheSameGenerator = isTheSameGenerator();
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
-                toReplaceIndex.parallelStream().forEach(_index -> {
+                Stream<Integer> stream = (parallelSupport) ? toReplaceIndex.parallelStream() : toReplaceIndex.stream();
+                stream.forEach(_index -> {
                     int intents = 0;
                     do {
                         try {
@@ -199,11 +210,21 @@ public class KDFLC {
 
                 }
                 mutation(offspring);
-                Arrays.parallelSetAll(offspring, _index -> {
-                    GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-                    _gomf.optimize(offspring[_index]);
-                    return offspring[_index];
-                });
+                if (parallelSupport) {
+                    Arrays.parallelSetAll(offspring, _index -> {
+                        GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter,
+                                adj_min_truth_value);
+                        _gomf.optimize(offspring[_index]);
+                        return offspring[_index];
+                    });
+                } else {
+                    Arrays.setAll(offspring, _index -> {
+                        GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter,
+                                adj_min_truth_value);
+                        _gomf.optimize(offspring[_index]);
+                        return offspring[_index];
+                    });
+                }
                 for (int i = 0; i < offspring.length; i++) {
                     for (int j = 0; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
@@ -457,7 +478,7 @@ public class KDFLC {
                                 }
                             }
                             if (isValidChange) {
-                                clon.setType(NodeType.OR);                                
+                                clon.setType(NodeType.OR);
                                 do {
                                     parent = NodeTree.getNodeParent(population[i], n.getId());
                                     if (parent != null)
@@ -473,7 +494,7 @@ public class KDFLC {
                                 }
                             }
                             if (isValidChange) {
-                                clon.setType(NodeType.EQV);                                
+                                clon.setType(NodeType.EQV);
                                 do {
                                     parent = NodeTree.getNodeParent(population[i], n.getId());
                                     if (parent != null)
@@ -489,7 +510,7 @@ public class KDFLC {
                                 }
                             }
                             if (isValidChange) {
-                                clon.setType(NodeType.IMP);                                
+                                clon.setType(NodeType.IMP);
                                 do {
                                     parent = NodeTree.getNodeParent(population[i], n.getId());
                                     if (parent != null)
@@ -647,6 +668,22 @@ public class KDFLC {
      */
     public ArrayList<NodeTree> getResultList() {
         return resultList;
+    }
+
+    public void setParallelSupport(boolean parallelSupport) {
+        this.parallelSupport = parallelSupport;
+    }
+
+    public boolean isParallelSupport() {
+        return parallelSupport;
+    }
+
+    @Override
+    public String toString() {
+        return "KDFLC [adj_min_truth_value=" + adj_min_truth_value + ", adj_num_iter=" + adj_num_iter + ", adj_num_pop="
+                + adj_num_pop + ", logic=" + logic + ", min_truth_value=" + min_truth_value + ", mut_percentage="
+                + mut_percentage + ", num_iter=" + num_iter + ", num_pop=" + num_pop + ", num_result=" + num_result
+                + ", parallelSupport=" + parallelSupport + "]";
     }
 
 }

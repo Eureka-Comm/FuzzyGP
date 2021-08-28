@@ -23,8 +23,6 @@ public class GeneratorNode extends Node {
      */
     private static final long serialVersionUID = -5456955267782382254L;
     @Expose
-    private String label;
-    @Expose
     private int depth;
     @Expose
     private Integer max_child_number;
@@ -61,14 +59,6 @@ public class GeneratorNode extends Node {
 
     public void setDepth(int depth) {
         this.depth = depth;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     public NodeType[] getOperators() {
