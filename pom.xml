@@ -39,7 +39,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.castellanos.fuzzylogicgp.cli.Main</mainClass>
+                            <mainClass>com.castellanos94.fuzzylogicgp.cli.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
