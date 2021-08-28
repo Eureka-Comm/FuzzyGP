@@ -41,14 +41,13 @@ import tech.tablesaw.io.xlsx.XlsxReader;
  * @version 1.0.0
  */
 public class EvaluatePredicate {
-
+    private static final Logger logger = LogManager.getLogger(EvaluatePredicate.class);
     private NodeTree predicate;
     private Logic logic;
     private Table data;
     private Table fuzzyData;
     private DoubleColumn resultColumn;
     private String outPath;
-    private static final Logger logger = LogManager.getLogger(EvaluatePredicate.class);
 
     /**
      * Default constructor
