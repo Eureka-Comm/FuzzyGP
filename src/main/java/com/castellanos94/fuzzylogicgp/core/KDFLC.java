@@ -27,12 +27,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.Destination;
-import tech.tablesaw.io.json.*;
+import tech.tablesaw.io.json.JsonWriteOptions;
+import tech.tablesaw.io.json.JsonWriter;
 
 /**
  * fuzzy compensatory logical knowledge discovery
@@ -40,9 +43,12 @@ import tech.tablesaw.io.json.*;
  * @author Castellanos Alvarez, Alejandro.
  * @since Oct, 19.
  * @version 0.1.0
+ * @see GOMF
+ * @see EvaluatePredicate
  */
 public class KDFLC {
-    private ParserPredicate parserPredicate;
+    private static final Logger logger = LogManager.getLogger(KDFLC.class);
+
     private NodeTree predicatePattern;
     private HashMap<String, List<StateNode>> statesByGenerators;
     private HashMap<String, GeneratorNode> generators;
@@ -66,9 +72,8 @@ public class KDFLC {
 
     private Table fuzzyData;
 
-    public KDFLC(ParserPredicate pp, Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value,
-            double mut_percentage, int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data)
-            throws OperatorException, CloneNotSupportedException {
+    public KDFLC( Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value,
+            double mut_percentage, int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data){
 
         if (min_truth_value < 0.0 || min_truth_value > 1.0)
             throw new IllegalArgumentException("Min truth value must be in [0,1].");
@@ -78,8 +83,6 @@ public class KDFLC {
 
         if (adj_min_truth_value < 0.0 || adj_min_truth_value > 1.0)
             throw new IllegalArgumentException("Adj min truth value must be in [0,1].");
-        this.parserPredicate = pp;
-        this.predicatePattern = pp.parser();
         this.logic = logic;
         this.num_pop = num_pop;
         this.num_iter = num_iter;
@@ -97,7 +100,8 @@ public class KDFLC {
         this.generatorNodes = new ArrayList<>();
     }
 
-    public void execute() throws CloneNotSupportedException, OperatorException {
+    public void execute(NodeTree predicate) throws CloneNotSupportedException, OperatorException {        
+        this.predicatePattern = predicate;
         statesByGenerators = new HashMap<>();
         int wasNotChanged = 0;
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
@@ -107,7 +111,7 @@ public class KDFLC {
                 GeneratorNode gNode = (GeneratorNode) node;
                 List<StateNode> states = new ArrayList<>();
                 for (String var : gNode.getVariables()) {
-                    for (StateNode s : parserPredicate.getStates()) {
+                    for (Node s : NodeTree.getNodesByType(predicatePattern, NodeType.STATE)) {
                         if (s.getLabel().trim().equals(var.trim())) {
                             StateNode ss = (StateNode) s.copy();
                             ss.setByGenerator(gNode.getId());
@@ -148,10 +152,8 @@ public class KDFLC {
 
         if (isToDiscovery) {
             boolean isTheSameGenerator = isTheSameGenerator();
-            // isTheSameGenerator = false;
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
-                // System.out.println("\tTo replace : " + toReplaceIndex.size());
                 toReplaceIndex.parallelStream().forEach(_index -> {
                     int intents = 0;
                     do {
@@ -166,14 +168,12 @@ public class KDFLC {
                     _gomf.optimize(population[_index]);
                 });
                 toReplaceIndex.clear();
-                System.out.println("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
+                logger.info("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
                 int offspring_size = population.length / 2;
                 if (offspring_size % 2 != 0) {
                     offspring_size++;
                 }
                 NodeTree[] offspring = new NodeTree[offspring_size];
-
-                // System.out.println("\tBefore crossover");
                 if (!isTheSameGenerator) {
                     TournamentSelection tournamentSelection = new TournamentSelection(population, offspring_size);
                     tournamentSelection.execute();
@@ -199,21 +199,12 @@ public class KDFLC {
                     }
 
                 }
-                // System.out.println("\tAfter crossover");
                 mutation(offspring);
-                // System.out.println("\tAfter mutation");
                 Arrays.parallelSetAll(offspring, _index -> {
                     GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
                     _gomf.optimize(offspring[_index]);
                     return offspring[_index];
                 });
-
-                /*
-                 * for (int i = 0; i < offspring.length; i++) { }
-                 */
-                // System.out.println("\tAfter evaluate offspring");
-
-                // int lastFound = 0;
                 for (int i = 0; i < offspring.length; i++) {
                     for (int j = 0; j < population.length; j++) {
                         if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
@@ -222,7 +213,6 @@ public class KDFLC {
                         }
                     }
                 }
-                // System.out.println("\tAdded to population " + lastFound);
                 boolean flag = false;
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value) {
@@ -252,7 +242,7 @@ public class KDFLC {
 
         }
 
-        System.out.println("Result list " + resultList.size());
+        logger.info("Result list " + resultList.size());
         if (resultList.isEmpty()) {
             if (isForEvaluate()) {
                 gomf.optimize(this.predicatePattern);
@@ -260,7 +250,7 @@ public class KDFLC {
             }
 
         }
-        System.out.println("Added min" + resultList.isEmpty());
+        logger.info("Added min" + resultList.isEmpty());
         if (resultList.isEmpty()) {
             NodeTree best = population[0];
 
@@ -270,18 +260,17 @@ public class KDFLC {
                 }
             }
             resultList.add((NodeTree) best.copy());
-            System.out.println("Best found " + best.getFitness());
+            logger.info("Best found " + best.getFitness());
         }
 
         for (int i = 0; i < resultList.size(); i++) {
-            System.out.println((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
+            logger.info((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
         }
 
     }
 
     private boolean isTheSameGenerator() {
         ArrayList<Node> _nodesByType = NodeTree.getNodesByType(this.predicatePattern, NodeType.OPERATOR);
-        // Filter
         ArrayList<Node> fList = new ArrayList<>();
         for (Node n : _nodesByType) {
             if (!fList.contains(n))
@@ -390,8 +379,6 @@ public class KDFLC {
         if (predicatePattern.getChildren().size() == 1) {
             flag = predicatePattern.getChildren().get(0) instanceof GeneratorNode;
         }
-        // ArrayList<Node> _nodesByType = NodeTree.getNodesByType(p, NodeType.OPERATOR);
-
         // Filter
         ArrayList<Node> fList = new ArrayList<>();
         for (GeneratorNode n : this.generators.values()) {
@@ -426,7 +413,6 @@ public class KDFLC {
                 }
             }
         }
-
         return p;
     }
 
@@ -472,9 +458,7 @@ public class KDFLC {
                                 }
                             }
                             if (isValidChange) {
-                                clon.setType(NodeType.OR);
-                                // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                                // false);
+                                clon.setType(NodeType.OR);                                
                                 do {
                                     parent = NodeTree.getNodeParent(population[i], n.getId());
                                     if (parent != null)
@@ -490,9 +474,7 @@ public class KDFLC {
                                 }
                             }
                             if (isValidChange) {
-                                clon.setType(NodeType.EQV);
-                                // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                                // false);
+                                clon.setType(NodeType.EQV);                                
                                 do {
                                     parent = NodeTree.getNodeParent(population[i], n.getId());
                                     if (parent != null)
@@ -508,9 +490,7 @@ public class KDFLC {
                                 }
                             }
                             if (isValidChange) {
-                                clon.setType(NodeType.IMP);
-                                // NodeTree.replace(NodeTree.getNodeParent(population[i], n.getId()), n, clon,
-                                // false);
+                                clon.setType(NodeType.IMP);                                
                                 do {
                                     parent = NodeTree.getNodeParent(population[i], n.getId());
                                     if (parent != null)
@@ -545,8 +525,8 @@ public class KDFLC {
                     }
 
                 } else {
-                    System.out.println("\t? " + editableNode.size());
-                    System.out.println("\t" + population[i]);
+                    logger.debug("\t? " + editableNode.size());
+                    logger.debug("\t" + population[i]);
                 }
             }
         }

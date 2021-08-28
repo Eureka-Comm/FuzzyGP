@@ -22,7 +22,9 @@ public abstract class Node implements Serializable {
     private final String id;
     private NodeType type;
     private boolean editable;
-    private String byGenerator;
+    protected String byGenerator;
+    @Expose
+    protected String label;
     @Expose
     protected String description = "";
 
@@ -70,6 +72,14 @@ public abstract class Node implements Serializable {
      */
     public void setByGenerator(String byGenerator) {
         this.byGenerator = byGenerator;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public abstract Object copy();

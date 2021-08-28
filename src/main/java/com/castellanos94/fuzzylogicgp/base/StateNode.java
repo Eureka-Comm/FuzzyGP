@@ -34,40 +34,35 @@ public class StateNode extends Node {
      */
     private static final long serialVersionUID = -196106920996217719L;
     @Expose
-    private String label;
-    @Expose
     private String cname;
     @Expose
     @SerializedName("f")
     private MembershipFunction membershipFunction;
 
-    public StateNode() {
-        setType(NodeType.STATE);
-    }
-
-    public StateNode(StateNode state) {
-        this.label = state.getLabel();
-        this.cname = state.getColName();
-        this.setType(NodeType.STATE);
-        if (state.getMembershipFunction() != null)
-            this.membershipFunction = state.getMembershipFunction();
-        this.setEditable(state.isEditable());
-    }
-
     public StateNode(String label, String cname) {
-        this.label = label;
+        setLabel(label);
         this.cname = cname;
         this.setType(NodeType.STATE);
         this.setEditable(false);
     }
 
     public StateNode(String label, String cname, MembershipFunction membershipFunction) {
-        this.label = label;
-        this.cname = cname;
+        this(label, cname);
         this.membershipFunction = membershipFunction;
-        this.setEditable(false);
-        this.setType(NodeType.STATE);
+    }
 
+    /**
+     * Constructor for copy object
+     * 
+     * @param state
+     */
+    public StateNode(StateNode state) {
+        this(state.getLabel(), state.getColName(),
+                (state.getMembershipFunction() != null) ? state.getMembershipFunction().copy() : null);
+        if (state.getByGenerator() != null)
+            this.setByGenerator(state.getByGenerator());
+        this.setEditable(state.isEditable());
+        this.setDescription(state.getDescription());
     }
 
     public String getColName() {
@@ -76,14 +71,6 @@ public class StateNode extends Node {
 
     public void setColName(String cname) {
         this.cname = cname;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
     }
 
     public MembershipFunction getMembershipFunction() {
@@ -106,18 +93,7 @@ public class StateNode extends Node {
 
     @Override
     public StateNode copy() {
-        StateNode state = new StateNode();
-        if (this.getLabel() != null)
-            state.setLabel(label);
-        if (this.getColName() != null)
-            state.setColName(cname);
-        if (this.getMembershipFunction() != null)
-            state.setMembershipFunction((MembershipFunction) this.getMembershipFunction().copy());
-        if (this.getByGenerator() != null)
-            state.setByGenerator(this.getByGenerator());
-        state.setEditable(this.isEditable());
-        state.setDescription(this.description);
-        return state;
+        return new StateNode(this);
     }
 
     public void plot(String dirOutputString, String fileName) {
