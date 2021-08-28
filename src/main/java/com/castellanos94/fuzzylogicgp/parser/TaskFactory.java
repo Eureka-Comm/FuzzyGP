@@ -82,30 +82,12 @@ public class TaskFactory {
                         discoveryQuery.getMut_percentage(), discoveryQuery.getAdj_num_pop(),
                         discoveryQuery.getAdj_num_iter(), discoveryQuery.getAdj_min_truth_value(), data);
                 discovery.execute(p);
-                /*
-                 * for (int i = 0; i < discovery.getResultList().size(); i++) {
-                 * System.out.print((i+1)+": "+discovery.getResultList().get(i).getFitness()+" "
-                 * ); EvaluatePredicate _evaluator = new
-                 * EvaluatePredicate(discovery.getResultList().get(i), logic, data);
-                 * System.out.println(_evaluator.evaluate());
-                 * 
-                 * }
-                 */
                 discovery.exportToCsv(discoveryQuery.getOut_file());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported query.");
         }
     }
-
-    /*
-     * private static Logic getLogic(Query query) { switch (query.getLogic()) { case
-     * AMBC: return new AMBC_Logic(); case GMBC: return new GMBC_Logic(); case
-     * ZADEH: return new Zadeh_Logic(); case ACF: return new ACF_Logic(); default:
-     * return null;
-     * 
-     * } }
-     */
 
     public static void plotting(Query query, ArrayList<String> labels)
             throws OperatorException, CloneNotSupportedException, URISyntaxException, UnsupportedEncodingException {
