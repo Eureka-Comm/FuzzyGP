@@ -10,8 +10,8 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
      *
      */
     private static final long serialVersionUID = 7984595590989290929L;
-    private Double fitness;
-    private ArrayList<Node> children;
+    protected Double fitness;
+    protected ArrayList<Node> children;
     private String leftID;
     private String righID;
 
