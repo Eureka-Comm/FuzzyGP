@@ -18,12 +18,17 @@ import com.castellanos94.fuzzylogicgp.core.EvaluatePredicate;
 import com.castellanos94.fuzzylogicgp.core.KDFLC;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReader;
 
 public class TaskFactory {
+    private static final Logger logger = LogManager.getLogger(TaskFactory.class);
+
     public static void execute(Query query) throws OperatorException, CloneNotSupportedException, IOException {
         ParserPredicate parserPredicate;
         NodeTree p;
@@ -38,7 +43,7 @@ public class TaskFactory {
                         evaluationQuery.getOut_file());
                 double forall = evaluator.evaluate();
                 evaluationQuery.setJsonPredicate(p.toJson());
-                System.out.println("For all: " + forall);
+                logger.info("For all: " + forall);
 
                 evaluator.exportToCsv();
 
@@ -104,7 +109,7 @@ public class TaskFactory {
 
     public static void plotting(Query query, ArrayList<String> labels)
             throws OperatorException, CloneNotSupportedException, URISyntaxException, UnsupportedEncodingException {
-        System.out.println("Plotting states...");
+        logger.info("Plotting states...");
         switch (query.getType()) {
             case EVALUATION:
                 for (StateNode stateNode : query.getStates()) {
