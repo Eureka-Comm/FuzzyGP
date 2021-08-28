@@ -18,14 +18,16 @@ import com.castellanos94.fuzzylogicgp.parser.EDNParser;
 import com.castellanos94.fuzzylogicgp.parser.Query;
 import com.castellanos94.fuzzylogicgp.parser.TaskFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import static java.lang.System.out;
-
 @Command(name = "FLJF", description = "@|bold Demonstrating FLJF |@", headerHeading = "@|bold,underline Demonstration Usage|@:%n%n")
 public class Main {
+    private static final Logger logger = LogManager.getLogger(Main.class);
 
     @Option(names = { "-f", "--file" }, description = "Path and name of file")
     private String fileName;
@@ -55,7 +57,7 @@ public class Main {
         final Main main = CommandLine.populateCommand(new Main(), args);
 
         if (main.help) {
-            CommandLine.usage(main, out, CommandLine.Help.Ansi.AUTO);
+            CommandLine.usage(main, System.out, CommandLine.Help.Ansi.AUTO);
         } else {
             Query query = null;
             if (main.seed != null) {
@@ -77,7 +79,7 @@ public class Main {
                 }
             }
             if (main.evaluationDemo) {
-                out.println("Running demo evaluation");
+                logger.info("Running demo evaluation");
                 query = Examples.evaluation();
                 TaskFactory.execute(demoToFile(query));
 
@@ -85,11 +87,11 @@ public class Main {
                     TaskFactory.plotting(query, main.plot);
                 }
             } else if (main.discoveryDemo) {
-                out.println("Running demo discovery");
+                logger.info("Running demo discovery");
                 query = Examples.discovery();
                 TaskFactory.execute(demoToFile(query));
             } else if (main.irisDemo) {
-                out.println("Running irs demo");
+                logger.info("Running irs demo");
                 query = Examples.irisQuery();
                 TaskFactory.execute(demoToFile(query));
             }
@@ -100,26 +102,30 @@ public class Main {
     private static Query demoToFile(Query query) throws IOException {
         InputStream resourceAsStream = ClassLoader.getSystemClassLoader()
                 .getResourceAsStream("datasets" + File.separator + query.getDb_uri());
-            System.out.println("Relative path: "+"datasets" + File.separator + query.getDb_uri());
-            if(resourceAsStream== null){
-                resourceAsStream = ClassLoader.getSystemClassLoader().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
-            }
-            if(resourceAsStream== null){
-                resourceAsStream = Main.class.getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());//ClassLoader.getSystemClassLoader().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
-            }
-            if(resourceAsStream==null){
-                resourceAsStream = Main.class.getResourceAsStream("datasets" + File.separator + query.getDb_uri());//ClassLoader.getSystemClassLoader().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
-            }
-            if(resourceAsStream==null){
-                resourceAsStream = Main.class.getClass().getResourceAsStream("datasets" + File.separator + query.getDb_uri());
-            }
-            if(resourceAsStream==null){
-                resourceAsStream = Main.class.getClass().getResourceAsStream(File.separator+"datasets" + File.separator + query.getDb_uri());
-            }
-            
-        System.out.println(resourceAsStream.toString());
+        logger.info("Relative path: " + "datasets" + File.separator + query.getDb_uri());
+        if (resourceAsStream == null) {
+            resourceAsStream = ClassLoader.getSystemClassLoader()
+                    .getResourceAsStream(File.separator + "datasets" + File.separator + query.getDb_uri());
+        }
+        if (resourceAsStream == null) {
+            resourceAsStream = Main.class
+                    .getResourceAsStream(File.separator + "datasets" + File.separator + query.getDb_uri());
+        }
+        if (resourceAsStream == null) {
+            resourceAsStream = Main.class.getResourceAsStream("datasets" + File.separator + query.getDb_uri());
+        }
+        if (resourceAsStream == null) {
+            resourceAsStream = Main.class.getClass()
+                    .getResourceAsStream("datasets" + File.separator + query.getDb_uri());
+        }
+        if (resourceAsStream == null) {
+            resourceAsStream = Main.class.getClass()
+                    .getResourceAsStream(File.separator + "datasets" + File.separator + query.getDb_uri());
+        }
+
+        logger.info(resourceAsStream.toString());
         Path path = Paths.get("dataset.csv");
-        System.out.println("Path: "+path);
+        logger.info("Path: " + path);
         Files.copy(resourceAsStream, path, StandardCopyOption.REPLACE_EXISTING);
         query.setDb_uri(path.toFile().getAbsolutePath());
         Path p = Paths.get("demo-script.txt");
