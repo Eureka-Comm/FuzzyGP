@@ -22,7 +22,6 @@ import com.castellanos94.fuzzylogicgp.logic.GMBC_FA_Logic;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos94.fuzzylogicgp.parser.MembershipFunctionSerializer;
-import com.castellanos94.fuzzylogicgp.parser.ParserPredicate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
