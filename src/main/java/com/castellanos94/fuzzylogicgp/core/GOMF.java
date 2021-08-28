@@ -17,17 +17,23 @@ import com.castellanos94.fuzzylogicgp.base.Utils;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.FPG;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import tech.tablesaw.api.Table;
 import tech.tablesaw.columns.Column;
 
 /**
- * Generalized Optimizer of Membership Functions
- *
+ * Generalized Optimizer of Membership Functions (FPG)
+ * 
+ * @see FPG
  * @author Castellanos Alvarez, Alejandro.
  * @since October 06, 2019.
  * @version 0.5.0
  */
 public class GOMF {
+    @SuppressWarnings("unused")
+    private static final Logger logger = LogManager.getLogger(GOMF.class);
 
     private final Logic logic;
     private final double mut_percentage;
@@ -44,6 +50,16 @@ public class GOMF {
     private static final Random rand = Utils.random;
     private final ChromosomeComparator chromosomeComparator = new ChromosomeComparator();
 
+    /**
+     * Default constructors
+     * 
+     * @param data            dataset
+     * @param logic           to use
+     * @param mut_percentage  mutation percentage
+     * @param adj_num_pop     population size
+     * @param adj_iter        max iteration
+     * @param adj_truth_value min truth value
+     */
     public GOMF(Table data, Logic logic, double mut_percentage, int adj_num_pop, int adj_iter, double adj_truth_value) {
         this.data = data;
         this.logic = logic;
@@ -54,8 +70,13 @@ public class GOMF {
         this.minPromMaxMapValues = new HashMap<>();
     }
 
-    public void optimize(NodeTree p) {
-        this.predicatePattern = p;
+    /**
+     * Predicate to optimizae
+     * 
+     * @param predicate
+     */
+    public void optimize(NodeTree predicate) {
+        this.predicatePattern = predicate;
         sns = new ArrayList<>();
         NodeTree.getNodesByType(predicatePattern, NodeType.STATE).forEach(v -> {
             if (v instanceof StateNode) {
@@ -69,8 +90,8 @@ public class GOMF {
             genetic();
         } else {
             EvaluatePredicate evaluator = new EvaluatePredicate(logic, data);
-            evaluator.setPredicate(p);
-            p.setFitness(evaluator.evaluate());
+            evaluator.setPredicate(predicate);
+            predicate.setFitness(evaluator.evaluate());
         }
     }
 

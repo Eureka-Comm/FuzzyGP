@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.castellanos94.fuzzylogicgp.base.Node;
 import com.castellanos94.fuzzylogicgp.base.NodeTree;
@@ -20,6 +18,9 @@ import com.castellanos94.fuzzylogicgp.base.NodeType;
 import com.castellanos94.fuzzylogicgp.base.OperatorException;
 import com.castellanos94.fuzzylogicgp.base.StateNode;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.DoubleColumn;
