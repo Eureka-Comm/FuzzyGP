@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.castellanos94.fuzzylogicgp.base.GeneratorNode;
@@ -50,9 +51,7 @@ public class KDFLC {
     private static final Logger logger = LogManager.getLogger(KDFLC.class);
 
     private NodeTree predicatePattern;
-    private HashMap<String, List<StateNode>> statesByGenerators;
     private HashMap<String, GeneratorNode> generators;
-    private ArrayList<GeneratorNode> generatorNodes;
     private Logic logic;
     private int num_pop;
     private int num_iter;
@@ -98,32 +97,17 @@ public class KDFLC {
         this.min_truth_value = (min_truth_value <= 1) ? (min_truth_value > 0.0005) ? min_truth_value - 0.005 : 0.0
                 : 0.5;
         this.generators = new HashMap<>();
-        this.generatorNodes = new ArrayList<>();
     }
 
     public void execute(NodeTree predicate) throws CloneNotSupportedException, OperatorException {
         this.predicatePattern = predicate;
-        statesByGenerators = new HashMap<>();
         int wasNotChanged = 0;
         Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
                 GeneratorNode gNode = (GeneratorNode) node;
-                List<StateNode> states = new ArrayList<>();
-                for (String var : gNode.getVariables()) {
-                    for (Node s : NodeTree.getNodesByType(predicatePattern, NodeType.STATE)) {
-                        if (s.getLabel().trim().equals(var.trim())) {
-                            StateNode ss = (StateNode) s.copy();
-                            ss.setByGenerator(gNode.getId());
-                            states.add(ss);
-                            break;
-                        }
-                    }
-                }
-                statesByGenerators.put(gNode.getId(), states);
-                generators.put(gNode.getId(), gNode);
-                generatorNodes.add(gNode);
+                generators.put(gNode.getId(), gNode);                
             }
         }
         NodeTree[] population = makePopulation();
@@ -399,18 +383,11 @@ public class KDFLC {
         if (predicatePattern.getChildren().size() == 1) {
             flag = predicatePattern.getChildren().get(0) instanceof GeneratorNode;
         }
-        // Filter
-        ArrayList<Node> fList = new ArrayList<>();
-        for (GeneratorNode n : this.generators.values()) {
-            if (!fList.contains(n))
-                fList.add(n);
-        }
-        Iterator<Node> iterator = fList.iterator();
+        Iterator<Node> iterator = NodeTree.getNodesByType(p, NodeType.OPERATOR).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
             if (node instanceof GeneratorNode) {
-                Node generate = ((GeneratorNode) node).generate(statesByGenerators.get(node.getId()), generatorNodes,
-                        index < num_pop / 2);
+                Node generate = ((GeneratorNode) node).generate(index < num_pop / 2);
                 generate.setEditable(true);
                 if (p != node && p.getType() != NodeType.OPERATOR) {
                     NodeTree _parent = null;
@@ -519,8 +496,8 @@ public class KDFLC {
                             }
                             break;
                         case STATE:
-                            List<StateNode> ls = statesByGenerators.get(n.getByGenerator());
-                            StateNode state = ls.get(rand.nextInt(ls.size()));
+                            List<Node> ls = generators.get(n.getByGenerator()).getVariables().stream().filter(node -> node instanceof StateNode).collect(Collectors.toList());
+                            StateNode state = (StateNode)ls.get(rand.nextInt(ls.size()));
                             NodeTree p = NodeTree.getNodeParent(population[i], n.getId());
                             ArrayList<String> labels = new ArrayList<>();
                             for (Node _c : p) {
@@ -530,7 +507,7 @@ public class KDFLC {
                             }
                             int i_ = 0;
                             while (i_ < ls.size() && labels.contains(state.getLabel())) {
-                                state = ls.get(rand.nextInt(ls.size()));
+                                state = (StateNode)ls.get(rand.nextInt(ls.size()));
                                 i_++;
                             }
                             if (!labels.contains(state.getLabel()))

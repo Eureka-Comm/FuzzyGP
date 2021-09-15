@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
-import com.castellanos94.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.base.Node;
 import com.castellanos94.fuzzylogicgp.base.NodeTree;
 import com.castellanos94.fuzzylogicgp.base.NodeType;
@@ -28,13 +27,17 @@ public class ParserPredicate {
     private Node currentNodeRoot;
     private NodeTree predicate;
     private final List<StateNode> states;
-    private final List<GeneratorNode> generators;
+    private final List<DummyGenerator> generators;
+    private final ArrayList<Node> nodes;
 
-    public ParserPredicate(String expression, List<StateNode> states, List<GeneratorNode> gs) {
+    public ParserPredicate(String expression, List<StateNode> states, List<DummyGenerator> gs) {
         this.expression = expression;
         this.states = states;
         this.generators = gs;
         stack = new Stack<>();
+        this.nodes = new ArrayList<>();
+        nodes.addAll(states);
+        nodes.addAll(gs);
     }
 
     public NodeTree parser() throws OperatorException, CloneNotSupportedException {
@@ -160,9 +163,9 @@ public class ParserPredicate {
 
                 break;
             case "OPERATOR":
-                for (GeneratorNode generator : generators) {
+                for (DummyGenerator generator : generators) {
                     if (generator.getLabel().equals(rootString)) {
-                        tmp = generator;
+                        tmp = generator.toGeneratorNode(nodes);
                         break;
                     }
                 }
@@ -176,9 +179,9 @@ public class ParserPredicate {
                         break;
                     }
                 }
-                for (GeneratorNode generator : generators) {
+                for (DummyGenerator generator : generators) {
                     if (generator.getLabel().equals(rootString)) {
-                        tmp = generator;
+                        tmp = generator.toGeneratorNode(nodes);
                         break;
                     }
                 }
@@ -206,7 +209,7 @@ public class ParserPredicate {
     /**
      * @return the generators
      */
-    public List<GeneratorNode> getGenerators() {
+    public List<DummyGenerator> getGenerators() {
         return generators;
     }
 

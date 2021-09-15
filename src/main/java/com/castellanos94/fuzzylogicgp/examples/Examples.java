@@ -3,7 +3,6 @@ package com.castellanos94.fuzzylogicgp.examples;
 import java.time.Instant;
 import java.util.ArrayList;
 
-import com.castellanos94.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.base.NodeType;
 import com.castellanos94.fuzzylogicgp.base.StateNode;
 import com.castellanos94.fuzzylogicgp.logic.LogicBuilder;
@@ -25,6 +24,7 @@ import com.castellanos94.fuzzylogicgp.membershipfunction.Trapezoidal;
 import com.castellanos94.fuzzylogicgp.membershipfunction.Triangular;
 import com.castellanos94.fuzzylogicgp.membershipfunction.ZForm;
 import com.castellanos94.fuzzylogicgp.parser.DiscoveryQuery;
+import com.castellanos94.fuzzylogicgp.parser.DummyGenerator;
 import com.castellanos94.fuzzylogicgp.parser.EvaluationQuery;
 import com.castellanos94.fuzzylogicgp.parser.Query;
 
@@ -49,7 +49,7 @@ public class Examples {
         String out_file = "result-discovery-irs.csv";
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
-        GeneratorNode generator = new GeneratorNode();
+        DummyGenerator generator = new DummyGenerator();
         generator.setLabel("properties");
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
@@ -65,9 +65,9 @@ public class Examples {
         vrs.add(Setosa.getLabel());
         vrs.add(Versicolor.getLabel());
         vrs.add(Virginica.getLabel());
-        GeneratorNode classG = new GeneratorNode("class", new NodeType[] { NodeType.NOT }, vrs, 2);
+        DummyGenerator classG = new DummyGenerator("class", new NodeType[] { NodeType.NOT }, vrs, 2);
 
-        ArrayList<GeneratorNode> generators = new ArrayList<>();
+        ArrayList<DummyGenerator> generators = new ArrayList<>();
         generators.add(generator);
         generators.add(classG);
 
@@ -135,16 +135,17 @@ public class Examples {
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         String predicate = "(AND \"comodin\" (EQV \"comodin\" \"quality\"))";
         // predicate = "\"comodin\"";
-        GeneratorNode generator = new GeneratorNode();
+        DummyGenerator generator = new DummyGenerator();
         generator.setLabel("comodin");
         generator.setDepth(1);
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
+            if(!stateNode.getLabel().equalsIgnoreCase("quality"))
             variables.add(stateNode.getLabel());
         }
         generator.setVariables(variables);
         generator.setOperators(new NodeType[] { NodeType.AND,NodeType.OR, NodeType.IMP });
-        ArrayList<GeneratorNode> generators = new ArrayList<>();
+        ArrayList<DummyGenerator> generators = new ArrayList<>();
         generators.add(generator);
         query.setGenerators(generators);
         query.setPredicate(predicate);

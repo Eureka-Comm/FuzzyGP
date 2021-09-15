@@ -2,9 +2,7 @@ package com.castellanos94.fuzzylogicgp.parser;
 
 import java.util.ArrayList;
 
-import com.castellanos94.fuzzylogicgp.base.GeneratorNode;
 import com.google.gson.annotations.Expose;
-
 
 public class DiscoveryQuery extends Query {
 
@@ -13,7 +11,6 @@ public class DiscoveryQuery extends Query {
      */
     private static final long serialVersionUID = -5095255239602552073L;
 
-   
     @Expose
     protected int num_pop;
     @Expose
@@ -31,13 +28,11 @@ public class DiscoveryQuery extends Query {
     @Expose
     protected int adj_num_iter;
     @Expose
-    protected ArrayList<GeneratorNode> generators;
+    protected ArrayList<DummyGenerator> generators;
 
     public DiscoveryQuery() {
         setType(TaskType.DISCOVERY);
     }
-
-
 
     public int getNum_pop() {
         return num_pop;
@@ -110,20 +105,20 @@ public class DiscoveryQuery extends Query {
         this.adj_num_iter = adj_num_iter;
     }
 
-    public ArrayList<GeneratorNode> getGenerators() {
+    public ArrayList<DummyGenerator> getGenerators() {
         return generators;
     }
 
-    public void setGenerators(ArrayList<GeneratorNode> generators) {
+    public void setGenerators(ArrayList<DummyGenerator> generators) {
         this.generators = generators;
     }
 
     @Override
     public String toString() {
         return "DiscoveryQuery [adj_min_truth_value=" + adj_min_truth_value + ", adj_num_iter=" + adj_num_iter
-                + ", adj_num_pop=" + adj_num_pop + ", generators=" + generators
-                + ", min_truth_value=" + min_truth_value + ", mut_percentage=" + mut_percentage + ", num_iter="
-                + num_iter + ", num_pop=" + num_pop + ", num_result=" + num_result + "]" + super.toString();
+                + ", adj_num_pop=" + adj_num_pop + ", generators=" + generators + ", min_truth_value=" + min_truth_value
+                + ", mut_percentage=" + mut_percentage + ", num_iter=" + num_iter + ", num_pop=" + num_pop
+                + ", num_result=" + num_result + "]" + super.toString();
     }
 
     @Override
@@ -157,7 +152,7 @@ public class DiscoveryQuery extends Query {
             return false;
         if (adj_num_pop != other.adj_num_pop)
             return false;
-        
+
         if (generators == null) {
             if (other.generators != null)
                 return false;

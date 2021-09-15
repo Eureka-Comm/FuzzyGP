@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.ArrayList;
 
-import com.castellanos94.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.base.NodeType;
 import com.castellanos94.fuzzylogicgp.base.StateNode;
+import com.castellanos94.fuzzylogicgp.parser.DummyGenerator;
 
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public class GeneratorTest {
         states.add(new StateNode("quality", "quality"));
         states.add(new StateNode("density", "density"));
         states.add(new StateNode("chlorides", "chlorides"));
-        GeneratorNode generator = new GeneratorNode();
+        DummyGenerator generator = new DummyGenerator();
         generator.setLabel("todos los estados");
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
@@ -40,7 +40,7 @@ public class GeneratorTest {
         generator.setVariables(variables);
         generator.setOperators(operators);
         generator.setDepth(2);
-        assertEquals("GeneratorNode [depth=" + 2 + ", label=" + generator.getLabel() + ", operators="
+        assertEquals("DummyGeneratorNode [depth=" + 2 + ", label=" + generator.getLabel() + ", operators="
                 + Arrays.toString(operators) + ", variables=" + variables + "]", generator.toString());
 
     }

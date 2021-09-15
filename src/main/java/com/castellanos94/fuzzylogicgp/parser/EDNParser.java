@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.castellanos94.fuzzylogicgp.base.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.base.NodeType;
 import com.castellanos94.fuzzylogicgp.base.StateNode;
 import com.castellanos94.fuzzylogicgp.logic.LogicBuilder;
@@ -110,7 +109,7 @@ public class EDNParser {
                         Float.parseFloat(queryMap.get(Keyword.newKeyword("adj-min-truth-value")).toString().trim()));
                 discoveryQuery.setGenerators(
                         convertToGenerator((Map<?, ?>) queryMap.get(Keyword.newKeyword("generator")), convertToState));
-                for (GeneratorNode g : discoveryQuery.getGenerators()) {
+                for (DummyGenerator g : discoveryQuery.getGenerators()) {
                     g.setDepth(Integer.parseInt(queryMap.get(Keyword.newKeyword("depth")).toString().trim()));
                 }
                 return discoveryQuery;
@@ -119,9 +118,9 @@ public class EDNParser {
         }
     }
 
-    private ArrayList<GeneratorNode> convertToGenerator(Map<?, ?> gen, List<StateNode> stateNodes) {
-        ArrayList<GeneratorNode> lst = new ArrayList<>();
-        GeneratorNode geneNode = new GeneratorNode();
+    private ArrayList<DummyGenerator> convertToGenerator(Map<?, ?> gen, List<StateNode> stateNodes) {
+        ArrayList<DummyGenerator> lst = new ArrayList<>();
+        DummyGenerator geneNode = new DummyGenerator();
         String[] opeStrings = gen.get(Keyword.newKeyword("operators")).toString().replace("[", "").replace("]", "")
                 .split(",");
         NodeType[] oNodeTypes = new NodeType[opeStrings.length];
