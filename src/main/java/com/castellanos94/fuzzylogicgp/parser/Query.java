@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import com.castellanos94.fuzzylogicgp.base.Node;
 import com.castellanos94.fuzzylogicgp.base.StateNode;
 import com.castellanos94.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
@@ -167,7 +168,7 @@ public abstract class Query implements Serializable {
         // MembershipTypeDeserializer());
 
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionDeserializer());
-
+        builder.registerTypeAdapter(Node.class, new NodeDeserializer());
         Gson read = builder.create();
         FileReader fileReader = new FileReader(path.toFile());
         return read.fromJson(fileReader, Query.class);
