@@ -10,6 +10,6 @@ package com.castellanos94.fuzzylogicgp.base;
  * @author hp
  */
 public enum NodeType {
-    OPERATOR, STATE, NOT, IMP, EQV, AND, OR;
+    OPERATOR, STATE, NOT, IMP, EQV, AND, OR,DUMMYGENERATOR;
     
 }

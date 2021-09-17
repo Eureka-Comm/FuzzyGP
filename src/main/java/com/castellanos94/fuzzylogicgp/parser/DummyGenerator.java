@@ -21,7 +21,7 @@ public class DummyGenerator extends Node {
     private List<String> variables;
 
     public DummyGenerator() {
-        this.setType(NodeType.OPERATOR);
+        this.setType(NodeType.DUMMYGENERATOR);
         this.setEditable(true);
     }
 
