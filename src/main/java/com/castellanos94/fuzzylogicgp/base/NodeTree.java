@@ -193,6 +193,14 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
 
         return st + ")";
     }
+    @Override
+    public String getLabel() {
+        if(this.label!=null && !this.label.trim().isEmpty()){
+            return label;
+        }else{
+            return this.toString();
+        }
+    }
 
     public boolean isValid() {
         return true;
