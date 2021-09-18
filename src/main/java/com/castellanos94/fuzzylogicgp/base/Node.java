@@ -20,8 +20,11 @@ public abstract class Node implements Serializable {
      */
     private static final long serialVersionUID = 2377425499330019252L;
     private final String id;
+    @Expose
     private NodeType type;
+    @Expose
     private boolean editable;
+    @Expose
     protected String byGenerator;
     @Expose
     protected String label;
