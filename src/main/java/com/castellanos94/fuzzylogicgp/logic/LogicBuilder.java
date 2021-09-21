@@ -53,6 +53,9 @@ public class LogicBuilder {
                 return null;
         }
     }
+    public LogicType getType() {
+        return type;
+    }
 
     @Override
     public String toString() {
