@@ -101,3 +101,5 @@ local.properties
 dataset.csv
 demo-script.txt
 result-discovery-prop.csv
+result-evaluation-prop.csv
+tree-result-evaluation-prop.json
