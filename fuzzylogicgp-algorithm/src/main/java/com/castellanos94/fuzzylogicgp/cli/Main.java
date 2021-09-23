@@ -1,6 +1,7 @@
 package com.castellanos94.fuzzylogicgp.cli;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -12,13 +13,11 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 import com.castellanos94.fuzzylogicgp.core.OperatorException;
+import com.castellanos94.fuzzylogicgp.core.Query;
 import com.castellanos94.fuzzylogicgp.core.Utils;
 import com.castellanos94.fuzzylogicgp.examples.Examples;
 import com.castellanos94.fuzzylogicgp.parser.EDNParser;
-import com.castellanos94.fuzzylogicgp.core.Query;
 import com.castellanos94.fuzzylogicgp.parser.FLGPObjectParser;
-import com.castellanos94.fuzzylogicgp.task.TaskFactory;
-import java.io.FileInputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,7 +69,7 @@ public class Main {
                 Utils.random.setSeed(main.seed);
                 main.parallelSupport = false;
             }
-            TaskFactory.parallelSupport = main.parallelSupport;
+            TaskExecutor.parallelSupport = main.parallelSupport;
             if (main.fileName != null) {
 
                 if (main.formatEdn) {
@@ -81,29 +80,29 @@ public class Main {
                     query = (Query) flgpop.fromJson(Paths.get(main.fileName), Query.class);
                 }
                 if (!main.executeTask) {
-                    TaskFactory.execute(query);
+                    TaskExecutor.execute(query);
                 }
 
                 if (main.plot != null && main.plot.size() > 0) {
-                    TaskFactory.plotting(query, main.plot);
+                    TaskExecutor.plotting(query, main.plot);
                 }
             }
             if (main.evaluationDemo) {
                 logger.info("Running demo evaluation");
                 query = Examples.evaluation();
-                TaskFactory.execute(demoToFile(query));
+                TaskExecutor.execute(demoToFile(query));
 
                 if (main.plot != null && main.plot.size() > 0) {
-                    TaskFactory.plotting(query, main.plot);
+                    TaskExecutor.plotting(query, main.plot);
                 }
             } else if (main.discoveryDemo) {
                 logger.info("Running demo discovery");
                 query = Examples.discovery();
-                TaskFactory.execute(demoToFile(query));
+                TaskExecutor.execute(demoToFile(query));
             } else if (main.irisDemo) {
                 logger.info("Running irs demo");
                 query = Examples.irisQuery();
-                TaskFactory.execute(demoToFile(query));
+                TaskExecutor.execute(demoToFile(query));
             }
 
         }

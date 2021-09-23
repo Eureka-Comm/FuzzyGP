@@ -1,8 +1,5 @@
-package com.castellanos94.fuzzylogicgp.task;
+package com.castellanos94.fuzzylogicgp.cli;
 
-import com.castellanos94.fuzzylogicgp.core.DiscoveryQuery;
-import com.castellanos94.fuzzylogicgp.core.EvaluationQuery;
-import com.castellanos94.fuzzylogicgp.core.Query;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,11 +11,14 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.castellanos94.fuzzylogicgp.core.NodeTree;
-import com.castellanos94.fuzzylogicgp.core.OperatorException;
-import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.algorithm.EvaluatePredicate;
 import com.castellanos94.fuzzylogicgp.algorithm.KDFLC;
+import com.castellanos94.fuzzylogicgp.core.DiscoveryQuery;
+import com.castellanos94.fuzzylogicgp.core.EvaluationQuery;
+import com.castellanos94.fuzzylogicgp.core.NodeTree;
+import com.castellanos94.fuzzylogicgp.core.OperatorException;
+import com.castellanos94.fuzzylogicgp.core.Query;
+import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.parser.ParserPredicate;
 
@@ -30,9 +30,9 @@ import tech.tablesaw.io.csv.CsvReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReadOptions;
 import tech.tablesaw.io.xlsx.XlsxReader;
 
-public class TaskFactory {
+public class TaskExecutor {
 
-    private static final Logger logger = LogManager.getLogger(TaskFactory.class);
+    private static final Logger logger = LogManager.getLogger(TaskExecutor.class);
     public static boolean parallelSupport = true;
 
     public static void execute(Query query) throws OperatorException, CloneNotSupportedException, IOException {

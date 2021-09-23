@@ -1,6 +1,6 @@
 package com.castellanos94.fuzzylogicgp.algorithm;
 
-import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
@@ -16,7 +17,6 @@ import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.core.Utils;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.FPG;
-import java.io.File;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

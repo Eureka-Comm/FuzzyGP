@@ -3,7 +3,11 @@ package com.castellanos94.fuzzylogicgp.examples;
 import java.time.Instant;
 import java.util.ArrayList;
 
+import com.castellanos94.fuzzylogicgp.core.DiscoveryQuery;
+import com.castellanos94.fuzzylogicgp.core.DummyGenerator;
+import com.castellanos94.fuzzylogicgp.core.EvaluationQuery;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
+import com.castellanos94.fuzzylogicgp.core.Query;
 import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.logic.LogicBuilder;
 import com.castellanos94.fuzzylogicgp.logic.LogicType;
@@ -23,10 +27,6 @@ import com.castellanos94.fuzzylogicgp.membershipfunction.Singleton;
 import com.castellanos94.fuzzylogicgp.membershipfunction.Trapezoidal;
 import com.castellanos94.fuzzylogicgp.membershipfunction.Triangular;
 import com.castellanos94.fuzzylogicgp.membershipfunction.ZForm;
-import com.castellanos94.fuzzylogicgp.core.DummyGenerator;
-import com.castellanos94.fuzzylogicgp.core.DiscoveryQuery;
-import com.castellanos94.fuzzylogicgp.core.EvaluationQuery;
-import com.castellanos94.fuzzylogicgp.core.Query;
 
 public class Examples {
 
@@ -55,7 +55,7 @@ public class Examples {
             variables.add(stateNode.getLabel());
         }
         generator.setVariables(variables);
-        generator.setOperators(new NodeType[]{NodeType.AND, NodeType.OR, NodeType.NOT});
+        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.NOT });
 
         states.add(Setosa);
         states.add(Versicolor);
@@ -64,7 +64,7 @@ public class Examples {
         vrs.add(Setosa.getLabel());
         vrs.add(Versicolor.getLabel());
         vrs.add(Virginica.getLabel());
-        DummyGenerator classG = new DummyGenerator("class", new NodeType[]{NodeType.NOT}, vrs, 2);
+        DummyGenerator classG = new DummyGenerator("class", new NodeType[] { NodeType.NOT }, vrs, 2);
 
         ArrayList<DummyGenerator> generators = new ArrayList<>();
         generators.add(generator);
@@ -125,7 +125,7 @@ public class Examples {
         states.add(new StateNode("chlorides", "chlorides"));
         // states.add(new StateNode("chlorides", "chlorides"));
 
-        //states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
+        // states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
         query.setStates(states);
         query.setDb_uri("tinto.csv");
         String out_file = "result-discovery-prop.csv";
@@ -143,7 +143,7 @@ public class Examples {
             }
         }
         generator.setVariables(variables);
-        generator.setOperators(new NodeType[]{NodeType.AND, NodeType.OR, NodeType.IMP});
+        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP });
         ArrayList<DummyGenerator> generators = new ArrayList<>();
         generators.add(generator);
         query.setGenerators(generators);
@@ -177,7 +177,7 @@ public class Examples {
         mf = new LGamma(4, 3);
 
         StateNode state = new StateNode("high quality", "quality", mf);
-        state.plot("/home/thinkpad/Documents/FuzzyLogicGP", "membershipFunctionGrap");
+        state.plot("", "membershipFunctionGrap");
     }
 
 }

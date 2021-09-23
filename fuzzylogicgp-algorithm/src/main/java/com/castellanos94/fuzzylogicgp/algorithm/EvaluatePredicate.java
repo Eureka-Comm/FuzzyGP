@@ -5,7 +5,6 @@
  */
 package com.castellanos94.fuzzylogicgp.algorithm;
 
-import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
