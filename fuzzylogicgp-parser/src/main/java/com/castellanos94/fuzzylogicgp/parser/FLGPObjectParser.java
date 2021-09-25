@@ -5,6 +5,10 @@
  */
 package com.castellanos94.fuzzylogicgp.parser;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.nio.file.Path;
+
 import com.castellanos94.fuzzylogicgp.core.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
@@ -13,15 +17,26 @@ import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.nio.file.Path;
 
 /**
  *
  * @author thinkpad
  */
 public class FLGPObjectParser {
+    private final Gson gson;
+
+    public FLGPObjectParser() {
+
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Query.class, new QuerySerializer());
+
+        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
+
+        builder.excludeFieldsWithoutExposeAnnotation();
+        builder.setPrettyPrinting();
+
+        gson = builder.create();
+    }
 
     public String toJson(Query query) {
         return toJSON(query);
@@ -43,16 +58,7 @@ public class FLGPObjectParser {
         if (object == null) {
             return null;
         }
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(Query.class, new QuerySerializer());
-
-        builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
-
-        builder.excludeFieldsWithoutExposeAnnotation();
-        builder.setPrettyPrinting();
-
-        Gson print = builder.create();
-        return print.toJson(object);
+        return gson.toJson(object);
     }
 
     public Object fromJson(Path path, Class<?> clazz) throws FileNotFoundException {
@@ -68,4 +74,9 @@ public class FLGPObjectParser {
         FileReader fileReader = new FileReader(path.toFile());
         return read.fromJson(fileReader, clazz);
     }
+
+    public Gson getGsonWriter() {
+        return gson;
+    }
+
 }
