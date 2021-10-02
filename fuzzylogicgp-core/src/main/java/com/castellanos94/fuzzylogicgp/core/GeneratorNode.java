@@ -25,7 +25,7 @@ public class GeneratorNode extends Node {
     @Expose
     private int depth;
     @Expose
-    private Integer max_child_number;
+    private int max_child_number;
     @Expose
     private NodeType operators[];
     @Expose
@@ -137,7 +137,7 @@ public class GeneratorNode extends Node {
     }
 
     public Node generate(boolean balanced) throws OperatorException {
-        if (max_child_number == null) {
+        if (max_child_number == 0) {
             max_child_number = Math.max(operators.length + variables.size() / 2, 2);
         }
 
