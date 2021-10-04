@@ -56,7 +56,13 @@ public class LogicBuilder {
     public LogicType getType() {
         return type;
     }
+    public Integer getExponent() {
+        return exponent;
+    }
 
+    public Boolean getNatural_implication() {
+        return natural_implication;
+    }
     @Override
     public String toString() {
         return "LogicBuilder [exponent=" + exponent + ", natural_implication=" + natural_implication + ", type=" + type
