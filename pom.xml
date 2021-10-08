@@ -33,8 +33,8 @@
                 <groupId>com.castellanos94</groupId>
                 <artifactId>fuzzylogicgp-core</artifactId>
                 <version>1.4.0</version>
-            </dependency>            
-            
+            </dependency>
+
             <dependency>
                 <groupId>com.castellanos94</groupId>
                 <artifactId>fuzzylogicgp-parser</artifactId>
@@ -46,7 +46,7 @@
                 <artifactId>fuzzylogicgp-algorithm</artifactId>
                 <version>1.4.0</version>
             </dependency>
-                        
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -150,6 +150,20 @@
                 <plugin>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
                     <version>3.0.0</version>
+                </plugin>
+                <!-- Generate sources -->
+                <plugin>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>4.5.3</version>
+                    <executions>
+                        <execution>
+                            <id>antlr</id>
+                            <goals>
+                                <goal>antlr4</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
