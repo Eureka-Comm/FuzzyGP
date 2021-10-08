@@ -18,7 +18,7 @@ public class LogicBuilder {
         this.type = type;
     }
 
-    public LogicBuilder setExponent(int exponent) {
+    public LogicBuilder setExponent(Integer exponent) {
         this.exponent = exponent;
         return this;
     }
