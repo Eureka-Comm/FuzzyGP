@@ -616,7 +616,7 @@ public class KDFLC implements IAlgorithm {
         ArrayList<String> d = new ArrayList<>();
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
-        builder.excludeFieldsWithoutExposeAnnotation();
+        //builder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = builder.create();
         ArrayList<Double> f0 = null;
         GOMF gomf = null;
