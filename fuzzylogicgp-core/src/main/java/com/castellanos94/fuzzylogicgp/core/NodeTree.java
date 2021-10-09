@@ -167,19 +167,19 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         if (node instanceof NodeTree) {
             NodeTree nodeTree = (NodeTree) node;
             if (nodeTree.children.isEmpty()) {
-                return "(" + nodeTree.getType() + ")";
+                return " (" + nodeTree.getType() + ")";
             } else {
-                st += "(" + nodeTree.getType();
+                st += " (" + ((nodeTree.getType() != NodeType.OPERATOR) ? nodeTree.getType() : "");
                 if (nodeTree.getType() == NodeType.IMP || nodeTree.getType() == NodeType.EQV) {
                     if (nodeTree.getLeftID() != null) {
-                        st += " " + makePrintStruct(nodeTree.findById(nodeTree.getLeftID()));
+                        st += addWhiteSpace(st) + makePrintStruct(nodeTree.findById(nodeTree.getLeftID()));
                     }
                     if (nodeTree.getRighID() != null) {
-                        st += " " + makePrintStruct(nodeTree.findById(nodeTree.getRighID()));
+                        st +=  addWhiteSpace(st) + makePrintStruct(nodeTree.findById(nodeTree.getRighID()));
                     }
                 } else {
                     for (Node chilNode : nodeTree) {
-                        st += " " + makePrintStruct(chilNode);
+                        st +=  addWhiteSpace(st) + makePrintStruct(chilNode);
                     }
                 }
             }
@@ -187,17 +187,27 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
             st += String.format("\"%s\"", ((StateNode) node).getLabel());
             return st;
         } else if (node instanceof GeneratorNode) {
-            st += String.format(" \"%s\"", ((GeneratorNode) node).getLabel());
+            st +=  String.format("\"%s\"", ((GeneratorNode) node).getLabel());
             return st;
         }
 
-        return st + ")";
+        return st.trim() + ")";
     }
+
+    private String addWhiteSpace(String st) {
+        if (!st.isEmpty()) {
+            if (!Character.isWhitespace(st.charAt(st.length() - 1))) {
+                return " ";
+            }
+        }
+        return "";
+    }
+
     @Override
     public String getLabel() {
-        if(this.label!=null && !this.label.trim().isEmpty()){
+        if (this.label != null && !this.label.trim().isEmpty()) {
             return label;
-        }else{
+        } else {
             return this.toString();
         }
     }

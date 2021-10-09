@@ -56,7 +56,10 @@ public class ParserPredicate {
                         break;
                     case ")":
                         if (currentNodeRoot != null) {
-                            currentNodeRoot = NodeTree.getNodeParent(predicate, currentNodeRoot.getId());
+                            NodeTree tmp = NodeTree.getNodeParent(predicate, currentNodeRoot.getId());
+                            if(tmp!=null){
+                                currentNodeRoot = tmp;
+                            }
                         }
                         break;
                     default:
@@ -161,17 +164,8 @@ public class ParserPredicate {
                 break;
             case "NOT":
                 tmp = new NodeTree(NodeType.NOT);
-
                 break;
-            case "OPERATOR":
-                for (DummyGenerator generator : generators) {
-                    if (generator.getLabel().equals(rootString)) {
-                        tmp = generator.toGeneratorNode(nodes);
-                        break;
-                    }
-                }
-
-                break;
+        
             default:
 
                 for (int i = 0; i < states.size(); i++) {
@@ -219,5 +213,23 @@ public class ParserPredicate {
      */
     public List<StateNode> getStates() {
         return states;
+    }
+    public static void main(String[] args) throws OperatorException, CloneNotSupportedException {
+        String expression = "(AND \"a\" \"c\" \"q\" \"fa\")";
+        NodeType[] operators = { NodeType.AND, NodeType.OR, NodeType.NOT };
+        ArrayList<StateNode> states = new ArrayList<>();
+        states.add(new StateNode("a", "alcohol"));
+        states.add(new StateNode("c", "chlorides"));
+        states.add(new StateNode("q", "quality"));
+        states.add(new StateNode("fa", "fixed_acidity"));
+
+        ArrayList<String> variables = new ArrayList<>();
+        states.stream().map(StateNode::getLabel).forEach(variables::add);
+        DummyGenerator generator = new DummyGenerator("calidad", operators, variables, 2);
+        ArrayList<DummyGenerator> gs = new ArrayList<>();
+        gs.add(generator);
+        ParserPredicate parserPredicate = new ParserPredicate(expression, states, gs);
+        NodeTree predicate = parserPredicate.parser();
+        System.out.println(predicate);
     }
 }

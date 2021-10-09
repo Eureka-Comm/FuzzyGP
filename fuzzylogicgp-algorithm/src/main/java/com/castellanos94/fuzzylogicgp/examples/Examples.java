@@ -96,6 +96,7 @@ public class Examples {
         query.setOut_file("result-evaluation-prop.csv");
         query.setShowTree(true);
         ArrayList<StateNode> states = new ArrayList<>();
+        //states.add(new StateNode("high alcohol", "alcohol", new FPG(0, 0, 0)));
         states.add(new StateNode("high alcohol", "alcohol", new Sigmoid(11.65, 9)));
         states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
         states.add(new StateNode("high quality", "quality", new Sigmoid(5.5, 4)));
@@ -104,6 +105,7 @@ public class Examples {
         states.forEach(s -> s.setDescription(Instant.now().toString()));
         query.setStates(states);
         query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");
+        //query.setPredicate("(NOT \"high alcohol\")");
         return query;
     }
 

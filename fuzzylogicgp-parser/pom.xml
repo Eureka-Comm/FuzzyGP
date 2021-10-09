@@ -16,7 +16,12 @@
     <description>FuzzyLogicGP parser</description>
     <url>http://github.com/castellanos94/FuzzyLogicGP</url>
 
-    <dependencies>       
+    <dependencies>    
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>   
         <dependency>
             <groupId>com.castellanos94</groupId>
             <artifactId>fuzzylogicgp-core</artifactId>
