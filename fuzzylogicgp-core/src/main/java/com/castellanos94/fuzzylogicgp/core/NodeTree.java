@@ -175,11 +175,11 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
                         st += addWhiteSpace(st) + makePrintStruct(nodeTree.findById(nodeTree.getLeftID()));
                     }
                     if (nodeTree.getRighID() != null) {
-                        st +=  addWhiteSpace(st) + makePrintStruct(nodeTree.findById(nodeTree.getRighID()));
+                        st += addWhiteSpace(st) + makePrintStruct(nodeTree.findById(nodeTree.getRighID()));
                     }
                 } else {
                     for (Node chilNode : nodeTree) {
-                        st +=  addWhiteSpace(st) + makePrintStruct(chilNode);
+                        st += addWhiteSpace(st) + makePrintStruct(chilNode);
                     }
                 }
             }
@@ -187,7 +187,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
             st += String.format("\"%s\"", ((StateNode) node).getLabel());
             return st;
         } else if (node instanceof GeneratorNode) {
-            st +=  String.format("\"%s\"", ((GeneratorNode) node).getLabel());
+            st += String.format("\"%s\"", ((GeneratorNode) node).getLabel());
             return st;
         }
 
@@ -196,7 +196,8 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
 
     private String addWhiteSpace(String st) {
         if (!st.isEmpty()) {
-            if (!Character.isWhitespace(st.charAt(st.length() - 1))) {
+            char c = st.charAt(st.length() - 1);
+            if (!Character.isWhitespace(c) && c != '(') {
                 return " ";
             }
         }

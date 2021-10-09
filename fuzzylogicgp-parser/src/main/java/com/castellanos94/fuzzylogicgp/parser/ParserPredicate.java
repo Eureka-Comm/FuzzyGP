@@ -215,7 +215,7 @@ public class ParserPredicate {
         return states;
     }
     public static void main(String[] args) throws OperatorException, CloneNotSupportedException {
-        String expression = "(AND \"a\" \"c\" \"q\" \"fa\")";
+        String expression = "(\"calidad\")";
         NodeType[] operators = { NodeType.AND, NodeType.OR, NodeType.NOT };
         ArrayList<StateNode> states = new ArrayList<>();
         states.add(new StateNode("a", "alcohol"));
