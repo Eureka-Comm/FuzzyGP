@@ -631,19 +631,8 @@ public class KDFLC implements IAlgorithm {
             v.add(resultList.get(i).getFitness());
 
             p.add(resultList.get(i).toString());
-            ArrayList<Node> _states = NodeTree.getNodesByType(resultList.get(i), NodeType.STATE);
-            if (!isJson) {
-                String st = "(";
-                for (Node node : _states) {
-                    if (node instanceof StateNode) {
-                        StateNode s = (StateNode) node;
-                        st += s.toString() + " ";
-                    }
-                }
-                d.add(st.trim() + ")");
-            } else {
-                d.add(gson.toJson(_states));
-            }
+            d.add(gson.toJson(resultList.get(i)));
+
             if (f0 != null) {
                 NodeTree nodeTree = resultList.get(i).copy();
                 gomf.optimize(nodeTree);
