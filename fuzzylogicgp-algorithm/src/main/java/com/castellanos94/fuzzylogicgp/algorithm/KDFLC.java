@@ -601,7 +601,7 @@ public class KDFLC implements IAlgorithm {
     }
 
     public void exportToJSon(String file) throws IOException {
-        outPutData(true);
+        outPutData();
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
         JsonWriter jsonWriter = new JsonWriter();
         JsonWriteOptions options = JsonWriteOptions
@@ -609,7 +609,7 @@ public class KDFLC implements IAlgorithm {
         jsonWriter.write(fuzzyData, options);
     }
 
-    private void outPutData(boolean isJson) {
+    private void outPutData() {
         fuzzyData = Table.create();
         ArrayList<Double> v = new ArrayList<>();
         ArrayList<String> p = new ArrayList<>();
@@ -628,8 +628,13 @@ public class KDFLC implements IAlgorithm {
             gomf = new GOMF(data, lFa_Logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
         }
         for (int i = 0; i < resultList.size(); i++) {
-            v.add(resultList.get(i).getFitness());
-
+            Double fv = resultList.get(i).getFitness();
+            v.add(fv);
+            EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, this.data);
+            evaluatePredicate.execute(resultList.get(i));
+            Double tmp = resultList.get(i).getFitness();
+            boolean flag =fv==tmp;
+            System.out.printf("Previo : %10.5f, New : %10.5f, Equals : %b\n",fv,tmp, flag);
             p.add(resultList.get(i).toString());
             d.add(gson.toJson(resultList.get(i)));
 
@@ -657,7 +662,7 @@ public class KDFLC implements IAlgorithm {
 
     @Override
     public void exportResult(File file) {
-        outPutData(false);
+        outPutData();
 
         File f = new File(file.getAbsolutePath().replace(".xlsx", ".csv").replace(".xls", ".csv"));
         try {

@@ -31,30 +31,32 @@ public class Main {
 
     private static final Logger logger = LogManager.getLogger(Main.class);
 
-    @Option(names = {"-f", "--file"}, description = "Path and name of file")
+    @Option(names = { "-f", "--file" }, description = "Path and name of file")
     private String fileName;
-    @Option(names = {"--seed"}, description = "Seed random")
+    @Option(names = { "--seed" }, description = "Seed random")
     private Long seed;
     @Option(names = {
-        "--parallel"}, description = "Parallel support, if seed is set then sequential process is active.")
+            "--parallel" }, description = "Parallel support, if seed is set then sequential process is active.")
     private boolean parallelSupport = true;
 
-    @Option(names = {"-h", "--help"}, description = "Display help/usage.", help = true)
+    @Option(names = { "-h", "--help" }, description = "Display help/usage.", help = true)
     private boolean help;
 
-    @Option(names = {"-p", "--plot"}, description = "Plot linguistic states, Evaluation script is requiered.")
+    @Option(names = { "-p", "--plot" }, description = "Plot linguistic states, Evaluation script is requiered.")
     private ArrayList<String> plot;
 
-    @Option(names = {"--evaluation-demo"}, description = "Run a evaluation demo.")
+    @Option(names = { "--evaluation-demo" }, description = "Run a evaluation demo.")
     private boolean evaluationDemo;
-    @Option(names = {"--discovery-demo"}, description = "Run a discovery demo.")
+    @Option(names = { "--discovery-demo" }, description = "Run a discovery demo.")
     private boolean discoveryDemo;
 
-    @Option(names = {"--iris"}, description = "Run a discovery demo with iris dataset.")
+    @Option(names = { "--iris" }, description = "Run a discovery demo with iris dataset.")
     private boolean irisDemo;
-    @Option(names = {"--EDN"}, description = "Supported EDN script.")
+    @Option(names = { "--generator" }, description = "Run a discovery demo with a generator as root.")
+    private boolean generatorDemo;
+    @Option(names = { "--EDN" }, description = "Supported EDN script.")
     private boolean formatEdn;
-    @Option(names = {"--N"}, description = "No run task.")
+    @Option(names = { "--N" }, description = "No run task.")
     private boolean executeTask;
 
     public static void main(String[] args)
@@ -102,6 +104,10 @@ public class Main {
             } else if (main.irisDemo) {
                 logger.info("Running irs demo");
                 query = Examples.irisQuery();
+                TaskExecutor.execute(demoToFile(query));
+            } else if (main.generatorDemo) {
+                logger.info("Running generator demo");
+                query = Examples.generator();
                 TaskExecutor.execute(demoToFile(query));
             }
 

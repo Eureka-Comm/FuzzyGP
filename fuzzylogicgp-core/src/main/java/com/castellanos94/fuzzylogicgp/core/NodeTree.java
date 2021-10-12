@@ -278,10 +278,10 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     @Override
     public NodeTree copy() {
         try {
-            NodeTree tree = new NodeTree(this.getType());
-            tree.setEditable(this.isEditable());
+            NodeTree tree = new NodeTree(getType());
+            tree.setEditable(isEditable());
             if (this.getByGenerator() != null)
-                tree.setByGenerator(this.getByGenerator());
+                tree.setByGenerator(getByGenerator());
             this.children.forEach(n -> {
                 try {
                     Node _n = (Node) n.copy();

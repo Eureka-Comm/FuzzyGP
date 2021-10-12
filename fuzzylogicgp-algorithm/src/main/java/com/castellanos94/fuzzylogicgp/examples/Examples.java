@@ -161,6 +161,56 @@ public class Examples {
         return query;
     }
 
+    public static Query generator() {
+        DiscoveryQuery query = new DiscoveryQuery();
+
+        ArrayList<StateNode> states = new ArrayList<>();
+        states.add(new StateNode("c", "chlorides"));
+        states.add(new StateNode("q", "quality"));
+        states.add(new StateNode("a", "alcohol"));
+        states.add(new StateNode("fa", "fixed_acidity"));
+        states.add(new StateNode("tsd", "total_sulfur_dioxide"));
+        states.add(new StateNode("va", "volatile_acidity"));
+        states.add(new StateNode("d", "density"));
+        states.add(new StateNode("ca", "citric_acid"));        
+        states.add(new StateNode("rs", "residual_sugar"));        
+        
+        
+        // states.add(new StateNode("chlorides", "chlorides"));
+
+        // states.add(new StateNode("low pH", "pH", new NSigmoid(3.375, 2.93)));
+        query.setStates(states);
+        query.setDb_uri("tinto.csv");
+        String out_file = "result-generador.csv";
+        query.setOut_file(out_file);
+        query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
+        String predicate = "\"generador simple\"";
+        DummyGenerator generator = new DummyGenerator();
+        generator.setLabel("generador simple");
+        generator.setDepth(3);
+        ArrayList<String> variables = new ArrayList<>();
+        states.stream().map(StateNode::getLabel).forEach(variables::add);
+
+        generator.setVariables(variables);
+        generator.setOperators(new NodeType[] { NodeType.AND,NodeType.OR,NodeType.NOT,NodeType.IMP, NodeType.EQV });
+        ArrayList<DummyGenerator> generators = new ArrayList<>();
+        generators.add(generator);
+        query.setGenerators(generators);
+        query.setPredicate(predicate);
+        query.setAdj_min_truth_value(0.75f);
+        query.setAdj_num_pop(20);
+        query.setAdj_num_iter(50);
+
+        query.setMut_percentage(0.75f);
+        
+        query.setNum_iter(100);
+        query.setMin_truth_value(0.9f);
+        query.setNum_pop(50);
+
+        query.setNum_result(20);
+        return query;
+    }
+
     public static void testMembershipFunction() {
 
         // Triangular triangular = new Triangular(1.0,5.0,9.0);
