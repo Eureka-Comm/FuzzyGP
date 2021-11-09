@@ -20,7 +20,7 @@ public class RNG {
      * @return RNG
      * @see Random
      */
-    private static RNG getRNG(final long seed) {
+    public static RNG getRNG(final long seed) {
         return new ThreadLocal<RNG>() {
             @Override
             protected RNG initialValue() {
@@ -35,7 +35,7 @@ public class RNG {
      * @return RNG instance
      * @see ThreadLocalRandom
      */
-    private static RNG getRNG() {
+    public static RNG getRNG() {
         return new RNG();
     }
 
@@ -73,13 +73,6 @@ public class RNG {
     public int randInt(int min, int max) {
         Random r = random == null ? localRandom : random;
         return r.nextInt((max - min) + 1) + min;
-    }
-    public static class Factory{
-        private static Long seed;
-        public Factory setSeet(final long seed){
-            Factory.seed = seed;
-            return this;
-        }
     }
 
 }
