@@ -348,7 +348,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         }
         if (pos != -1) {
             nodeTree.getChildren().set(pos, newNode);
-            if (nodeTree.getType() == NodeType.EQV || nodeTree.getType() == NodeType.IMP) {
+            if (nodeTree.getType() == NodeType.IMP) {
                 if (nodeTree.getLeftID().equals(toReplace.getId())) {
                     nodeTree.setLeftID(newNode.getId());
                 } else if (nodeTree.getRighID().equals(toReplace.getId())) {
