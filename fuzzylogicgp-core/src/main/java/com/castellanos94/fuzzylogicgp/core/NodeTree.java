@@ -23,26 +23,26 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     public NodeTree(NodeType type) throws OperatorException {
         this.children = new ArrayList<>();
         switch (type) {
-            case AND:
-                setType(type);
-                break;
-            case OR:
-                setType(type);
-                break;
-            case IMP:
-                setType(type);
-                break;
-            case EQV:
-                setType(type);
-                break;
-            case NOT:
-                setType(type);
-                break;
-            case OPERATOR:
-                setType(type);
-                break;
-            default:
-                throw new OperatorException(this.getId() + " " + this.getType() + ": illegal assigment.");
+        case AND:
+            setType(type);
+            break;
+        case OR:
+            setType(type);
+            break;
+        case IMP:
+            setType(type);
+            break;
+        case EQV:
+            setType(type);
+            break;
+        case NOT:
+            setType(type);
+            break;
+        case OPERATOR:
+            setType(type);
+            break;
+        default:
+            throw new OperatorException(this.getId() + " " + this.getType() + ": illegal assigment.");
 
         }
     }
@@ -72,33 +72,39 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         Node node_ = node;
 
         switch (this.getType()) {
-            case AND:
-            case OR:
+        case AND:
+        case OR:
+            this.children.add(node_);
+            break;
+        case IMP:
+            if (this.children.isEmpty()) {
+                this.leftID = node_.getId();
+                this.children.add(node_);
+            } else if (children.size() == 1) {
+                this.righID = node_.getId();
+                this.children.add(node_);
+            } else {
+                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
+            }
+            break;
+        case EQV:
+            if (this.children.size() < 2) {
+                this.children.add(node_);
+            } else {
+                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
+            }
+            break;
+        case NOT:
+            if (children.isEmpty()) {
                 this.children.add(node_);
                 break;
-            case IMP:
-            case EQV:
-                if (this.children.isEmpty()) {
-                    this.leftID = node_.getId();
-                    this.children.add(node_);
-                } else if (children.size() == 1) {
-                    this.righID = node_.getId();
-                    this.children.add(node_);
-                } else {
-                    throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
-                }
-                break;
-            case NOT:
-                if (children.isEmpty()) {
-                    this.children.add(node_);
-                    break;
-                } else
-                    throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be one element.");
-            case OPERATOR:
-                this.children.add(node_);
-                break;
-            default:
-                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be ? element.");
+            } else
+                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be one element.");
+        case OPERATOR:
+            this.children.add(node_);
+            break;
+        default:
+            throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be ? element.");
         }
     }
 
@@ -170,7 +176,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
                 return " (" + nodeTree.getType() + ")";
             } else {
                 st += " (" + ((nodeTree.getType() != NodeType.OPERATOR) ? nodeTree.getType() : "");
-                if (nodeTree.getType() == NodeType.IMP || nodeTree.getType() == NodeType.EQV) {
+                if (nodeTree.getType() == NodeType.IMP) {
                     if (nodeTree.getLeftID() != null) {
                         st += addWhiteSpace(st) + makePrintStruct(nodeTree.findById(nodeTree.getLeftID()));
                     }
