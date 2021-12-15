@@ -15,8 +15,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <tech.tablesaw.version>0.38.0</tech.tablesaw.version>
-        <org.log4j.version>2.13.3</org.log4j.version>
+        <tech.tablesaw.version>0.42.0</tech.tablesaw.version>
+        <org.log4j.version>2.16.0</org.log4j.version>
         <current.version>1.4.1</current.version>
     </properties>
 
