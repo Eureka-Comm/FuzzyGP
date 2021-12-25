@@ -101,6 +101,7 @@ public class GOMF implements IAlgorithm{
         int iteration = 0;
         currentPop = makePop();
         evaluatePredicate(currentPop);
+        
         while (iteration < adj_iter
                 && currentPop.get(currentPop.size() - 1).getFitness().compareTo(adj_truth_value) < 0) {
             iteration++;
@@ -365,7 +366,7 @@ public class GOMF implements IAlgorithm{
         if (Double.isNaN(gamma)) {
             gamma = randomValue(beta, minMaxPromT[2]);
         }
-        while (Math.abs(beta - gamma) <= minMaxPromT[3] || gamma == beta) {
+        while (Math.abs(beta - gamma) <= minMaxPromT[3] || Double.compare(gamma, beta) <= 0) {
             gamma = randomValue(minMaxPromT[0], minMaxPromT[2]);
             beta = randomValue(minMaxPromT[0], gamma);
         }
