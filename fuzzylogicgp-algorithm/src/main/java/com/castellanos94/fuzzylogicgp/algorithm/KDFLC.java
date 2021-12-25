@@ -217,7 +217,7 @@ public class KDFLC implements IAlgorithm {
                     Arrays.parallelSetAll(offspring, _index -> {
                         GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter,
                                 adj_min_truth_value);
-                        _gomf.optimize(offspring[_index]);
+                        _gomf.optimize(offspring[_index].copy());
                         return offspring[_index];
                     });
                 } else {
