@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-
 /**
  *
  * @author hp
@@ -33,9 +32,7 @@ public abstract class MembershipFunction implements Serializable {
     @Expose
     public MembershipFunctionType type;
 
-    public boolean isValid() {
-        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
-    }
+    public abstract boolean isValid();
 
     public MembershipFunctionType getType() {
         return type;
@@ -60,6 +57,7 @@ public abstract class MembershipFunction implements Serializable {
     }
 
     public abstract MembershipFunction copy();
+
     @Override
     public int hashCode() {
         final int prime = 31;

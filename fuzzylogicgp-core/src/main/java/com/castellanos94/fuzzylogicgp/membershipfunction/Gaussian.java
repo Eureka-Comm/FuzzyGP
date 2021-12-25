@@ -119,7 +119,7 @@ public class Gaussian extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return !(center == null || deviation == null);
+        return (center != null && deviation != null);
     }
 
     @Override

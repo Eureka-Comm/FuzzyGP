@@ -150,4 +150,9 @@ public class FPG extends MembershipFunction {
         return new FPG(beta, gamma, m);
     }
 
+    @Override
+    public boolean isValid() {
+        return (beta != null && gamma != null && m != null) && (m >= 0 && m <= 1.0) && (gamma > beta);
+    }
+
 }

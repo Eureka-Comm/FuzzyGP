@@ -144,4 +144,9 @@ public class Triangular extends MembershipFunction {
         } while (y > Point.EPSILON && points.size() < 999);
         return points;
     }
+
+    @Override
+    public boolean isValid() {
+        return (a != null && b != null && c != null) && (a <= b && b <= c);
+    }
 }

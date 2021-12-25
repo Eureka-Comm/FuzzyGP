@@ -87,7 +87,7 @@ public class Gamma extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return !(a == null || b == null);
+        return (a != null && b != null);
     }
 
     @Override

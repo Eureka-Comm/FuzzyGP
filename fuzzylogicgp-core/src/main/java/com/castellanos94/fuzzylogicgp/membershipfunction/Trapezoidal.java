@@ -18,7 +18,7 @@ public class Trapezoidal extends LTrapezoidal {
 
     @Override
     public boolean isValid() {
-        return !(a == null || b == null || c == null || d == null);
+        return !(a == null || b == null || c == null || d == null) && (a <= b && b <= c && c <= d);
     }
 
     public Trapezoidal(Double a, Double b, Double c, Double d) {

@@ -21,7 +21,7 @@ public class SForm extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return !(a == null || b == null);
+        return (a != null && b != null) && a < b;
     }
 
     public SForm(Double a, Double b) {

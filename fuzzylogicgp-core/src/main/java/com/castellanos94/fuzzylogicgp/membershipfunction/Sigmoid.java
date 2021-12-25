@@ -21,9 +21,9 @@ public class Sigmoid extends MembershipFunction {
      */
     private static final long serialVersionUID = 8054075265710944588L;
     @Expose
-    private double center;
+    private Double center;
     @Expose
-    private double beta;
+    private Double beta;
 
     public Sigmoid(double center, double beta) {
         this.center = center;
@@ -120,4 +120,8 @@ public class Sigmoid extends MembershipFunction {
         return points;
     }
 
+    @Override
+    public boolean isValid() {
+        return (center != null && beta != null) && center > beta;
+    }
 }

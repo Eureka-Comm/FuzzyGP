@@ -17,7 +17,7 @@ public class LTrapezoidal extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return !(a == null || b == null);
+        return (a != null && b != null) && a <= b;
     }
 
     public LTrapezoidal(double a, double b) {
