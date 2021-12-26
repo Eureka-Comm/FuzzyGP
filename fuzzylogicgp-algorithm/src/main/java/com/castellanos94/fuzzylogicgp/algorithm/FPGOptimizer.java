@@ -156,7 +156,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             }
         }
         Arrays.sort(population, this.comparator);
-        for (int i = 0; i < populationSize; i++) {
+        /*for (int i = 0; i < populationSize; i++) {
             double tmp = population[i].getFitness();
             _evaluate(predicate, statesToWork, population[i]);
             boolean valid = true;
@@ -167,7 +167,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 }
             }
             System.out.println(String.format("%.05f (prev %.05f), valid ? %s", population[i].getFitness(), tmp, valid));
-        }
+        }*/
         _evaluate(predicate, statesToWork, population[0]);
         return predicate;
     }
