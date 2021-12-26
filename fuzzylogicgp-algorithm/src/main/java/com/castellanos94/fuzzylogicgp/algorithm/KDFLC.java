@@ -44,8 +44,8 @@ import tech.tablesaw.io.json.JsonWriter;
  *
  * @author Castellanos Alvarez, Alejandro.
  * @since Oct, 19.
- * @version 0.1.0
- * @see GOMF
+ * @version 0.1.2
+ * @see FPGOptimizer
  * @see EvaluatePredicate
  */
 public class KDFLC implements IAlgorithm {
@@ -61,7 +61,7 @@ public class KDFLC implements IAlgorithm {
     private double min_truth_value;
     private double mut_percentage;
 
-    // GOMF Params
+    // FPGOptimizer Params
     private int adj_num_pop;
     private int adj_num_iter;
     private double adj_min_truth_value;
@@ -123,18 +123,17 @@ public class KDFLC implements IAlgorithm {
         NodeTree[] population = makePopulation();
         if (parallelSupport) {
             Arrays.parallelSetAll(population, _index -> {
-                GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-                _gomf.optimize(population[_index]);
-                return population[_index];
+                FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
+                        0.95, null);
+                return optimizer.execute(population[_index]);
             });
         } else {
             Arrays.setAll(population, _index -> {
-                GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-                _gomf.optimize(population[_index]);
-                return population[_index];
+                FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
+                        0.95, null);
+                return optimizer.execute(population[_index]);
             });
         }
-        GOMF gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
 
         Arrays.sort(population, Collections.reverseOrder());
         boolean isToDiscovery = isToDiscovery(predicatePattern);
@@ -169,8 +168,11 @@ public class KDFLC implements IAlgorithm {
                         }
                         intents++;
                     } while (!valid_predicate(population[_index]) && intents < 20);
-                    GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
-                    _gomf.optimize(population[_index]);
+
+                    FPGOptimizer _optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
+                            adj_min_truth_value,
+                            0.95, null);
+                    population[_index] = _optimizer.execute(population[_index]);
                 });
                 toReplaceIndex.clear();
                 logger.info("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
@@ -215,17 +217,17 @@ public class KDFLC implements IAlgorithm {
                 }
                 if (parallelSupport) {
                     Arrays.parallelSetAll(offspring, _index -> {
-                        GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter,
-                                adj_min_truth_value);
-                        _gomf.optimize(offspring[_index].copy());
-                        return offspring[_index];
+                        FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
+                                adj_min_truth_value,
+                                0.95, null);
+                        return optimizer.execute(population[_index]);
                     });
                 } else {
                     Arrays.setAll(offspring, _index -> {
-                        GOMF _gomf = new GOMF(data, logic, mut_percentage, adj_num_pop, adj_num_iter,
-                                adj_min_truth_value);
-                        _gomf.optimize(offspring[_index]);
-                        return offspring[_index];
+                        FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
+                                adj_min_truth_value,
+                                0.95, null);
+                        return optimizer.execute(population[_index]);
                     });
                 }
                 for (int i = 0; i < offspring.length; i++) {
@@ -239,7 +241,7 @@ public class KDFLC implements IAlgorithm {
                 boolean flag = false;
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value) {
-                        if (!check_result_contains(population[i])) {                            
+                        if (!check_result_contains(population[i])) {
                             resultList.add((NodeTree) population[i].copy());
                             flag = true;
                         }
@@ -268,8 +270,9 @@ public class KDFLC implements IAlgorithm {
         logger.info("Result list " + resultList.size());
         if (resultList.isEmpty()) {
             if (isForEvaluate()) {
-                gomf.optimize(this.predicatePattern);
-                resultList.add(predicatePattern);
+                FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
+                        0.95, null);
+                resultList.add(optimizer.execute(this.predicatePattern));
             }
 
         }
@@ -526,7 +529,8 @@ public class KDFLC implements IAlgorithm {
                             }
                             break;
                         case STATE:
-                            List<Node> ls = generators.get(n.getByGenerator()).getVariables().stream().filter(node -> node instanceof StateNode).collect(Collectors.toList());
+                            List<Node> ls = generators.get(n.getByGenerator()).getVariables().stream()
+                                    .filter(node -> node instanceof StateNode).collect(Collectors.toList());
                             StateNode state = (StateNode) ls.get(rand.nextInt(ls.size()));
                             NodeTree p = NodeTree.getNodeParent(population[i], n.getId());
                             ArrayList<String> labels = new ArrayList<>();
@@ -576,7 +580,7 @@ public class KDFLC implements IAlgorithm {
              * NodeTree.getEditableNodes(b).size());
              * System.out.println("\tCrossover Parents? " + a + ", " + b);
              */
-            return new NodeTree[]{ac, bc};
+            return new NodeTree[] { ac, bc };
         }
         Node cand = a_editable.get(rand.nextInt(a_editable.size()));
         int nivel = NodeTree.dfs(ac, cand);
@@ -597,7 +601,7 @@ public class KDFLC implements IAlgorithm {
             } while (nivel > nivel_b);
             NodeTree.replace(NodeTree.getNodeParent(bc, cand_b.getId()), cand_b, (Node) cand.copy(), false);
         }
-        return new NodeTree[]{ac, bc};
+        return new NodeTree[] { ac, bc };
     }
 
     public void exportToJSon(String file) throws IOException {
@@ -616,16 +620,17 @@ public class KDFLC implements IAlgorithm {
         ArrayList<String> d = new ArrayList<>();
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
-        //builder.excludeFieldsWithoutExposeAnnotation();
+        // builder.excludeFieldsWithoutExposeAnnotation();
         Gson gson = builder.create();
         ArrayList<Double> f0 = null;
-        GOMF gomf = null;
+        FPGOptimizer optimizer=null;
 
         if (this.logic instanceof GMBC_FA_Logic) {
             f0 = new ArrayList<>();
             GMBC_FA_Logic lFa_Logic = (GMBC_FA_Logic) this.logic;
             lFa_Logic.setExponent(0);
-            gomf = new GOMF(data, lFa_Logic, mut_percentage, adj_num_pop, adj_num_iter, adj_min_truth_value);
+            optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
+            0.95, null);
         }
         for (int i = 0; i < resultList.size(); i++) {
             Double fv = resultList.get(i).getFitness();
@@ -635,8 +640,8 @@ public class KDFLC implements IAlgorithm {
 
             if (f0 != null) {
                 NodeTree nodeTree = resultList.get(i).copy();
-                gomf.optimize(nodeTree);
-                f0.add(nodeTree.getFitness());
+                 NodeTree execute = optimizer.execute(nodeTree);
+                f0.add(execute.getFitness());
             }
         }
         DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
