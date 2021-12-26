@@ -96,7 +96,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     public NodeTree execute(NodeTree predicate) {
         // filter states with null MF
         final List<StateNode> statesToWork = NodeTree.getNodesByType(predicate, NodeType.STATE).stream()
-                .map(n -> (StateNode) n).filter(s -> s.getMembershipFunction() == null).collect(Collectors.toList());
+                .map(n -> (StateNode) n).filter(s -> s.getMembershipFunction() == null || s.isEditable()).collect(Collectors.toList());
         minMaxDataValue = new HashMap<>();
         if (statesToWork.isEmpty()) {
             this.evaluatePredicate.execute(predicate);

@@ -636,6 +636,11 @@ public class KDFLC implements IAlgorithm {
             Double fv = resultList.get(i).getFitness();
             v.add(fv);
             p.add(resultList.get(i).toString());
+            NodeTree.getEditableNodes(resultList.get(i)).forEach(n-> {
+                if(n.isEditable()){
+                    n.setEditable(false);
+                }
+            });
             d.add(gson.toJson(resultList.get(i)));
 
             if (f0 != null) {
