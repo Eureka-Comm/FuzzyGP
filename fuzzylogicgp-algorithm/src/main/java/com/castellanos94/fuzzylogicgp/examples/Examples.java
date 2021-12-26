@@ -134,10 +134,10 @@ public class Examples {
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         String predicate = "(AND \"comodin\" (EQV \"comodin\" \"quality\"))";
-        // predicate = "\"comodin\"";
+        predicate = "\"comodin\"";
         DummyGenerator generator = new DummyGenerator();
         generator.setLabel("comodin");
-        generator.setDepth(1);
+        generator.setDepth(2);
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
             if (!stateNode.getLabel().equalsIgnoreCase("quality")) {
@@ -145,19 +145,22 @@ public class Examples {
             }
         }
         generator.setVariables(variables);
-        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP });
+        generator.setOperators(new NodeType[] { NodeType.AND, NodeType.OR});
         ArrayList<DummyGenerator> generators = new ArrayList<>();
         generators.add(generator);
         query.setGenerators(generators);
         query.setPredicate(predicate);
-        query.setAdj_min_truth_value(0.1f);
-        query.setAdj_num_pop(10);
-        query.setMut_percentage(0.05f);
-        query.setNum_iter(5);
-        query.setMin_truth_value(0.95f);
-        query.setNum_pop(100);
-        query.setNum_result(15);
-        query.setAdj_num_iter(2);
+        query.setAdj_min_truth_value(0.5f);
+        query.setAdj_num_pop(20);
+        query.setAdj_num_iter(50);
+
+        query.setMut_percentage(0.75f);
+        
+        query.setNum_iter(100);
+        query.setMin_truth_value(0.75f);
+        query.setNum_pop(50);
+
+        query.setNum_result(20);
         return query;
     }
 
@@ -197,14 +200,14 @@ public class Examples {
         generators.add(generator);
         query.setGenerators(generators);
         query.setPredicate(predicate);
-        query.setAdj_min_truth_value(0.75f);
+        query.setAdj_min_truth_value(0.5f);
         query.setAdj_num_pop(20);
         query.setAdj_num_iter(50);
 
         query.setMut_percentage(0.75f);
         
         query.setNum_iter(100);
-        query.setMin_truth_value(0.9f);
+        query.setMin_truth_value(0.75f);
         query.setNum_pop(50);
 
         query.setNum_result(20);
