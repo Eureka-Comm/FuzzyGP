@@ -239,7 +239,7 @@ public class KDFLC implements IAlgorithm {
                 boolean flag = false;
                 for (int i = 0; i < population.length; i++) {
                     if (population[i].getFitness() >= min_truth_value) {
-                        if (!check_result_contains(population[i])) {
+                        if (!check_result_contains(population[i])) {                            
                             resultList.add((NodeTree) population[i].copy());
                             flag = true;
                         }
@@ -630,11 +630,6 @@ public class KDFLC implements IAlgorithm {
         for (int i = 0; i < resultList.size(); i++) {
             Double fv = resultList.get(i).getFitness();
             v.add(fv);
-            EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, this.data);
-            evaluatePredicate.execute(resultList.get(i));
-            Double tmp = resultList.get(i).getFitness();
-            boolean flag =fv==tmp;
-            System.out.printf("Previo : %10.5f, New : %10.5f, Equals : %b\n",fv,tmp, flag);
             p.add(resultList.get(i).toString());
             d.add(gson.toJson(resultList.get(i)));
 
