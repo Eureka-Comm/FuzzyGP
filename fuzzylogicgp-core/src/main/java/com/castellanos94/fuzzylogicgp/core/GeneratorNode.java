@@ -48,7 +48,7 @@ public class GeneratorNode extends Node {
         }
         this.variables = variables;
         this.depth = depth;
-        this.max_child_number = Math.max(max_child_number, 3);
+        this.max_child_number = Math.max(this.operators.length + variables.size() / 2, 2);
         this.setType(NodeType.OPERATOR);
         this.setEditable(true);
     }
