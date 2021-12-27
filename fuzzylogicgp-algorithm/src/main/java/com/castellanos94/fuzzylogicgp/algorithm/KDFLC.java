@@ -127,13 +127,13 @@ public class KDFLC implements IAlgorithm {
             Arrays.parallelSetAll(population, _index -> {
                 FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
                         0.95, null);
-                return optimizer.execute(population[_index]);
+                return optimizer.execute(population[_index].copy());
             });
         } else {
             Arrays.setAll(population, _index -> {
                 FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
                         0.95, null);
-                return optimizer.execute(population[_index]);
+                return optimizer.execute(population[_index].copy());
             });
         }
 
@@ -174,7 +174,7 @@ public class KDFLC implements IAlgorithm {
                     FPGOptimizer _optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
                             adj_min_truth_value,
                             0.95, null);
-                    population[_index] = _optimizer.execute(population[_index]);
+                    population[_index] = _optimizer.execute(population[_index].copy());
                 });
                 toReplaceIndex.clear();
                 logger.info("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
@@ -222,14 +222,14 @@ public class KDFLC implements IAlgorithm {
                         FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
                                 adj_min_truth_value,
                                 0.95, null);
-                        return optimizer.execute(population[_index]);
+                        return optimizer.execute(population[_index].copy());
                     });
                 } else {
                     Arrays.setAll(offspring, _index -> {
                         FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
                                 adj_min_truth_value,
                                 0.95, null);
-                        return optimizer.execute(population[_index]);
+                        return optimizer.execute(population[_index].copy());
                     });
                 }
                 for (int i = 0; i < offspring.length; i++) {
