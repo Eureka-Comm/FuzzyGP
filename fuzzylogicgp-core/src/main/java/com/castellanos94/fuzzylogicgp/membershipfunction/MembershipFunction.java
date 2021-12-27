@@ -20,6 +20,7 @@ public abstract class MembershipFunction implements Serializable {
      *
      */
     private static final long serialVersionUID = -9006368296289781684L;
+    private boolean editable;
 
     public MembershipFunction(MembershipFunctionType type) {
         this.type = type;
@@ -27,6 +28,14 @@ public abstract class MembershipFunction implements Serializable {
 
     public MembershipFunction() {
         this(null);
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public boolean isEditable() {
+        return editable;
     }
 
     @Expose

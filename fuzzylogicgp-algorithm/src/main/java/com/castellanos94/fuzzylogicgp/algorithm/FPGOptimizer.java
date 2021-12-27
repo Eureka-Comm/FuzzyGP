@@ -96,7 +96,10 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     public NodeTree execute(NodeTree predicate) {
         // filter states with null MF
         final List<StateNode> statesToWork = NodeTree.getNodesByType(predicate, NodeType.STATE).stream()
-                .map(n -> (StateNode) n).filter(s -> s.getMembershipFunction() == null || s.isEditable()).collect(Collectors.toList());
+                .map(n -> (StateNode) n)
+                .filter(s -> s.getMembershipFunction() == null
+                        || (s.getMembershipFunction() != null && s.getMembershipFunction().isEditable()))
+                .collect(Collectors.toList());
         minMaxDataValue = new HashMap<>();
         if (statesToWork.isEmpty()) {
             this.evaluatePredicate.execute(predicate);
@@ -156,18 +159,21 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             }
         }
         Arrays.sort(population, this.comparator);
-        /*for (int i = 0; i < populationSize; i++) {
-            double tmp = population[i].getFitness();
-            _evaluate(predicate, statesToWork, population[i]);
-            boolean valid = true;
-            for (int j = 0; j < population[i].getFunctions().length; j++) {
-                if (!population[i].getFunctions()[j].isValid()) {
-                    valid = false;
-                    break;
-                }
-            }
-            System.out.println(String.format("%.05f (prev %.05f), valid ? %s", population[i].getFitness(), tmp, valid));
-        }*/
+        /*
+         * for (int i = 0; i < populationSize; i++) {
+         * double tmp = population[i].getFitness();
+         * _evaluate(predicate, statesToWork, population[i]);
+         * boolean valid = true;
+         * for (int j = 0; j < population[i].getFunctions().length; j++) {
+         * if (!population[i].getFunctions()[j].isValid()) {
+         * valid = false;
+         * break;
+         * }
+         * }
+         * System.out.println(String.format("%.05f (prev %.05f), valid ? %s",
+         * population[i].getFitness(), tmp, valid));
+         * }
+         */
         _evaluate(predicate, statesToWork, population[0]);
         return predicate;
     }
@@ -207,7 +213,9 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
      */
     protected void _evaluate(NodeTree predicate, List<StateNode> statesToWork, Chromosome chromosome) {
         for (int i = 0; i < statesToWork.size(); i++) {
-            statesToWork.get(i).setMembershipFunction(chromosome.getFunctions()[i]);
+            MembershipFunction f = chromosome.getFunctions()[i];
+            f.setEditable(true);
+            statesToWork.get(i).setMembershipFunction(f);
         }
         try {
             chromosome.setFitness(evaluatePredicate.evaluate(predicate));
