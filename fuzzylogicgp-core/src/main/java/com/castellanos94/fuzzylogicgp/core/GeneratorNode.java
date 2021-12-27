@@ -77,7 +77,7 @@ public class GeneratorNode extends Node {
     }
 
     public void setMax_child_number(int max_child_number) {
-        this.max_child_number = Math.max(max_child_number, 3);
+        this.max_child_number = max_child_number;
     }
 
     public List<Node> getVariables() {
@@ -137,7 +137,7 @@ public class GeneratorNode extends Node {
     }
 
     public Node generate(boolean balanced) throws OperatorException {
-        if (max_child_number == 0) {
+        if (max_child_number < 2) {
             max_child_number = Math.max(operators.length + variables.size() / 2, 2);
         }
 
