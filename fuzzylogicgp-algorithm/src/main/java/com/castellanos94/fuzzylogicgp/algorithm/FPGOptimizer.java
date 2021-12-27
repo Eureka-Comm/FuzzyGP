@@ -228,14 +228,19 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     protected Chromosome generate(final List<StateNode> states) {
         MembershipFunction[] functions = new MembershipFunction[states.size()];
         for (int i = 0; i < states.size(); i++) {
-            String idCname = states.get(i).getId();
-            Double[] ref = minMaxDataValue.get(idCname);
-            double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-            double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
-            while (Double.compare(gamma, beta) <= 0) {
-                gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+            StateNode stateNode = states.get(i);
+            if (stateNode.getMembershipFunction() == null) {
+                String idCname = stateNode.getId();
+                Double[] ref = minMaxDataValue.get(idCname);
+                double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
+                double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                while (Double.compare(gamma, beta) <= 0) {
+                    gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                }
+                functions[i] = new FPG(beta, gamma, random.nextInt(100001) / 100001.0);
+            }else{
+                functions[i] = stateNode.getMembershipFunction().copy();
             }
-            functions[i] = new FPG(beta, gamma, random.nextInt(100001) / 100001.0);
         }
         return new Chromosome(functions);
     }
@@ -307,7 +312,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             if (random.nextDouble() <= mutationProbability) {
                 String idCname = states.get(i).getId();
                 Double[] ref = minMaxDataValue.get(idCname);
-                double beta = random.doubles(ref[0], ref[1] + 1).findAny().getAsDouble();
+                double beta = random.doubles(ref[0], ref[1] ).findAny().getAsDouble();
                 double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
                 while (Double.compare(gamma, beta) <= 0) {
                     gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
