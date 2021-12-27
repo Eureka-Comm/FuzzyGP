@@ -117,7 +117,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         // Random population
         Chromosome[] population = new Chromosome[populationSize];
         for (int i = 0; i < populationSize; i++) {
-            population[i] = generate(statesToWork);
+
+            population[i] = generate(statesToWork, i < populationSize / 2 ? 0 : 1);
         }
         // control
         // Evaluate first iteration
@@ -141,7 +142,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 _evaluate(predicate, statesToWork, offspring.get(k));
                 // Repair if fitness -> 0
                 if (Double.compare(offspring.get(k).getFitness(), 1.0e-5) <= 0) {
-                    Chromosome tmp = generate(statesToWork);
+                    Chromosome tmp = generate(statesToWork, 0);
                     _evaluate(predicate, statesToWork, tmp);
                     offspring.set(k, tmp);
                 }
@@ -225,11 +226,11 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     }
 
     @Override
-    protected Chromosome generate(final List<StateNode> states) {
+    protected Chromosome generate(final List<StateNode> states, int generationType) {
         MembershipFunction[] functions = new MembershipFunction[states.size()];
         for (int i = 0; i < states.size(); i++) {
             StateNode stateNode = states.get(i);
-            if (stateNode.getMembershipFunction() == null) {
+            if (stateNode.getMembershipFunction() == null || generationType == 0) {
                 String idCname = stateNode.getId();
                 Double[] ref = minMaxDataValue.get(idCname);
                 double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
@@ -238,7 +239,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                     gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
                 }
                 functions[i] = new FPG(beta, gamma, random.nextInt(100001) / 100001.0);
-            }else{
+            } else {
                 functions[i] = stateNode.getMembershipFunction().copy();
             }
         }
@@ -312,7 +313,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             if (random.nextDouble() <= mutationProbability) {
                 String idCname = states.get(i).getId();
                 Double[] ref = minMaxDataValue.get(idCname);
-                double beta = random.doubles(ref[0], ref[1] ).findAny().getAsDouble();
+                double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
                 double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
                 while (Double.compare(gamma, beta) <= 0) {
                     gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();

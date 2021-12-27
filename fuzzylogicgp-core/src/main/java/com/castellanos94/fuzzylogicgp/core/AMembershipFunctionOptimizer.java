@@ -22,7 +22,7 @@ public abstract class AMembershipFunctionOptimizer {
 
     public abstract NodeTree execute(NodeTree predicate);
 
-    protected abstract Chromosome generate(final List<StateNode> states);
+    protected abstract Chromosome generate(final List<StateNode> states, int generationType);
 
     protected abstract List<Chromosome> crossover(Chromosome a, Chromosome b);
 
