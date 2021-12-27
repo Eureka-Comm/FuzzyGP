@@ -35,6 +35,11 @@ public class FPG extends MembershipFunction {
         this.m = Double.parseDouble(m);
     }
 
+    public FPG(double beta, double gamma, double m, boolean editable) {
+        this(beta, gamma, m);
+        this.editable = editable;
+    }
+
     public FPG(double beta, double gamma, double m) {
         this();
         this.beta = beta;
@@ -147,7 +152,7 @@ public class FPG extends MembershipFunction {
 
     @Override
     public MembershipFunction copy() {
-        return new FPG(beta, gamma, m);
+        return new FPG(beta, gamma, m, editable);
     }
 
     @Override
