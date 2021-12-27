@@ -25,6 +25,8 @@ import com.castellanos94.fuzzylogicgp.logic.GMBC_FA_Logic;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos94.fuzzylogicgp.parser.MembershipFunctionSerializer;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -621,6 +623,19 @@ public class KDFLC implements IAlgorithm {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(MembershipFunction.class, new MembershipFunctionSerializer());
         // builder.excludeFieldsWithoutExposeAnnotation();
+        builder.setExclusionStrategies(new ExclusionStrategy() {
+
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+                return f.getName().equalsIgnoreCase("editable");
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+            }
+            
+        });
         Gson gson = builder.create();
         ArrayList<Double> f0 = null;
         FPGOptimizer optimizer=null;
@@ -636,16 +651,12 @@ public class KDFLC implements IAlgorithm {
             Double fv = resultList.get(i).getFitness();
             v.add(fv);
             p.add(resultList.get(i).toString());
-            NodeTree.getEditableNodes(resultList.get(i)).forEach(n-> {
-                if(n.isEditable()){
-                    n.setEditable(false);
-                }
-            });
-            d.add(gson.toJson(resultList.get(i)));
+            NodeTree nodeTree = resultList.get(i);
+            nodeTree.setEditable(false);
+            d.add(gson.toJson(nodeTree));
 
             if (f0 != null) {
-                NodeTree nodeTree = resultList.get(i).copy();
-                 NodeTree execute = optimizer.execute(nodeTree);
+                 NodeTree execute = optimizer.execute(nodeTree.copy());
                 f0.add(execute.getFitness());
             }
         }
