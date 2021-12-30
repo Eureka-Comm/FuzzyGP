@@ -27,7 +27,7 @@ public class NSigmoid extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return (center != null && beta != null) && center > beta;
+        return (center != null && beta != null) && center < beta;
     }
 
     public NSigmoid(double center, double beta) {
@@ -124,6 +124,5 @@ public class NSigmoid extends MembershipFunction {
     @Override
     public MembershipFunction copy() {
         return new NSigmoid(center, beta);
-    }
-
+    }    
 }
