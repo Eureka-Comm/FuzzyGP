@@ -211,7 +211,8 @@ public class EvaluatePredicate implements IAlgorithm {
                 return nodeTree.getFitness();
             case STATE:
                 StateNode st = (StateNode) node;
-                return Double.valueOf(fuzzyData.getString(index, st.getLabel()));
+                String vs = fuzzyData.getString(index, st.getLabel());
+                return vs !=null && !vs.isEmpty()? Double.valueOf(vs) : Double.NaN;
             case OPERATOR:
                 nodeTree = (NodeTree) node;
                 return fitValue(nodeTree.iterator().next(), index);

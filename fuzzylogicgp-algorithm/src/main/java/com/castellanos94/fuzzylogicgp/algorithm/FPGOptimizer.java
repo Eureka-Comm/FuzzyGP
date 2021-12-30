@@ -144,7 +144,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 repair(offspring.get(k), statesToWork);
                 _evaluate(predicate, statesToWork, offspring.get(k));
                 // Repair if fitness -> 0
-                if (Double.compare(offspring.get(k).getFitness(), 1.0e-5) <= 0) {
+                if (Double.isNaN(offspring.get(k).getFitness()) || Double.compare(offspring.get(k).getFitness(), 1.0e-5) <= 0) {
                     Chromosome tmp = generate(statesToWork, 0);
                     _evaluate(predicate, statesToWork, tmp);
                     offspring.set(k, tmp);
