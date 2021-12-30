@@ -110,6 +110,9 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             Double[] _minMax = new Double[2];
             _minMax[0] = doubleColumn.min();
             _minMax[1] = doubleColumn.max();
+            if (_minMax[0] == _minMax[1]) {
+                _minMax[1] = _minMax[0] + 1;
+            }
             minMaxDataValue.put(state.getId(), _minMax);
         });
 
