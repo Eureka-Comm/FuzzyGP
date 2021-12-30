@@ -16,7 +16,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <tech.tablesaw.version>0.38.2</tech.tablesaw.version>
-        <org.log4j.version>2.17.0</org.log4j.version>
+        <org.log4j.version>2.17.1</org.log4j.version>
         <current.version>1.4.3</current.version>
     </properties>
 
