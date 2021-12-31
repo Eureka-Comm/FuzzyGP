@@ -213,7 +213,7 @@ public class EvaluatePredicate implements IAlgorithm {
                 StateNode st = (StateNode) node;
                 String vs = fuzzyData.getString(index, st.getLabel());
                 if (vs == null || vs.isEmpty()) {
-                    logger.error("invalid function " + st);
+                    logger.error("invalid function " + st);                   
                 }
                 return vs != null && !vs.isEmpty() ? Double.valueOf(vs) : Double.NaN;
             case OPERATOR:
