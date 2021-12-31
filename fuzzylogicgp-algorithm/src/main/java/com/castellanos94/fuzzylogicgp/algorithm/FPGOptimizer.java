@@ -172,11 +172,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             for (int j = 0; j < populationSize; j++) {
                 if (Double.isNaN(population[j].getFitness())) {
                     population[j] = generate(statesToWork, j < populationSize / 2 ? 0 : 1);
-                    _evaluate(predicate, statesToWork, population[j]);
-                    while (!Double.isNaN(population[i].getFitness())) {
-                        repair(population[j], statesToWork);
-                        _evaluate(predicate, statesToWork, population[j]);
-                    }
+                    _evaluate(predicate, statesToWork, population[j]);                    
                 } else if (population[j].getFitness() >= minTruthValue) {
                     found = true;
                     bestIndex = j;
@@ -357,7 +353,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
 
                 double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
                 double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
-                while (Double.compare(gamma, beta) < 0) {
+                while (Double.compare(gamma, beta) <= 0) {
                     gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
                 }
                 fpg.setBeta(beta);
