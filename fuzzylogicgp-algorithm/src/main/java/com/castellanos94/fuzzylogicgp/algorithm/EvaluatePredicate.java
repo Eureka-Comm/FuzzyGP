@@ -212,7 +212,10 @@ public class EvaluatePredicate implements IAlgorithm {
             case STATE:
                 StateNode st = (StateNode) node;
                 String vs = fuzzyData.getString(index, st.getLabel());
-                return vs !=null && !vs.isEmpty()? Double.valueOf(vs) : Double.NaN;
+                if (vs == null || vs.isEmpty()) {
+                    logger.error("invalid function " + st);
+                }
+                return vs != null && !vs.isEmpty() ? Double.valueOf(vs) : Double.NaN;
             case OPERATOR:
                 nodeTree = (NodeTree) node;
                 return fitValue(nodeTree.iterator().next(), index);
