@@ -120,18 +120,19 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         // Random population
         Chromosome[] population = new Chromosome[populationSize];
         for (int i = 0; i < populationSize; i++) {
-
             population[i] = generate(statesToWork, i < populationSize / 2 ? 0 : 1);
-        }
-        // control
-        // Evaluate first iteration
-        for (int i = 0; i < populationSize; i++) {
             _evaluate(predicate, statesToWork, population[i]);
+            while (!Double.isNaN(population[i].getFitness())) {
+                population[i] = generate(statesToWork, i < populationSize / 2 ? 0 : 1);
+                _evaluate(predicate, statesToWork, population[i]);
+            }
+
         }
         Arrays.sort(population, comparator);
         // Main for
         ArrayList<Chromosome> offspring = new ArrayList<>();
-        for (int i = 1; i < maxIterations && population[0].getFitness() < minTruthValue; i++) {
+        int bestIndex = -1;
+        for (int i = 1; i < maxIterations; i++) {
             // Crossover
             offspring.clear();
             Chromosome[] parents = selection(population);
@@ -144,7 +145,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 repair(offspring.get(k), statesToWork);
                 _evaluate(predicate, statesToWork, offspring.get(k));
                 // Repair if fitness -> 0
-                if (Double.isNaN(offspring.get(k).getFitness()) || Double.compare(offspring.get(k).getFitness(), 1.0e-5) <= 0) {
+                if (Double.isNaN(offspring.get(k).getFitness())
+                        || Double.compare(offspring.get(k).getFitness(), 1.0e-5) <= 0) {
                     Chromosome tmp = generate(statesToWork, 0);
                     _evaluate(predicate, statesToWork, tmp);
                     offspring.set(k, tmp);
@@ -161,25 +163,39 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                     }
                 }
             }
+            boolean found = false;
+            for (int j = 0; j < populationSize; j++) {
+                if (Double.isNaN(population[j].getFitness())) {
+                    population[j] = generate(statesToWork, j < populationSize / 2 ? 0 : 1);
+                    _evaluate(predicate, statesToWork, population[j]);
+                    while (!Double.isNaN(population[i].getFitness())) {
+                        population[j] = generate(statesToWork, j < populationSize / 2 ? 0 : 1);
+                        _evaluate(predicate, statesToWork, population[j]);
+                    }
+                } else if (population[j].getFitness() >= minTruthValue) {
+                    found = true;
+                    bestIndex = j;
+                    minTruthValue = population[j].getFitness();
+                }
+            }
+            if (found) {
+                break;
+            }
         }
-        Arrays.sort(population, this.comparator);
-        /*
-         * for (int i = 0; i < populationSize; i++) {
-         * double tmp = population[i].getFitness();
-         * _evaluate(predicate, statesToWork, population[i]);
-         * boolean valid = true;
-         * for (int j = 0; j < population[i].getFunctions().length; j++) {
-         * if (!population[i].getFunctions()[j].isValid()) {
-         * valid = false;
-         * break;
-         * }
-         * }
-         * System.out.println(String.format("%.05f (prev %.05f), valid ? %s",
-         * population[i].getFitness(), tmp, valid));
-         * }
-         */
-        _evaluate(predicate, statesToWork, population[0]);
-        return predicate;
+        if (bestIndex != -1) {
+            _evaluate(predicate, statesToWork, population[bestIndex]);
+            return predicate;
+        } else {
+            double max = population[0].getFitness();
+            for (int i = 1; i < populationSize; i++) {
+                if (!Double.isNaN(population[i].getFitness()) && population[i].getFitness() >= max) {
+                    bestIndex = i;
+                    minTruthValue = population[i].getFitness();
+                }
+            }
+            _evaluate(predicate, statesToWork, population[bestIndex]);
+            return predicate;
+        }
     }
 
     /**
