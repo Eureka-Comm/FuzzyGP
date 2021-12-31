@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import com.castellanos94.fuzzylogicgp.core.AMembershipFunctionOptimizer;
+import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
 import com.castellanos94.fuzzylogicgp.core.OperatorException;
@@ -95,11 +96,20 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     @Override
     public NodeTree execute(NodeTree predicate) {
         // filter states with null MF
-        final List<StateNode> statesToWork = NodeTree.getNodesByType(predicate, NodeType.STATE).stream()
+        ArrayList<Node> states = NodeTree.getNodesByType(predicate, NodeType.STATE);
+        final List<StateNode> statesToWork = states.stream()
                 .map(n -> (StateNode) n)
                 .filter(s -> s.getMembershipFunction() == null
                         || (s.getMembershipFunction() != null && s.getMembershipFunction().isEditable()))
                 .collect(Collectors.toList());
+        for (Node node : states) {
+            if (node instanceof StateNode) {
+                StateNode sn = (StateNode) node;
+                if (sn.getMembershipFunction() != null && !sn.isEditable() && !sn.getMembershipFunction().isValid()) {
+                    throw new IllegalArgumentException("Invalid membership function " + sn.toString());
+                }
+            }
+        }
         minMaxDataValue = new HashMap<>();
         if (statesToWork.isEmpty()) {
             this.evaluatePredicate.execute(predicate);
