@@ -184,36 +184,41 @@ public class EvaluatePredicate implements IAlgorithm {
                     values.add(fitValue(child, index));
                 }
 
-                nodeTree.setFitness(logic.and(values));
-                return nodeTree.getFitness();
+                // nodeTree.setFitness(logic.and(values));
+                // return nodeTree.getFitness();
+                return logic.and(values);
             case OR:
                 nodeTree = (NodeTree) node;
                 values = new ArrayList<>();
                 for (Node child : nodeTree) {
                     values.add(fitValue(child, index));
                 }
-                nodeTree.setFitness(logic.or(values));
-                return nodeTree.getFitness();
+                // nodeTree.setFitness(logic.or(values));
+                // return nodeTree.getFitness();
+                return logic.or(values);
             case NOT:
                 nodeTree = (NodeTree) node;
-                nodeTree.setFitness(logic.not(fitValue(nodeTree.iterator().next(), index)));
-                return nodeTree.getFitness();
+                // nodeTree.setFitness();
+                // return nodeTree.getFitness();
+                return logic.not(fitValue(nodeTree.iterator().next(), index));
             case IMP:
                 nodeTree = (NodeTree) node;
                 NodeTree imp = (NodeTree) node;
-                nodeTree.setFitness(logic.imp(fitValue(imp.findById(imp.getLeftID()), index),
-                        fitValue(imp.findById(imp.getRighID()), index)));
-                return nodeTree.getFitness();
+                // nodeTree.setFitness();
+                // return nodeTree.getFitness();
+                return logic.imp(fitValue(imp.findById(imp.getLeftID()), index),
+                        fitValue(imp.findById(imp.getRighID()), index));
             case EQV:
                 nodeTree = (NodeTree) node;
                 Iterator<Node> iterator = nodeTree.iterator();
-                nodeTree.setFitness(logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index)));
-                return nodeTree.getFitness();
+                //nodeTree.setFitness();
+                //return nodeTree.getFitness();
+                return logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index));
             case STATE:
                 StateNode st = (StateNode) node;
                 String vs = fuzzyData.getString(index, st.getLabel());
                 if (vs == null || vs.isEmpty()) {
-                    logger.error("invalid function " + st);                   
+                    logger.error("invalid function " + st);
                 }
                 return vs != null && !vs.isEmpty() ? Double.valueOf(vs) : Double.NaN;
             case OPERATOR:
