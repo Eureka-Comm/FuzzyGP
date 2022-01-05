@@ -190,9 +190,9 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             double max = population[0].getFitness();
             bestIndex = 0;
             for (int i = 1; i < populationSize; i++) {
-                if (!Double.isNaN(population[i].getFitness()) && population[i].getFitness() >= max) {
+                if (!Double.isNaN(population[i].getFitness()) && population[i].getFitness() > max) {
                     bestIndex = i;
-                    minTruthValue = population[i].getFitness();
+                    max = population[i].getFitness();
                 }
             }
             _evaluate(predicate, statesToWork, population[bestIndex]);
