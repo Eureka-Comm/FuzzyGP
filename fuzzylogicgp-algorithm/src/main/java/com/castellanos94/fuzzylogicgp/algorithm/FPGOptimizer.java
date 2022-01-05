@@ -14,7 +14,7 @@ import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
 import com.castellanos94.fuzzylogicgp.core.OperatorException;
 import com.castellanos94.fuzzylogicgp.core.StateNode;
-import com.castellanos94.fuzzylogicgp.logic.GMBC_Logic;
+import com.castellanos94.fuzzylogicgp.logic.GMBCLogic;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
@@ -61,7 +61,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 e.printStackTrace();
             }
         });
-        FPGOptimizer optimizer = new FPGOptimizer(new GMBC_Logic(), table, 50, 20, 0.9, 0.95, null);
+        FPGOptimizer optimizer = new FPGOptimizer(new GMBCLogic(), table, 50, 20, 0.9, 0.95, null);
         NodeTree execute = optimizer.execute(and);
         System.out.println(execute + " f " + execute.getFitness());
         long end = System.currentTimeMillis();

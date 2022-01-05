@@ -9,7 +9,12 @@ import java.util.List;
  */
 public class Zadeh_Logic extends Logic {
     public Zadeh_Logic() {
-        super(false);
+        super();
+    }
+
+    @Override
+    public void setImplicationType(ImplicationType implicationType) {
+        throw new UnsupportedOperationException("Illegal assignment");
     }
 
     @Override

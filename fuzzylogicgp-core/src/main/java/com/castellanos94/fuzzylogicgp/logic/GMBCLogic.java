@@ -13,13 +13,13 @@ import java.util.List;
  *
  * @author hp
  */
-public class GMBC_Logic extends Logic {
-    public GMBC_Logic(boolean natural_implication) {
-        super(natural_implication);
+public class GMBCLogic extends Logic {
+    public GMBCLogic(ImplicationType ImplicationType) {
+        super(ImplicationType);
     }
 
-    public GMBC_Logic() {
-        super(false);
+    public GMBCLogic() {
+        super();
     }
 
     @Override

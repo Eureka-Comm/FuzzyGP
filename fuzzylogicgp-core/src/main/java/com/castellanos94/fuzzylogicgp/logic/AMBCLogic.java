@@ -13,14 +13,14 @@ import java.util.List;
  * 
  * @author Castellanos-Alvarez, Alejandro.
  */
-public class AMBC_Logic extends Logic {
+public class AMBCLogic extends Logic {
 
-    public AMBC_Logic(boolean natural_implication) {
-        super(natural_implication);
+    public AMBCLogic(ImplicationType implicationType) {
+        super(implicationType);
     }
 
-    public AMBC_Logic() {
-        this(false);
+    public AMBCLogic() {
+        super();
     }
 
     @Override

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-public class GMBC_FA_Logic extends GMBC_Logic {
+public class GMBCFALogic extends GMBCLogic {
     @Expose
     private int exponent;
 
@@ -12,13 +12,13 @@ public class GMBC_FA_Logic extends GMBC_Logic {
         this.exponent = exponent;
     }
 
-    public GMBC_FA_Logic(int coefficient, boolean natural_implication) {
-        super(natural_implication);
+    public GMBCFALogic(int coefficient, ImplicationType implicationType) {
+        super(implicationType);
         this.exponent = coefficient;
     }
 
-    public GMBC_FA_Logic() {
-        this(3, false);
+    public GMBCFALogic() {
+        this(3, ImplicationType.Zadeh);
     }
 
     @Override

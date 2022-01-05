@@ -9,31 +9,71 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author hp
+ * Logic with implication support
+ * 
+ * @author Castellanos Alvarez, Alejandro
+ * @version 1.0.1
  */
 public abstract class Logic {
-    protected boolean natural_implication;
+    public static enum ImplicationType {
+        /**
+         * S-Implication x -> y = d(n(x),y)
+         */
+        Natural,
+        /**
+         * QL-Implication x -> y = d(n(x),c(x,y))
+         */
+        Zadeh,
+        /**
+         * Reichenbach (S-implication) x -> y = 1 - x + x * y
+         */
+        Reichenbach,
+        /**
+         * Klir-Yuan implication (a variation of Reichenbach without a classification) x
+         * -> y = 1 - x + x^2 * y
+         */
+        KlirYuan,
+        /**
+         * A-Implication x -> y = y^x
+         */
+        Yager
+    };
 
-    public Logic(boolean natural_implication) {
-        this.natural_implication = natural_implication;
+    protected ImplicationType implicationType;
+
+    public Logic(ImplicationType type) {
+        this.implicationType = type;
     }
 
-    public boolean isNatural_implication() {
-        return natural_implication;
+    public Logic() {
+        this(ImplicationType.Zadeh);
     }
 
-    public void setNatural_implication(boolean natural_implication) {
-        this.natural_implication = natural_implication;
+    public ImplicationType getImplicationType() {
+        return implicationType;
+    }
+
+    public void setImplicationType(ImplicationType implicationType) {
+        this.implicationType = implicationType;
     }
 
     public abstract double not(double v1);
 
     public double imp(double v1, double v2) {
-        if (natural_implication) {
-            return this.or(this.not(v1), v2);
+        switch (implicationType) {
+            case Natural:
+                return or(not(v1), v2);
+            case Zadeh:
+                return or(not(v1), and(v1, v2));
+            case Reichenbach:
+                return 1.0 - v1 + v1 * v2;
+            case KlirYuan:
+                return 1.0 - v1 + (Math.pow(v1, 2) * v2);
+            case Yager:
+                return Math.pow(v1, v2);
+            default:
+                throw new IllegalArgumentException("Invalid implication type: " + implicationType);
         }
-        return this.or(this.not(v1), this.and(v1, v2));
     }
 
     public double eqv(double v1, double v2) {
@@ -52,4 +92,8 @@ public abstract class Logic {
 
     public abstract double exist(List<Double> values);
 
+    @Override
+    public String toString() {
+        return this.getClass().getName() + " " + implicationType;
+    }
 }

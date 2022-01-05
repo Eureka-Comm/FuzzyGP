@@ -1,5 +1,6 @@
 package com.castellanos94.fuzzylogicgp.logic;
 
+import com.castellanos94.fuzzylogicgp.logic.Logic.ImplicationType;
 import com.google.gson.annotations.Expose;
 
 public class LogicBuilder {
@@ -8,7 +9,7 @@ public class LogicBuilder {
     @Expose
     protected Integer exponent;
     @Expose
-    protected Boolean natural_implication;
+    protected ImplicationType implicationType;
 
     public static LogicBuilder newBuilder(LogicType type) {
         return new LogicBuilder(type);
@@ -23,8 +24,8 @@ public class LogicBuilder {
         return this;
     }
 
-    public LogicBuilder setNatural_implication(boolean natural_implication) {
-        this.natural_implication = natural_implication;
+    public LogicBuilder setImplicationType(ImplicationType implicationType) {
+        this.implicationType = implicationType;
         return this;
     }
 
@@ -34,38 +35,41 @@ public class LogicBuilder {
     }
 
     public Logic build() {
-        if (natural_implication == null) {
-            natural_implication = false;
+        if (implicationType == null) {
+            implicationType = ImplicationType.Zadeh;
         }
         if (exponent == null) {
             exponent = -1;
         }
         switch (type) {
             case GMBC:
-                return new GMBC_Logic(natural_implication);
+                return new GMBCLogic(implicationType);
             case ZADEH:
                 return new Zadeh_Logic();
             case AMBC:
-                return new AMBC_Logic(natural_implication);
+                return new AMBCLogic(implicationType);
             case GMBCV:
-                return new GMBC_FA_Logic(exponent, natural_implication);
+                return new GMBCFALogic(exponent, implicationType);
             default:
                 return null;
         }
     }
+
     public LogicType getType() {
         return type;
     }
+
     public Integer getExponent() {
         return exponent;
     }
 
-    public Boolean getNatural_implication() {
-        return natural_implication;
+    public ImplicationType getImplicationType() {
+        return implicationType;
     }
+
     @Override
     public String toString() {
-        return "LogicBuilder [exponent=" + exponent + ", natural_implication=" + natural_implication + ", type=" + type
+        return "LogicBuilder [exponent=" + exponent + ", implication type=" + implicationType + ", type=" + type
                 + "]";
     }
 }

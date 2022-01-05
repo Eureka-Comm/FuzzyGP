@@ -4,7 +4,7 @@
     <parent>
         <artifactId>FuzzyLogicGP</artifactId>
         <groupId>com.castellanos94</groupId>
-        <version>1.4.3</version>
+        <version>1.4.4</version>
     </parent>
     
     <groupId>com.castellanos94</groupId>

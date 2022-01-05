@@ -21,7 +21,7 @@ import com.castellanos94.fuzzylogicgp.core.OperatorException;
 import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.core.TournamentSelection;
 import com.castellanos94.fuzzylogicgp.core.Utils;
-import com.castellanos94.fuzzylogicgp.logic.GMBC_FA_Logic;
+import com.castellanos94.fuzzylogicgp.logic.GMBCFALogic;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
 import com.castellanos94.fuzzylogicgp.parser.MembershipFunctionSerializer;
@@ -640,9 +640,9 @@ public class KDFLC implements IAlgorithm {
         ArrayList<Double> f0 = null;
         FPGOptimizer optimizer=null;
 
-        if (this.logic instanceof GMBC_FA_Logic) {
+        if (this.logic instanceof GMBCFALogic) {
             f0 = new ArrayList<>();
-            GMBC_FA_Logic lFa_Logic = (GMBC_FA_Logic) this.logic;
+            GMBCFALogic lFa_Logic = (GMBCFALogic) this.logic;
             lFa_Logic.setExponent(0);
             optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
             0.95, null);

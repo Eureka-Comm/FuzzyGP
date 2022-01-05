@@ -3,6 +3,8 @@ package com.castellanos94.fuzzylogicgp.logic;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.cfg.ContextAttributes.Impl;
+
 import static java.lang.Math.*;
 
 /**
@@ -114,17 +116,17 @@ class MathOper {
 
 }
 
-public class ACF_Logic extends Logic {
+public class ACFLogic extends Logic {
 
     private Integer L, m;
     private MathOper Mo = new MathOper();
 
-    public ACF_Logic(int L, int m) {
-        this(false, L, m);
+    public ACFLogic(int L, int m) {
+        this(ImplicationType.Zadeh, L, m);
     }
 
-    public ACF_Logic(boolean natural_implication, int L, int m) {
-        super(natural_implication);
+    public ACFLogic(ImplicationType implicationType, int L, int m) {
+        super(implicationType);
         this.L = L;
         this.m = m;
     }
