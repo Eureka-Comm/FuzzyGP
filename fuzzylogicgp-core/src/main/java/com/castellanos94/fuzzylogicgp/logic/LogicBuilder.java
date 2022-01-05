@@ -1,6 +1,5 @@
 package com.castellanos94.fuzzylogicgp.logic;
 
-import com.castellanos94.fuzzylogicgp.logic.Logic.ImplicationType;
 import com.google.gson.annotations.Expose;
 
 public class LogicBuilder {

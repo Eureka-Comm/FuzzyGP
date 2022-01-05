@@ -14,39 +14,7 @@ import java.util.List;
  * @author Castellanos Alvarez, Alejandro
  * @version 1.0.1
  */
-public abstract class Logic {
-    public static enum ImplicationType {
-        /**
-         * S-Implication x -> y = d(n(x),y)
-         */
-        Natural,
-        /**
-         * QL-Implication x -> y = d(n(x),c(x,y))
-         */
-        Zadeh,
-        /**
-         * Reichenbach (S-implication) x -> y = 1 - x + x * y
-         */
-        Reichenbach,
-        /**
-         * Klir-Yuan implication (a variation of Reichenbach without a classification) x
-         * -> y = 1 - x + x^2 * y
-         */
-        KlirYuan,
-        /**
-         * A-Implication x -> y = y^x
-         */
-        Yager;
-
-        public static ImplicationType searchEnum(String value) {
-            for (ImplicationType type : values()) {
-                if (type.name().equalsIgnoreCase(value)) {
-                    return type;
-                }
-            }
-            return null;
-        }
-    };
+public abstract class Logic { 
 
     protected ImplicationType implicationType;
 
