@@ -3,8 +3,6 @@ package com.castellanos94.fuzzylogicgp.logic;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.cfg.ContextAttributes.Impl;
-
 import static java.lang.Math.*;
 
 /**
