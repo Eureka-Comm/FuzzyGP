@@ -36,7 +36,16 @@ public abstract class Logic {
         /**
          * A-Implication x -> y = y^x
          */
-        Yager
+        Yager;
+
+        public static ImplicationType searchEnum(String value) {
+            for (ImplicationType type : values()) {
+                if (type.name().equalsIgnoreCase(value)) {
+                    return type;
+                }
+            }
+            return null;
+        }
     };
 
     protected ImplicationType implicationType;
