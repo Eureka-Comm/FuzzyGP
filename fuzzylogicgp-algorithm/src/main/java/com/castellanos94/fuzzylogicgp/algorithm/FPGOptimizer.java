@@ -319,7 +319,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         MembershipFunction[] bFPG = new FPG[size];
         for (int i = 0; i < size; i++) {
             aFPG[i] = new FPG(offspringVars[0][aIndex], offspringVars[0][aIndex++], offspringVars[0][aIndex++]);
-            bFPG[i] = new FPG(offspringVars[0][bIndex], offspringVars[0][bIndex++], offspringVars[0][bIndex++]);
+            bFPG[i] = new FPG(offspringVars[1][bIndex], offspringVars[1][bIndex++], offspringVars[1][bIndex++]);
         }
         offspring.add(new Chromosome(aFPG));
         offspring.add(new Chromosome(bFPG));
