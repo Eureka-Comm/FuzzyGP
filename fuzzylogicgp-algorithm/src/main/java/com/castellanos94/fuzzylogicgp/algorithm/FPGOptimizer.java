@@ -255,9 +255,12 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 String idCname = stateNode.getId();
                 Double[] ref = minMaxDataValue.get(idCname);
                 double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-                double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                double gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
                 while (Double.compare(gamma, beta) <= 0) {
-                    gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                    if (Double.compare(beta, ref[1]) == 0) {
+                        beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
+                    }
+                    gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
                 }
                 functions[i] = new FPG(beta, gamma, random.nextInt(100001) / 100001.0);
             } else {
@@ -335,9 +338,12 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 String idCname = states.get(i).getId();
                 Double[] ref = minMaxDataValue.get(idCname);
                 double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-                double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                double gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
                 while (Double.compare(gamma, beta) <= 0) {
-                    gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                    if (Double.compare(beta, ref[1]) == 0) {
+                        beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
+                    }
+                    gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
                 }
                 chromosome.getFunctions()[i] = new FPG(beta, gamma, random.nextInt(100001) / 100001.0);
             }
@@ -353,9 +359,12 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 Double[] ref = minMaxDataValue.get(idCname);
 
                 double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-                double gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                double gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
                 while (Double.compare(gamma, beta) <= 0) {
-                    gamma = random.doubles(beta, ref[1] + 1).findAny().getAsDouble();
+                    if (Double.compare(beta, ref[1]) == 0) {
+                        beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
+                    }
+                    gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
                 }
                 fpg.setBeta(beta);
                 fpg.setGamma(gamma);
