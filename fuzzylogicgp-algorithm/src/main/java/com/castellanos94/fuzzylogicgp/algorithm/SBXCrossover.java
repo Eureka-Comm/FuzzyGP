@@ -105,13 +105,13 @@ public class SBXCrossover {
         for (int i = 0; i < offspring.length; i++) {
             for (int j = 0; j < offspring[0].length; j++) {
                 if (Double.isNaN(offspring[i][j])) { // NaN
-                    offspring[i][j] = randomGenerator.doubles(boundaries[i][0], boundaries[i][1]).findFirst()
+                    offspring[i][j] = randomGenerator.doubles(boundaries[j][0], boundaries[j][1]).findFirst()
                             .getAsDouble();
-                } else if (Double.compare(offspring[i][j], boundaries[i][0]) < 0) { // Lower
-                    offspring[i][j] = randomGenerator.doubles(boundaries[i][0], boundaries[i][1]).findFirst()
+                } else if (Double.compare(offspring[i][j], boundaries[j][0]) < 0) { // Lower
+                    offspring[i][j] = randomGenerator.doubles(boundaries[j][0], boundaries[j][1]).findFirst()
                             .getAsDouble();
-                } else if (Double.compare(offspring[i][j], boundaries[i][1]) > 0) { // Upper
-                    offspring[i][j] = randomGenerator.doubles(boundaries[i][0], boundaries[i][1]).findFirst()
+                } else if (Double.compare(offspring[i][j], boundaries[j][1]) > 0) { // Upper
+                    offspring[i][j] = randomGenerator.doubles(boundaries[j][0], boundaries[j][1]).findFirst()
                             .getAsDouble();
                 }
             }
