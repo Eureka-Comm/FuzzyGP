@@ -146,7 +146,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 offspring.addAll(crossover(parents[k], parents[k + 1 < parents.length ? k + 1 : 0]));
             }
             for (int k = 0; k < offspring.size(); k++) {
-                // mutation(offspring.get(k), statesToWork);
+                mutation(offspring.get(k), statesToWork);
                 repair(offspring.get(k), statesToWork);
                 _evaluate(predicate, statesToWork, offspring.get(k));
                 // Repair if fitness -> 0
