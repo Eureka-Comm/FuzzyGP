@@ -104,7 +104,7 @@ public class NSigmoid extends MembershipFunction {
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
         double step = 0.1;
-        double x = 0;
+        double x = -center*beta/2;
         double y;
         do {
             y = evaluate(x);
