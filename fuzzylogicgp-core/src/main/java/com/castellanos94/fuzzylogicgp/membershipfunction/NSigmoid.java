@@ -49,10 +49,11 @@ public class NSigmoid extends MembershipFunction {
         return "[-sigmoid " + this.center + " " + this.beta + "]";
     }
 
-    @Override
+    @Override 
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-        return (1 - (1 / (1 + (Math.exp(-((Math.log(0.99) - Math.log(0.01)) / (center - beta)) * (v - center))))));
+        double alpha = (Math.log(0.99)-Math.log(0.01))/(beta - center);
+        return 1.0 - 1.0/(1 + Math.exp(-alpha*(v-beta)));
     }
 
     public Double getCenter() {
@@ -102,8 +103,8 @@ public class NSigmoid extends MembershipFunction {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        double step = Math.abs(center - beta) / 50;
-        double x = -center * 2 - beta;
+        double step = 0.1;
+        double x = 0;
         double y;
         do {
             y = evaluate(x);
@@ -111,13 +112,14 @@ public class NSigmoid extends MembershipFunction {
                 points.add(new Point(x, y));
             }
             x += step;
-        } while (y <= 0.98 && points.size() < 500);
+            
+        } while (y < 0.98 && points.size() < 500 );
 
         do {
             y = evaluate(x);
             points.add(new Point(x, y));
             x += step;
-        } while (y > Point.EPSILON && points.size() < 999);
+        } while (y > Point.EPSILON && points.size() < 999 && y <= 0.99999);
         return points;
     }
 
