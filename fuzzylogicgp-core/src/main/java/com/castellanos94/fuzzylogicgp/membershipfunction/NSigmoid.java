@@ -103,8 +103,8 @@ public class NSigmoid extends MembershipFunction {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        double step = 0.1;
         double x = -center*beta/2;
+        double step = (center*beta)/100.0;
         double y;
         do {
             y = evaluate(x);
@@ -113,7 +113,7 @@ public class NSigmoid extends MembershipFunction {
             }
             x += step;
             
-        } while (y < 0.98 && points.size() < 500 );
+        } while (y < 1.0 && points.size() < 500 && y> Point.EPSILON);
 
         do {
             y = evaluate(x);

@@ -4,7 +4,7 @@ import java.util.List;
 
 public class TestMembership {
     public static void main(String[] args) {
-        NSigmoid nSigmoid = new NSigmoid(1,5);
+        NSigmoid nSigmoid = new NSigmoid(3,6);
         System.out.println(nSigmoid + " "+nSigmoid.isValid());
         List<Point> points = nSigmoid.getPoints();
         System.out.println("Points "+points.size());
