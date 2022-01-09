@@ -5,12 +5,12 @@
  */
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
+import com.google.gson.annotations.Expose;
+
 import static java.lang.Math.pow;
 
-import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.annotations.Expose;
 
 /**
  * @author hp
@@ -129,10 +129,25 @@ public class FPG extends MembershipFunction {
     }
 
     @Override
-    public List<Point2D> getPoints() {
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
         double step = (gamma - beta) / 50;
         double x = -gamma * 2 - beta;
-        return calculatePoints(step, x);
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98 && points.size() < 500);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON && x < gamma * beta && points.size() < 999);
+        return points;
     }
 
     @Override

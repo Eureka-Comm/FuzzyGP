@@ -1,6 +1,6 @@
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
-import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -106,9 +106,24 @@ public class SForm extends MembershipFunction {
     }
 
     @Override
-    public List<Point2D> getPoints() {
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
         double step = Math.abs(a - b) / 50;
         double x = -a * 2 - b;
-        return calculatePoints(step, x);
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98 && points.size() < 500);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON && points.size() < 999);
+        return points;
     }
 }

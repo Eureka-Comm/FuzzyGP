@@ -4,7 +4,18 @@
  * and open the template in the editor.
  */
 package com.castellanos94.fuzzylogicgp.core;
-import java.awt.geom.Point2D;
+
+import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
+import com.castellanos94.fuzzylogicgp.membershipfunction.Point;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.plotly.Plot;
+import tech.tablesaw.plotly.components.Figure;
+import tech.tablesaw.plotly.components.Layout;
+import tech.tablesaw.plotly.traces.ScatterTrace;
+import tech.tablesaw.plotly.traces.Trace;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -12,17 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-import tech.tablesaw.api.DoubleColumn;
-import tech.tablesaw.plotly.Plot;
-import tech.tablesaw.plotly.components.Figure;
-import tech.tablesaw.plotly.components.Layout;
-import tech.tablesaw.plotly.traces.ScatterTrace;
-import tech.tablesaw.plotly.traces.Trace;
 
 /**
  * @author hp
@@ -99,7 +99,7 @@ public class StateNode extends Node {
     public void plot(String dirOutputString, String fileName) {
 
         Layout layout = Layout.builder().title(label + "(" + cname + "): " + membershipFunction.toString()).build();
-        ArrayList<Point2D> points = (ArrayList<Point2D>) membershipFunction.getPoints();
+        ArrayList<Point> points = (ArrayList<Point>) membershipFunction.getPoints();
         Trace trace = null;
         if (points.size() <= 1000) {
             double[] x = new double[points.size()];
@@ -122,7 +122,7 @@ public class StateNode extends Node {
             int[] count = new int[values.length];
             boolean included_one = false;
             for (int i = 0; i < points.size(); i++) {
-                Point2D v = points.get(i);
+                Point v = points.get(i);
                 for (int l = 0; l < values.length; l++) {
                     if (v.getY() > 0.00006 && v.getY() <= values[l] && count[l] < 20) {
                         xdc.append(v.getX());

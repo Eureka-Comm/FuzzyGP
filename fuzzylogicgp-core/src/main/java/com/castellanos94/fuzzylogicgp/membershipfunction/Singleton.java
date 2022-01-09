@@ -7,7 +7,6 @@ package com.castellanos94.fuzzylogicgp.membershipfunction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.geom.Point2D;
 
 import com.google.gson.annotations.Expose;
 
@@ -83,10 +82,10 @@ public class Singleton extends MembershipFunction {
     }
 
     @Override
-    public List<Point2D> getPoints() {
-        ArrayList<Point2D> point = new ArrayList<>();
-        point.add(new Point2D.Double(a, 1.0));
-        point.add(new Point2D.Double(a,0));
+    public List<Point> getPoints() {
+        ArrayList<Point> point = new ArrayList<>();
+        point.add(new Point(a, 1.0));
+        point.add(new Point(a,0));
         return point;
     }
 

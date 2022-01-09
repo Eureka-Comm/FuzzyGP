@@ -1,12 +1,11 @@
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.pow;
-
-import java.awt.geom.Point2D;
-import java.util.List;
-
 import com.google.gson.annotations.Expose;
+
+import static java.lang.Math.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The class {@code GAUSSIAN_MF} is Generalized Gaussian function fuzzy
@@ -124,10 +123,25 @@ public class Gaussian extends MembershipFunction {
     }
 
     @Override
-    public List<Point2D> getPoints() {
+    public List<Point> getPoints() {
+        ArrayList<Point> points = new ArrayList<>();
         double step = Math.abs(center - deviation) / 50;
         double x = -center * 2 - deviation;
-        return calculatePoints(step, x);
+        double y;
+        do {
+            y = evaluate(x);
+            if (y > Point.EPSILON) {
+                points.add(new Point(x, y));
+            }
+            x += step;
+        } while (y <= 0.98 && points.size() < 500);
+
+        do {
+            y = evaluate(x);
+            points.add(new Point(x, y));
+            x += step;
+        } while (y > Point.EPSILON && points.size() < 999);
+        return points;
     }
 
 }
