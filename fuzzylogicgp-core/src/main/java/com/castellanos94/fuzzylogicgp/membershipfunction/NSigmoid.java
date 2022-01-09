@@ -5,7 +5,7 @@
  */
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
-import java.util.ArrayList;
+import java.awt.geom.Point2D;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -49,11 +49,11 @@ public class NSigmoid extends MembershipFunction {
         return "[-sigmoid " + this.center + " " + this.beta + "]";
     }
 
-    @Override 
+    @Override
     public double evaluate(Number value) {
         Double v = value.doubleValue();
-        double alpha = (Math.log(0.99)-Math.log(0.01))/(beta - center);
-        return 1.0 - 1.0/(1 + Math.exp(-alpha*(v-beta)));
+        double alpha = (Math.log(0.99) - Math.log(0.01)) / (beta - center);
+        return 1.0 - 1.0 / (1 + Math.exp(-alpha * (v - beta)));
     }
 
     public Double getCenter() {
@@ -101,30 +101,14 @@ public class NSigmoid extends MembershipFunction {
     }
 
     @Override
-    public List<Point> getPoints() {
-        ArrayList<Point> points = new ArrayList<>();
-        double x = -center*beta/2;
-        double step = (center*beta)/100.0;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
-            x += step;
-            
-        } while (y < 1.0 && points.size() < 500 && y> Point.EPSILON);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && points.size() < 999 && y <= 0.99999);
-        return points;
+    public List<Point2D> getPoints() {
+        double x = -center * beta / 2;
+        double step = (center * beta) / 100.0;
+        return calculatePoints(step, x);
     }
 
     @Override
     public MembershipFunction copy() {
         return new NSigmoid(center, beta);
-    }    
+    }
 }

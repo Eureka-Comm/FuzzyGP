@@ -1,11 +1,13 @@
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
-import com.google.gson.annotations.Expose;
+import static java.lang.Math.abs;
+import static java.lang.Math.log;
+import static java.lang.Math.pow;
 
-import static java.lang.Math.*;
-
-import java.util.ArrayList;
+import java.awt.geom.Point2D;
 import java.util.List;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * The class {@code GBELL_MF} is Generalized Bell function fuzzy membership
@@ -165,24 +167,9 @@ public class GBell extends MembershipFunction {
     }
 
     @Override
-    public List<Point> getPoints() {
-        ArrayList<Point> points = new ArrayList<>();
+    public List<Point2D> getPoints() {        
         double step = Math.abs(center - width) / 50;
         double x = -width * 2 - center - slope;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
-            x += step;
-        } while (y <= 0.98 && points.size() < 500);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && points.size() < 999);
-        return points;
+        return calculatePoints(step, x);
     }
 }

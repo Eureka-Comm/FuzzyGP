@@ -1,5 +1,6 @@
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.List;
 
@@ -107,7 +108,7 @@ public class MapNominal extends MembershipFunction {
     }
 
     @Override
-    public List<Point> getPoints() {
+    public List<Point2D> getPoints() {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
     @Override

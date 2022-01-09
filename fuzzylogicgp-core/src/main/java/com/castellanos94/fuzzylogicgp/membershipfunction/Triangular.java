@@ -1,6 +1,6 @@
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
-import java.util.ArrayList;
+import java.awt.geom.Point2D;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -124,25 +124,10 @@ public class Triangular extends MembershipFunction {
     }
 
     @Override
-    public List<Point> getPoints() {
-        ArrayList<Point> points = new ArrayList<>();
+    public List<Point2D> getPoints() {
         double step = Math.max(Math.abs(a - b) / 50, Math.abs(b - c) / 50);
-        double x = -a - c / 2;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
-            x += step;
-        } while (y <= 0.98 && points.size() < 500);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && points.size() < 999);
-        return points;
+        double x = -a - c / 2;        
+        return calculatePoints(step, x);
     }
 
     @Override

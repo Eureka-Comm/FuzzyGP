@@ -1,5 +1,6 @@
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,10 +125,10 @@ public class Nominal extends MembershipFunction {
     }
 
     @Override
-    public List<Point> getPoints() {
-        ArrayList<Point> point = new ArrayList<>();
-        point.add(new Point(1, value));
-        point.add(new Point(0.5, notFoundValue));
+    public List<Point2D> getPoints() {
+        ArrayList<Point2D> point = new ArrayList<>();
+        point.add(new Point2D.Double(1, value));
+        point.add(new Point2D.Double(0.5, notFoundValue));
         return point;
     }
 }

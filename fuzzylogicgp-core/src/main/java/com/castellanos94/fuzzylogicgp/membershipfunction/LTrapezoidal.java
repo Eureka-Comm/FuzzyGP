@@ -1,6 +1,6 @@
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
-import java.util.ArrayList;
+import java.awt.geom.Point2D;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -96,25 +96,10 @@ public class LTrapezoidal extends MembershipFunction {
     }
 
     @Override
-    public List<Point> getPoints() {
-        ArrayList<Point> points = new ArrayList<>();
+    public List<Point2D> getPoints() {
         double step = Math.abs(a - b) / 50;
         double x = -a * 2 - b;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
-            x += step;
-        } while (y <= 0.98 && points.size() < 500);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && points.size() < 999);
-        return points;
+        return calculatePoints(step, x);
     }
 
     @Override
