@@ -103,7 +103,7 @@ public class NSigmoid extends MembershipFunction {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        final double step = Math.abs(center) / 100.0;
+        final double step = center != 0 ? Math.abs(center) / 100.0 : Math.abs(beta) / 100.0;
         double x = center - 3 * center / 2.0;
         double y;
         do {
