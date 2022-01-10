@@ -131,11 +131,44 @@ public class FPG extends MembershipFunction {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        final double step = Math.abs(gamma - beta) / 100.0;
+        double step = Math.abs(gamma - beta) / 100.0;
+        if (step < 0.0001) {
+            step = 0.001;
+        }
+        double y, max = 0;
         double x = gamma - 3 * gamma / 2.0;
-        while (x <= (gamma + 5 * gamma / 6.0)) {
-            points.add(new Point(x, evaluate(x)));
+        while (x <= (gamma + 3 * gamma / 2.0) && points.size() < 5000) {
+            y = evaluate(x);
+            if (max < y)
+                max = y;
+            points.add(new Point(x, y));
             x += step;
+        }
+        ArrayList<Point> tmp = new ArrayList<>();
+        int indexFirstOne = -1, indexLastZero = -1;
+        int secondZero = -1;
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point p = points.get(i);
+            if (Math.abs(p.getY() - 1.0) < 0.00001 && indexFirstOne == -1) {
+                indexFirstOne = i;
+            }
+            if (p.getY() > 0.00001 && indexLastZero == -1) {
+                indexLastZero = i;
+            }
+            if (indexLastZero != -1 && secondZero == -1 && p.getY() <= 0.00001) {
+                secondZero = i;
+            }
+        }
+        if (indexLastZero != -1 || secondZero != -1) {
+            if (secondZero != -1 && secondZero + 5 < points.size()) {
+                secondZero += 5;
+            } else {
+                secondZero = points.size();
+            }
+            for (int i = (indexLastZero - 5 > 0) ? indexLastZero - 1 : indexLastZero; i < secondZero; i++) {
+                tmp.add(points.get(i));
+            }
+            return tmp;
         }
         return points;
     }
