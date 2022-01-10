@@ -4,10 +4,19 @@ import java.util.List;
 
 public class TestMembership {
     public static void main(String[] args) {
-        NSigmoid nSigmoid = new NSigmoid(3,6);
-        System.out.println(nSigmoid + " "+nSigmoid.isValid());
-        List<Point> points = nSigmoid.getPoints();
-        System.out.println("Points "+points.size());
-        points.forEach(p->{System.out.println(p.getX()+", "+p.getY());});
+        NSigmoid nSigmoid = new NSigmoid(3, 6);
+        MembershipFunction function = new Trapezoidal(3., 5., 7., 10.);
+        List<Point> points = function.getPoints();
+        System.out.println(String.format("%s - %3d, start = %10sf, end = %10sf", function, points.size(),
+                points.get(0), points.get(points.size() - 1)));
+
+        function = new RTrapezoidal(3., 7.);
+        points = function.getPoints();
+        System.out.println(String.format("%s - %3d, start = %10sf, end = %10sf", function, points.size(),
+                points.get(0), points.get(points.size() - 1)));
+        function = new LTrapezoidal(3., 7.);
+        points = function.getPoints();
+        System.out.println(String.format("%s - %3d, start = %10sf, end = %10sf", function, points.size(),
+                points.get(0), points.get(points.size() - 1)));
     }
 }

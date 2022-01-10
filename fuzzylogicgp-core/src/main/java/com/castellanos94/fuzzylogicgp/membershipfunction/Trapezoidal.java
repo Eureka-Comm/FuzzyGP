@@ -117,22 +117,12 @@ public class Trapezoidal extends LTrapezoidal {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        double step = Math.max(Math.max(Math.abs(a - b), Math.abs(b - c)), Math.abs(c - d)) / 50.0;
-        double x = -a * 2 - c;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
+        final double step = Math.abs(a - d) / 100.0;
+        double x = a - step * 5;
+        while (x <= (d + step * 5)) {
+            points.add(new Point(x, evaluate(x)));
             x += step;
-        } while (y <= 0.98 && points.size() < 500);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && points.size() < 999);
+        }
         return points;
     }
 
