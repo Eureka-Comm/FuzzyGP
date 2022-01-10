@@ -137,7 +137,7 @@ public class FPG extends MembershipFunction {
         }
         double y, max = 0;
         double x = gamma - 3 * gamma / 2.0;
-        while (x <= (gamma + 3 * gamma / 2.0) && points.size() < 5000) {
+        while (x <= (gamma * 2 + beta / 3) && points.size() < 6000) {
             y = evaluate(x);
             if (max < y)
                 max = y;
@@ -169,6 +169,26 @@ public class FPG extends MembershipFunction {
                 tmp.add(points.get(i));
             }
             return tmp;
+        }
+        if (indexFirstOne == -1 && indexLastZero == -1) {
+            points.clear();
+            step = (gamma - beta) / 50;
+            x = -gamma * 2 - beta;
+            
+            do {
+                y = evaluate(x);
+                if (y > Point.EPSILON) {
+                    points.add(new Point(x, y));
+                }
+                x += step;
+            } while (y <= 0.98 && points.size() < 500);
+
+            do {
+                y = evaluate(x);
+                points.add(new Point(x, y));
+                x += step;
+            } while (y > Point.EPSILON && x < gamma * beta && points.size() < 999);
+            return points;
         }
         return points;
     }
