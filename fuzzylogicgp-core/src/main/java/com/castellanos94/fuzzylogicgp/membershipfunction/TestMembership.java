@@ -51,5 +51,9 @@ public class TestMembership {
         points = function.getPoints();
         System.out.println(String.format("%s - %3d, start = %10s, end = %10s", function, points.size(),
                 points.get(0), points.get(points.size() - 1)));
+        function = new Gamma(4., 3.);
+        points = function.getPoints();
+        System.out.println(String.format("%s - %3d, start = %10s, end = %10s", function, points.size(),
+                points.get(0), points.get(points.size() - 1)));
     }
 }

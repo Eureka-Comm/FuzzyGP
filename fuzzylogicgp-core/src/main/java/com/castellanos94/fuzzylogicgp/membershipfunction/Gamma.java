@@ -93,22 +93,12 @@ public class Gamma extends MembershipFunction {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        double step = Math.abs(a - b) / 50;
-        double x = -a * 2 - b;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
+        final double step = Math.abs(a - b) / 100.0;
+        double x = a - a / 4.0;
+        while (x <= (a + 5 * a / 4.0)) {
+            points.add(new Point(x, evaluate(x)));
             x += step;
-        } while (y <= 0.98 && points.size() < 500);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && points.size() < 999);
+        }
         return points;
     }
 
