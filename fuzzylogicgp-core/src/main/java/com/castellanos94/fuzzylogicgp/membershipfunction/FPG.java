@@ -131,22 +131,12 @@ public class FPG extends MembershipFunction {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        double step = (gamma - beta) / 50;
-        double x = -gamma * 2 - beta;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
+        final double step = Math.abs(gamma - beta) / 100.0;
+        double x = gamma - 3 * gamma / 2.0;
+        while (x <= (gamma + 5 * gamma / 6.0)) {
+            points.add(new Point(x, evaluate(x)));
             x += step;
-        } while (y <= 0.98 && points.size() < 500);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && x < gamma * beta && points.size() < 999);
+        }
         return points;
     }
 
