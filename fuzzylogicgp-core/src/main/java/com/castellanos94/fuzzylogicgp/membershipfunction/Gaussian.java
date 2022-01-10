@@ -125,22 +125,12 @@ public class Gaussian extends MembershipFunction {
     @Override
     public List<Point> getPoints() {
         ArrayList<Point> points = new ArrayList<>();
-        double step = Math.abs(center - deviation) / 50;
-        double x = -center * 2 - deviation;
-        double y;
-        do {
-            y = evaluate(x);
-            if (y > Point.EPSILON) {
-                points.add(new Point(x, y));
-            }
+        final double step = Math.abs(deviation) / 100.0;
+        double x = center - 3 * center / 2.0;
+        while (x <= (center + 3 * center / 2.0)) {
+            points.add(new Point(x, evaluate(x)));
             x += step;
-        } while (y <= 0.98 && points.size() < 500);
-
-        do {
-            y = evaluate(x);
-            points.add(new Point(x, y));
-            x += step;
-        } while (y > Point.EPSILON && points.size() < 999);
+        }
         return points;
     }
 
