@@ -18,5 +18,9 @@ public class TestMembership {
         points = function.getPoints();
         System.out.println(String.format("%s - %3d, start = %10sf, end = %10sf", function, points.size(),
                 points.get(0), points.get(points.size() - 1)));
+        function = new Triangular(1., 5., 9.);
+        points = function.getPoints();
+        System.out.println(String.format("%s - %3d, start = %10sf, end = %10sf", function, points.size(),
+                points.get(0), points.get(points.size() - 1)));
     }
 }
