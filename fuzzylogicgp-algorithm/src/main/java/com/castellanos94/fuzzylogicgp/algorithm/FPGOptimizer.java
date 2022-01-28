@@ -203,6 +203,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 }
             }
             _evaluate(predicate, statesToWork, population[bestIndex]);
+            predicate.setFitness(population[bestIndex].getFitness());
             return predicate;
         }
     }
@@ -263,7 +264,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                     }
                 }
                 if (flag) {
-                    double and = logic.and(forAll, logic.exist(rs));
+                    double exits = logic.exist(rs);
+                    double and = logic.and(forAll, exits);
                     chromosome.setFitness(and);
                 }
             }
