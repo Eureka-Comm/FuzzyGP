@@ -22,11 +22,17 @@ import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
 import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Default FPG Optimizer
+ * Se cambio la funcion objetivo de forAll -> and(forAll, exits)
  */
 public class FPGOptimizer extends AMembershipFunctionOptimizer {
-    protected EvaluatePredicate evaluatePredicate;
+    private static final Logger logger = LogManager.getLogger(FPGOptimizer.class);
+
+    // protected EvaluatePredicate evaluatePredicate;
     protected int maxIterations;
     protected int populationSize;
     protected double minTruthValue;
@@ -84,7 +90,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             Random random) {
         super(logic);
         this.data = data;
-        this.evaluatePredicate = new EvaluatePredicate(logic, data);
+        // this.evaluatePredicate = new EvaluatePredicate(logic, data);
         this.maxIterations = maxIterations;
         this.populationSize = populationSize;
         this.minTruthValue = minTruthValue;
@@ -112,7 +118,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         }
         minMaxDataValue = new HashMap<>();
         if (statesToWork.isEmpty()) {
-            this.evaluatePredicate.execute(predicate);
+            EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
+            evaluatePredicate.execute(predicate);
             return predicate;
         }
         statesToWork.forEach(state -> {
@@ -240,7 +247,26 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             statesToWork.get(i).setMembershipFunction(f);
         }
         try {
-            chromosome.setFitness(evaluatePredicate.evaluate(predicate));
+            EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
+            double forAll = evaluatePredicate.evaluate(predicate);
+            chromosome.setFitness(forAll);
+            if (predicate.getType() == NodeType.IMP) {
+                Node p = predicate.findById(predicate.getLeftID());
+                List<Double> rs = new ArrayList<>();
+                boolean flag = true;
+                for (int i = 0; i < data.rowCount() && flag; i++) {
+                    try {
+                        rs.add(evaluatePredicate.fitValue(p, i));
+                    } catch (OperatorException e) {
+                        logger.error("Fit compute error at premise {} : {}", p, e.getMessage());
+                        flag = false;
+                    }
+                }
+                if (flag) {
+                    double and = logic.and(forAll, logic.exist(rs));
+                    chromosome.setFitness(and);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

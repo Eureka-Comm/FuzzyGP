@@ -134,6 +134,29 @@ public class EvaluatePredicate implements IAlgorithm {
             fa.append("");
             ec.append("");
         }
+        /*DoubleColumn pColumn = null;
+        if (this.predicate.getType() == NodeType.IMP) {
+            Node p = this.predicate.findById(this.predicate.getLeftID());
+            pColumn = DoubleColumn.create("Premise");
+            boolean flag = true;
+            for (int i = 0; i < this.fuzzyData.rowCount(); i++) {
+                try {
+                    pColumn.append(fitValue(p, i));
+                } catch (OperatorException e) {
+                    logger.error("Fit compute error at premise {} : {}", p, e.getMessage());
+                    flag = false;
+                }
+            }
+            if (flag) {
+                double and = logic.and(forAllValue, logic.exist(pColumn.asList()));
+                fa.set(0, "" + and);
+                predicate.setFitness(and);
+            }
+        }
+        if (pColumn == null)
+            fuzzyData.addColumns(fa, ec, resultColumn);
+        else
+            fuzzyData.addColumns(fa, ec, resultColumn, pColumn);*/
         fuzzyData.addColumns(fa, ec, resultColumn);
         return forAllValue;
     }
@@ -173,7 +196,7 @@ public class EvaluatePredicate implements IAlgorithm {
         }
     }
 
-    private double fitValue(Node node, int index) throws OperatorException {
+    public double fitValue(Node node, int index) throws OperatorException {
         NodeTree nodeTree;
         ArrayList<Double> values;
         switch (node.getType()) {
@@ -211,8 +234,8 @@ public class EvaluatePredicate implements IAlgorithm {
             case EQV:
                 nodeTree = (NodeTree) node;
                 Iterator<Node> iterator = nodeTree.iterator();
-                //nodeTree.setFitness();
-                //return nodeTree.getFitness();
+                // nodeTree.setFitness();
+                // return nodeTree.getFitness();
                 return logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index));
             case STATE:
                 StateNode st = (StateNode) node;
