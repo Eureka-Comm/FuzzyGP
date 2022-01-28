@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import com.castellanos94.fuzzylogicgp.core.AMembershipFunctionOptimizer;
+import com.castellanos94.fuzzylogicgp.core.ICrossover;
 import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
@@ -40,7 +41,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     protected Table data;
     protected HashMap<String, Double[]> minMaxDataValue;
     protected Random random;
-    protected SBXCrossover crossover;
+    protected ICrossover sbxCrossover;
+    protected ICrossover blenCrossover;
     protected double[][] boundaries;
 
     public static void main(String[] args) throws IOException, OperatorException {
@@ -96,7 +98,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         this.minTruthValue = minTruthValue;
         this.crossoverProbability = crossoverProbability;
         this.random = random == null ? new Random() : random;
-        this.crossover = new SBXCrossover(20, crossoverProbability, this.random);
+        this.sbxCrossover = new SBXCrossover(20, crossoverProbability, this.random);
+        this.blenCrossover = new BlendCrossover(crossoverProbability, this.random);
     }
 
     @Override
@@ -333,24 +336,42 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             FPG af = (FPG) a.getFunctions()[i];
             FPG bf = (FPG) b.getFunctions()[i];
             aVars[aIndex] = af.getBeta();
-            aVars[aIndex++] = af.getGamma();
-            aVars[aIndex++] = af.getM();
-
+            aVars[aIndex + 1] = af.getGamma();
+            aVars[aIndex + 2] = af.getM();
+            aIndex += 3;
             bVars[bIndex] = bf.getBeta();
-            bVars[bIndex++] = bf.getGamma();
-            bVars[bIndex++] = bf.getM();
+            bVars[bIndex + 1] = bf.getGamma();
+            bVars[bIndex + 2] = bf.getM();
+            bIndex += 3;
         }
-        double[][] offspringVars = crossover.execute(aVars, bVars, boundaries);
+        // sbx crossover
+        double[][] offspringVars = sbxCrossover.execute(aVars, bVars, boundaries);
         aIndex = 0;
         bIndex = 0;
         MembershipFunction[] aFPG = new FPG[size];
         MembershipFunction[] bFPG = new FPG[size];
         for (int i = 0; i < size; i++) {
-            aFPG[i] = new FPG(offspringVars[0][aIndex], offspringVars[0][aIndex++], offspringVars[0][aIndex++]);
-            bFPG[i] = new FPG(offspringVars[1][bIndex], offspringVars[1][bIndex++], offspringVars[1][bIndex++]);
+            aFPG[i] = new FPG(offspringVars[0][aIndex], offspringVars[0][aIndex + 1], offspringVars[0][aIndex + 2]);
+            bFPG[i] = new FPG(offspringVars[1][bIndex], offspringVars[1][bIndex + 1], offspringVars[1][bIndex + 2]);
+            aIndex += 3;
+            bIndex += 3;
         }
         offspring.add(new Chromosome(aFPG));
         offspring.add(new Chromosome(bFPG));
+        // blend crossover
+        double[][] offspringVars2 = blenCrossover.execute(aVars, bVars, boundaries);
+        aIndex = 0;
+        bIndex = 0;
+        MembershipFunction[] cFPG = new FPG[size];
+        MembershipFunction[] dFPG = new FPG[size];
+        for (int i = 0; i < size; i++) {
+            cFPG[i] = new FPG(offspringVars2[0][aIndex], offspringVars2[0][aIndex + 1], offspringVars2[0][aIndex + 2]);
+            dFPG[i] = new FPG(offspringVars2[1][bIndex], offspringVars2[1][bIndex + 1], offspringVars2[1][bIndex + 2]);
+            aIndex += 3;
+            bIndex += 3;
+        }
+        offspring.add(new Chromosome(cFPG));
+        offspring.add(new Chromosome(dFPG));
         return offspring;
     }
 

@@ -2,11 +2,13 @@ package com.castellanos94.fuzzylogicgp.algorithm;
 
 import java.util.Random;
 
+import com.castellanos94.fuzzylogicgp.core.ICrossover;
+
 /**
  * This class allows to apply a SBX crossover operator using two parent
  * solutions (Double encoding).
  */
-public class SBXCrossover {
+public class SBXCrossover implements ICrossover {
     public static final double EPS = 1.0e-6;
     private Random randomGenerator;
     private double distributionIndex;
@@ -40,13 +42,14 @@ public class SBXCrossover {
      *                   (upper)
      * @return
      */
+    @Override
     public double[][] execute(double[] a, double[] b, double[][] boundaries) {
         if (a.length != b.length) {
             return null;
         }
-        double[][] offspring = new double[2][a.length];
-        offspring[0] = a.clone();
-        offspring[1] = b.clone();
+        double[][] offspring = new double[2][a.length];        
+        System.arraycopy(a, 0, offspring[0], 0, a.length);
+        System.arraycopy(b, 0, offspring[1], 0, b.length);
 
         double rand;
         double y1, y2, lowerBound, upperBound;
