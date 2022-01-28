@@ -267,7 +267,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                     }
                 }
                 if (flag) {
-                    double exits = logic.exist(rs);
+                    double exits = logic.forAll(rs);
                     double and = logic.and(forAll, exits);
                     chromosome.setFitness(and);
                 }
