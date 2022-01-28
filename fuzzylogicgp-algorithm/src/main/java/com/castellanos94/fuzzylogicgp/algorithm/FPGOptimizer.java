@@ -345,10 +345,10 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             bIndex += 3;
         }
         // sbx crossover
-        double[][] offspringVars = sbxCrossover.execute(aVars, bVars, boundaries);
+        //double[][] offspringVars = sbxCrossover.execute(aVars, bVars, boundaries);
         aIndex = 0;
         bIndex = 0;
-        MembershipFunction[] aFPG = new FPG[size];
+      /*  MembershipFunction[] aFPG = new FPG[size];
         MembershipFunction[] bFPG = new FPG[size];
         for (int i = 0; i < size; i++) {
             aFPG[i] = new FPG(offspringVars[0][aIndex], offspringVars[0][aIndex + 1], offspringVars[0][aIndex + 2]);
@@ -357,7 +357,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             bIndex += 3;
         }
         offspring.add(new Chromosome(aFPG));
-        offspring.add(new Chromosome(bFPG));
+        offspring.add(new Chromosome(bFPG));*/
         // blend crossover
         double[][] offspringVars2 = blenCrossover.execute(aVars, bVars, boundaries);
         aIndex = 0;
