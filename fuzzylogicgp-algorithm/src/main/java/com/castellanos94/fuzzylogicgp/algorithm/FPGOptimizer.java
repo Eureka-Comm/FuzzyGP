@@ -310,7 +310,7 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         }
         Chromosome[] parents = new Chromosome[size];
         for (int i = 0; i < parents.length; i++) {
-            parents[i] = chromosomes[i];
+            parents[i] = chromosomes[i % 2 == 0 ? i : random.nextInt(chromosomes.length)];
         }
         return parents;
     }

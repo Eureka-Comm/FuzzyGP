@@ -133,8 +133,8 @@ public class Examples {
         String out_file = "result-discovery-prop.csv";
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
-        String predicate = "(AND \"comodin\" (EQV \"comodin\" \"quality\"))";
-        predicate = "\"comodin\"";
+        String predicate = "(IMP \"comodin\"  \"quality\")";
+        //predicate = "\"comodin\"";
         DummyGenerator generator = new DummyGenerator();
         generator.setLabel("comodin");
         generator.setDepth(2);
