@@ -252,26 +252,13 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         }
         try {
             EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
-            double forAll = evaluatePredicate.evaluate(predicate);
-            chromosome.setFitness(forAll);
+            double forAll;
             if (predicate.getType() == NodeType.IMP) {
-                Node p = predicate.findById(predicate.getLeftID());
-                List<Double> rs = new ArrayList<>();
-                boolean flag = true;
-                for (int i = 0; i < data.rowCount() && flag; i++) {
-                    try {
-                        rs.add(evaluatePredicate.fitValue(p, i));
-                    } catch (OperatorException e) {
-                        logger.error("Fit compute error at premise {} : {}", p, e.getMessage());
-                        flag = false;
-                    }
-                }
-                if (flag) {
-                    double exits = logic.exist(rs);
-                    double and = logic.and(forAll, exits);
-                    chromosome.setFitness(and);
-                }
+                forAll = evaluatePredicate.evaluateIMP(predicate);
+            } else {
+                forAll = evaluatePredicate.evaluate(predicate);
             }
+            chromosome.setFitness(forAll);        
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -315,7 +302,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         }
         Chromosome[] parents = new Chromosome[size];
         for (int i = 0; i < parents.length; i++) {
-            //parents[i] = chromosomes[i % 2 == 0 ? i : random.nextInt(chromosomes.length)];
+            // parents[i] = chromosomes[i % 2 == 0 ? i :
+            // random.nextInt(chromosomes.length)];
             parents[i] = chromosomes[i];
         }
         return parents;
@@ -346,19 +334,23 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             bIndex += 3;
         }
         // sbx crossover
-        //double[][] offspringVars = sbxCrossover.execute(aVars, bVars, boundaries);
+        // double[][] offspringVars = sbxCrossover.execute(aVars, bVars, boundaries);
         aIndex = 0;
         bIndex = 0;
-      /*  MembershipFunction[] aFPG = new FPG[size];
-        MembershipFunction[] bFPG = new FPG[size];
-        for (int i = 0; i < size; i++) {
-            aFPG[i] = new FPG(offspringVars[0][aIndex], offspringVars[0][aIndex + 1], offspringVars[0][aIndex + 2]);
-            bFPG[i] = new FPG(offspringVars[1][bIndex], offspringVars[1][bIndex + 1], offspringVars[1][bIndex + 2]);
-            aIndex += 3;
-            bIndex += 3;
-        }
-        offspring.add(new Chromosome(aFPG));
-        offspring.add(new Chromosome(bFPG));*/
+        /*
+         * MembershipFunction[] aFPG = new FPG[size];
+         * MembershipFunction[] bFPG = new FPG[size];
+         * for (int i = 0; i < size; i++) {
+         * aFPG[i] = new FPG(offspringVars[0][aIndex], offspringVars[0][aIndex + 1],
+         * offspringVars[0][aIndex + 2]);
+         * bFPG[i] = new FPG(offspringVars[1][bIndex], offspringVars[1][bIndex + 1],
+         * offspringVars[1][bIndex + 2]);
+         * aIndex += 3;
+         * bIndex += 3;
+         * }
+         * offspring.add(new Chromosome(aFPG));
+         * offspring.add(new Chromosome(bFPG));
+         */
         // blend crossover
         double[][] offspringVars2 = blenCrossover.execute(aVars, bVars, boundaries);
         aIndex = 0;

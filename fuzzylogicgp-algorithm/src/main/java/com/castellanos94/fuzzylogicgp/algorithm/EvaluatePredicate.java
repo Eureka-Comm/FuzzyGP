@@ -134,31 +134,52 @@ public class EvaluatePredicate implements IAlgorithm {
             fa.append("");
             ec.append("");
         }
-        /*DoubleColumn pColumn = null;
-        if (this.predicate.getType() == NodeType.IMP) {
-            Node p = this.predicate.findById(this.predicate.getLeftID());
-            pColumn = DoubleColumn.create("Premise");
-            boolean flag = true;
-            for (int i = 0; i < this.fuzzyData.rowCount(); i++) {
-                try {
-                    pColumn.append(fitValue(p, i));
-                } catch (OperatorException e) {
-                    logger.error("Fit compute error at premise {} : {}", p, e.getMessage());
-                    flag = false;
-                }
-            }
-            if (flag) {
-                double and = logic.and(forAllValue, logic.exist(pColumn.asList()));
-                fa.set(0, "" + and);
-                predicate.setFitness(and);
-            }
-        }
-        if (pColumn == null)
-            fuzzyData.addColumns(fa, ec, resultColumn);
-        else
-            fuzzyData.addColumns(fa, ec, resultColumn, pColumn);*/
         fuzzyData.addColumns(fa, ec, resultColumn);
         return forAllValue;
+    }
+
+    public double evaluateIMP(NodeTree predicate) {
+        this.predicate = predicate;
+        if (predicate.getType() == NodeType.IMP) {
+            dataFuzzy();
+            fitCompute();
+
+            Node premise = predicate.findById(predicate.getLeftID());
+            List<Double> rsPremise = new ArrayList<>();
+            List<Double> rsPredicate = new ArrayList<>();
+
+            boolean flag = true;
+            // ∀x((∃xpx)∧px→qx))|x∈data
+
+            for (int i = 0; i < data.rowCount() && flag; i++) {
+                try {
+                    rsPremise.add(fitValue(premise, i));
+                } catch (OperatorException e) {
+                    logger.error("Fit compute error at premise {} : {}", premise, e.getMessage());
+                    flag = false;
+                }
+                try {
+                    rsPredicate.add(fitValue(predicate, i));
+                } catch (OperatorException e) {
+                    logger.error("Fit compute error at predicate {} : {}", predicate, e.getMessage());
+                    flag = false;
+                }
+
+            }
+            if (flag) {
+                double exits = logic.exist(rsPremise);
+                List<Double> rs = new ArrayList<>();
+                for (Double valDouble : rsPredicate) {
+                    rs.add(logic.and(exits, valDouble));
+                }
+                Double value = logic.forAll(rs);
+                predicate.setFitness(value);
+                return value;
+            }
+        } else {
+            return evaluate();
+        }
+        return Double.NaN;
     }
 
     public void exportToCsv() throws IOException {
