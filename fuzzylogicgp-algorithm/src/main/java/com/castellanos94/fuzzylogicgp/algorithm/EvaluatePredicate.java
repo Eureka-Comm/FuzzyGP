@@ -148,38 +148,28 @@ public class EvaluatePredicate implements IAlgorithm {
             List<Double> rsPremise = new ArrayList<>();
             List<Double> rsPredicate = new ArrayList<>();
 
-            boolean flag = true;
             // ∀x((∃xpx)∧px→qx))|x∈data
 
-            for (int i = 0; i < data.rowCount() && flag; i++) {
+            for (int i = 0; i < data.rowCount(); i++) {
                 try {
                     rsPremise.add(fitValue(premise, i));
-                } catch (OperatorException e) {
-                    logger.error("Fit compute error at premise {} : {}", premise, e.getMessage());
-                    flag = false;
-                }
-                try {
                     rsPredicate.add(fitValue(predicate, i));
-                } catch (OperatorException e) {
-                    logger.error("Fit compute error at predicate {} : {}", predicate, e.getMessage());
-                    flag = false;
+                } catch (OperatorException ex) {
+                    logger.error("Fit compute " + ex);
                 }
+            }
 
+            double exits = logic.exist(rsPremise);
+            List<Double> rs = new ArrayList<>();
+            for (Double valDouble : rsPredicate) {
+                rs.add(logic.and(exits, valDouble));
             }
-            if (flag) {
-                double exits = logic.exist(rsPremise);
-                List<Double> rs = new ArrayList<>();
-                for (Double valDouble : rsPredicate) {
-                    rs.add(logic.and(exits, valDouble));
-                }
-                Double value = logic.forAll(rs);
-                predicate.setFitness(value);
-                return value;
-            }
+            Double value = logic.forAll(rs);
+            predicate.setFitness(value);
+            return value;
         } else {
             return evaluate();
         }
-        return Double.NaN;
     }
 
     public void exportToCsv() throws IOException {

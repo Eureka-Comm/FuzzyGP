@@ -250,18 +250,15 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             f.setEditable(true);
             statesToWork.get(i).setMembershipFunction(f);
         }
-        try {
-            EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
-            double forAll;
-            if (predicate.getType() == NodeType.IMP) {
-                forAll = evaluatePredicate.evaluateIMP(predicate);
-            } else {
-                forAll = evaluatePredicate.evaluate(predicate);
-            }
-            chromosome.setFitness(forAll);        
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
+        double forAll;
+        if (predicate.getType() == NodeType.IMP) {
+            forAll = evaluatePredicate.evaluateIMP(predicate);
+        } else {
+            forAll = evaluatePredicate.evaluate(predicate);
         }
+        chromosome.setFitness(forAll);
     }
 
     @Override
