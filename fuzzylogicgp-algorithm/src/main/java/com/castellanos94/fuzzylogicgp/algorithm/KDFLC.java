@@ -634,29 +634,30 @@ public class KDFLC implements IAlgorithm {
             public boolean shouldSkipClass(Class<?> clazz) {
                 return false;
             }
-            
+
         });
         Gson gson = builder.create();
         ArrayList<Double> f0 = null;
-        FPGOptimizer optimizer=null;
+        FPGOptimizer optimizer = null;
 
         if (this.logic instanceof GMBCFALogic) {
             f0 = new ArrayList<>();
             GMBCFALogic lFa_Logic = (GMBCFALogic) this.logic;
             lFa_Logic.setExponent(0);
             optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
-            0.95, null);
+                    0.95, null);
         }
-        for (int i = 0; i < resultList.size(); i++) {
-            Double fv = resultList.get(i).getFitness();
+        ArrayList<NodeTree> rs = this.getResultList();
+        for (int i = 0; i < rs.size(); i++) {
+            Double fv = rs.get(i).getFitness();
             v.add(fv);
-            p.add(resultList.get(i).toString());
-            NodeTree nodeTree = resultList.get(i);
+            p.add(rs.get(i).toString());
+            NodeTree nodeTree = rs.get(i);
             nodeTree.setEditable(false);
             d.add(gson.toJson(nodeTree));
 
             if (f0 != null) {
-                 NodeTree execute = optimizer.execute(nodeTree.copy());
+                NodeTree execute = optimizer.execute(nodeTree.copy());
                 f0.add(execute.getFitness());
             }
         }
@@ -693,6 +694,19 @@ public class KDFLC implements IAlgorithm {
      * @return discovered predicate list
      */
     public ArrayList<NodeTree> getResultList() {
+        resultList.forEach(p -> {
+            HashMap<String, Integer> map = new HashMap<>();
+            for (Node node : NodeTree.getNodesByType(p, NodeType.STATE)) {
+                if (map.containsKey(node.getLabel())) {
+                    int count = map.get(node.getLabel()) + 1;
+                    String label = String.format("%s-%d", node.getLabel(), count);
+                    node.setLabel(label);
+                    map.put(node.getLabel(), count);
+                } else {
+                    map.put(node.getLabel(), 1);
+                }
+            }
+        });
         return resultList;
     }
 
