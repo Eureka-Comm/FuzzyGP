@@ -39,4 +39,8 @@ public class GMBCFALogic extends GMBCLogic {
         r = Math.sqrt(r / values.size());
         return Math.exp(pe - exponent * r);
     }
+    @Override
+    public String toString() {
+        return this.getClass().getName() + " " + implicationType + " "+exponent;
+    }
 }
