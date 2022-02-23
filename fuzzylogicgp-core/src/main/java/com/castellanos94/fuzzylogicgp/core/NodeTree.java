@@ -23,26 +23,26 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     public NodeTree(NodeType type) throws OperatorException {
         this.children = new ArrayList<>();
         switch (type) {
-        case AND:
-            setType(type);
-            break;
-        case OR:
-            setType(type);
-            break;
-        case IMP:
-            setType(type);
-            break;
-        case EQV:
-            setType(type);
-            break;
-        case NOT:
-            setType(type);
-            break;
-        case OPERATOR:
-            setType(type);
-            break;
-        default:
-            throw new OperatorException(this.getId() + " " + this.getType() + ": illegal assigment.");
+            case AND:
+                setType(type);
+                break;
+            case OR:
+                setType(type);
+                break;
+            case IMP:
+                setType(type);
+                break;
+            case EQV:
+                setType(type);
+                break;
+            case NOT:
+                setType(type);
+                break;
+            case OPERATOR:
+                setType(type);
+                break;
+            default:
+                throw new OperatorException(this.getId() + " " + this.getType() + ": illegal assigment.");
 
         }
     }
@@ -72,39 +72,39 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         Node node_ = node;
 
         switch (this.getType()) {
-        case AND:
-        case OR:
-            this.children.add(node_);
-            break;
-        case IMP:
-            if (this.children.isEmpty()) {
-                this.leftID = node_.getId();
-                this.children.add(node_);
-            } else if (children.size() == 1) {
-                this.righID = node_.getId();
-                this.children.add(node_);
-            } else {
-                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
-            }
-            break;
-        case EQV:
-            if (this.children.size() < 2) {
-                this.children.add(node_);
-            } else {
-                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
-            }
-            break;
-        case NOT:
-            if (children.isEmpty()) {
+            case AND:
+            case OR:
                 this.children.add(node_);
                 break;
-            } else
-                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be one element.");
-        case OPERATOR:
-            this.children.add(node_);
-            break;
-        default:
-            throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be ? element.");
+            case IMP:
+                if (this.children.isEmpty()) {
+                    this.leftID = node_.getId();
+                    this.children.add(node_);
+                } else if (children.size() == 1) {
+                    this.righID = node_.getId();
+                    this.children.add(node_);
+                } else {
+                    throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
+                }
+                break;
+            case EQV:
+                if (this.children.size() < 2) {
+                    this.children.add(node_);
+                } else {
+                    throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be two element.");
+                }
+                break;
+            case NOT:
+                if (children.isEmpty()) {
+                    this.children.add(node_);
+                    break;
+                } else
+                    throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be one element.");
+            case OPERATOR:
+                this.children.add(node_);
+                break;
+            default:
+                throw new OperatorException(this.getId() + " " + this.getType() + ": arity must be ? element.");
         }
     }
 
@@ -220,7 +220,33 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     }
 
     public boolean isValid() {
-        return true;
+        boolean rs = isValid(this);
+        if(rs){
+            for (Node node : children) {
+                if(node instanceof NodeTree){
+                    rs = ((NodeTree)node).isValid();
+                    if(!rs){
+                        return rs;
+                    }
+                }
+            }
+        }
+        return rs;
+    }
+
+    private boolean isValid(NodeTree node) {
+        switch (node.getType()) {
+            case OR:
+            case AND:
+                return node.children.size() >= 2;
+            case IMP:
+            case EQV:
+                return node.children.size() == 2;
+            case NOT:
+                return node.children.size() == 1;
+            default:
+                return true;
+        }
     }
 
     public static NodeTree getNodeParent(NodeTree root, String idChild) {
