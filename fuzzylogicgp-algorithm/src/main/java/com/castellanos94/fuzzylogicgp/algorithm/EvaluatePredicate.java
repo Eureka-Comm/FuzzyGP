@@ -210,6 +210,11 @@ public class EvaluatePredicate implements IAlgorithm {
     public double fitValue(Node node, int index) throws OperatorException {
         NodeTree nodeTree;
         ArrayList<Double> values;
+        if(node != null && node.getType() == null){
+            logger.error("Error fit value, invalid node type");
+
+            throw new OperatorException("Unknown element: "+node.getLabel() + " "+node.getDescription() + " ");
+        }
         switch (node.getType()) {
             case AND:
                 nodeTree = (NodeTree) node;
