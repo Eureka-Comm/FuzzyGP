@@ -649,7 +649,8 @@ public class KDFLC implements IAlgorithm {
         }
         ArrayList<NodeTree> rs = this.getResultList();
         for (int i = 0; i < rs.size(); i++) {
-            Double fv = rs.get(i).getFitness();
+            EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
+            Double fv = evaluatePredicate.evaluate(rs.get(i));
             v.add(fv);
             p.add(rs.get(i).toString());
             NodeTree nodeTree = rs.get(i);

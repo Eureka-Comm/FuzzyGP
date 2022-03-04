@@ -2,6 +2,7 @@ package com.castellanos94.fuzzylogicgp.core;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import com.google.gson.GsonBuilder;
 
@@ -11,17 +12,17 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
      */
     private static final long serialVersionUID = 7984595590989290929L;
     protected Double fitness;
-    protected ArrayList<Node> children;
+    protected LinkedList<Node> children;
     private String leftID;
     private String righID;
 
     public NodeTree() {
         setType(NodeType.OPERATOR);
-        this.children = new ArrayList<>();
+        this.children = new LinkedList<>();
     }
 
     public NodeTree(NodeType type) throws OperatorException {
-        this.children = new ArrayList<>();
+        this.children = new LinkedList<>();
         switch (type) {
             case AND:
                 setType(type);
@@ -58,7 +59,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
      * @return the children
      *
      */
-    public ArrayList<Node> getChildren() {
+    public LinkedList<Node> getChildren() {
         return children;
     }
 
