@@ -216,7 +216,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         if (this.label != null && !this.label.trim().isEmpty()) {
             return label;
         } else {
-            return this.toString();
+            return this.getType().toString();
         }
     }
 
