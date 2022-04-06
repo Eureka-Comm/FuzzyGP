@@ -257,12 +257,14 @@ public class KDFLC implements IAlgorithm {
                 iteration++;
                 // Esto se cambio antes incluia a
                 // if (wasNotChanged >= num_iter / 10 && !isTheSameGenerator) {
-                if (wasNotChanged >= (int)(num_iter * 0.05)) {
+                if (wasNotChanged >= (int)(num_iter * 0.10)) {
                     int n = 0;
                     wasNotChanged = 0;
+                    int index;
                     for (int i = 0; i < num_pop && n < num_pop / 2; i++) {
-                        if (!toReplaceIndex.contains(i)) {
-                            toReplaceIndex.add(i);
+                        index = rand.nextInt(num_pop);
+                        if (!toReplaceIndex.contains(index)) {
+                            toReplaceIndex.add(index);
                             n++;
                         }
                     }
