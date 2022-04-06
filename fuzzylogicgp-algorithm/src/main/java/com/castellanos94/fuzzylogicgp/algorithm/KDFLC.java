@@ -160,6 +160,7 @@ public class KDFLC implements IAlgorithm {
             int iteration = 1;
             while (iteration < num_iter && resultList.size() < num_result) {
                 Stream<Integer> stream = (parallelSupport) ? toReplaceIndex.parallelStream() : toReplaceIndex.stream();
+                logger.info("To replace {} at iteration {}", toReplaceIndex.size(), iteration);
                 stream.forEach(_index -> {
                     int intents = 0;
                     do {
@@ -254,10 +255,12 @@ public class KDFLC implements IAlgorithm {
                     wasNotChanged++;
                 }
                 iteration++;
-                if (wasNotChanged >= num_iter / 10 && !isTheSameGenerator) {
+                // Esto se cambio antes incluia a
+                // if (wasNotChanged >= num_iter / 10 && !isTheSameGenerator) {
+                if (wasNotChanged >= num_iter / 5) {
                     int n = 0;
                     wasNotChanged = 0;
-                    for (int i = 0; i < num_pop && n < num_pop / 3; i++) {
+                    for (int i = 0; i < num_pop && n < num_pop / 2; i++) {
                         if (!toReplaceIndex.contains(i)) {
                             toReplaceIndex.add(i);
                             n++;
