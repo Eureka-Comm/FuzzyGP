@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.castellanos94.fuzzylogicgp.core.GeneratorNode;
@@ -75,7 +76,7 @@ public class KDFLC implements IAlgorithm {
 
     private Table fuzzyData;
     private boolean parallelSupport = true;
-
+    private ArrayList<Integer> integerIndex;
     public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
             int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data) {
 
@@ -104,6 +105,7 @@ public class KDFLC implements IAlgorithm {
         this.min_truth_value = (min_truth_value <= 1) ? (min_truth_value > 0.0005) ? min_truth_value - 0.005 : 0.0
                 : 0.5;
         this.generators = new HashMap<>();
+        this.integerIndex = new ArrayList<>(IntStream.range(0, num_pop).boxed().collect(Collectors.toList()));
     }
 
     /**
@@ -261,8 +263,9 @@ public class KDFLC implements IAlgorithm {
                     int n = 0;
                     wasNotChanged = 0;
                     int index;
+                    Collections.shuffle(integerIndex);
                     for (int i = 0; i < num_pop && n < num_pop / 2; i++) {
-                        index = rand.nextInt(num_pop);
+                        index = integerIndex.get(i);
                         if (!toReplaceIndex.contains(index)) {
                             toReplaceIndex.add(index);
                             n++;

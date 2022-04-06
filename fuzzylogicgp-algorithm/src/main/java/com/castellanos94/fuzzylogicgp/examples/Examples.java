@@ -134,7 +134,7 @@ public class Examples {
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         String predicate = "(IMP \"comodin\"  \"quality\")";
-        predicate = "\"comodin\"";
+        //predicate = "\"comodin\"";
         DummyGenerator generator = new DummyGenerator();
         generator.setLabel("comodin");
         generator.setDepth(2);
@@ -156,8 +156,8 @@ public class Examples {
 
         query.setMut_percentage(0.75f);
         
-        query.setNum_iter(5);
-        query.setMin_truth_value(0.75f);
+        query.setNum_iter(50);
+        query.setMin_truth_value(0.95f);
         query.setNum_pop(50);
 
         query.setNum_result(20);
