@@ -271,6 +271,7 @@ public class KDFLC implements IAlgorithm {
                             n++;
                         }
                     }
+                    logger.info("\tAdded {}",n);
                 }
             }
             Collections.sort(resultList, Collections.reverseOrder());
