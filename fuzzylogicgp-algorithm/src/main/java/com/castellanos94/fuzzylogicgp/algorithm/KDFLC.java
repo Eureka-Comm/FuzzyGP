@@ -259,7 +259,7 @@ public class KDFLC implements IAlgorithm {
                 iteration++;
                 // Esto se cambio antes incluia a
                 // if (wasNotChanged >= num_iter / 10 && !isTheSameGenerator) {
-                if (wasNotChanged >= (int) (num_iter * 0.5) && iteration > ((int) num_iter / 10)) {
+                if (wasNotChanged >= (int) (num_iter * 0.5) && iteration > 9) {
                     int n = 0;
                     wasNotChanged = 0;
                     int index;
