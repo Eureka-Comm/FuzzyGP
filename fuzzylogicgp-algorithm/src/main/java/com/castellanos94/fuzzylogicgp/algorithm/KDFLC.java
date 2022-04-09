@@ -125,6 +125,7 @@ public class KDFLC implements IAlgorithm {
             generators.put(gNode.getId(), gNode);
         }
         NodeTree[] population = makePopulation();
+        logger.info("evaluate");
         if (parallelSupport) {
             Arrays.parallelSetAll(population, _index -> {
                 FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
