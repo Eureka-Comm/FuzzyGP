@@ -4,7 +4,7 @@ import java.util.List;
 
 public class TestMembership {
     public static void main(String[] args) {
-        NSigmoid nSigmoid = new NSigmoid(3, 6);
+        //NSigmoid nSigmoid = new NSigmoid(3, 6);
         MembershipFunction function = new Trapezoidal(3., 5., 7., 10.);
         List<Point> points = function.getPoints();
         System.out.println(String.format("%s - %3d, start = %10s, end = %10s", function, points.size(),

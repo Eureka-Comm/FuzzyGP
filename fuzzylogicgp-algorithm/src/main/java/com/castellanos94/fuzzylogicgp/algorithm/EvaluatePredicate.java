@@ -276,9 +276,8 @@ public class EvaluatePredicate implements IAlgorithm {
     @SuppressWarnings("unchecked")
     private void dataFuzzy() {
         fuzzyData = Table.create();
-        ArrayList<Node> nodes = NodeTree.getNodesByType(predicate, NodeType.STATE);
-        for (Node v : nodes) {
-            StateNode s = (StateNode) v;
+        ArrayList<StateNode> nodes = NodeTree.getNodesByType(predicate, StateNode.class);
+        for (StateNode s : nodes) {
             if (!fuzzyData.columnNames().contains(s.getLabel())) {
                 ColumnType type = data.column(s.getColName()).type();
                 DoubleColumn dc = DoubleColumn.create(s.getLabel());

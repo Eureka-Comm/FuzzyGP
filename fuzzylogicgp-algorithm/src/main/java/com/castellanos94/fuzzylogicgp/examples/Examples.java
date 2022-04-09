@@ -156,7 +156,7 @@ public class Examples {
 
         query.setMut_percentage(0.75f);
         
-        query.setNum_iter(50);
+        query.setNum_iter(1);
         query.setMin_truth_value(0.95f);
         query.setNum_pop(50);
 

@@ -222,11 +222,11 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
 
     public boolean isValid() {
         boolean rs = isValid(this);
-        if(rs){
+        if (rs) {
             for (Node node : children) {
-                if(node instanceof NodeTree){
-                    rs = ((NodeTree)node).isValid();
-                    if(!rs){
+                if (node instanceof NodeTree) {
+                    rs = ((NodeTree) node).isValid();
+                    if (!rs) {
                         return rs;
                     }
                 }
@@ -269,15 +269,15 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         return null;
     }
 
-    public static ArrayList<Node> getNodesByType(NodeTree tree, NodeType type) {
-        ArrayList<Node> nodes = new ArrayList<>();
-        getNodesByType(tree, nodes, type);
+    public static <T> ArrayList<T> getNodesByType(NodeTree tree, Class<T> clazz) {
+        ArrayList<T> nodes = new ArrayList<>();
+        getNodesByType(tree, nodes, clazz);
         return nodes;
     }
 
     public static ArrayList<Node> getEditableNodes(NodeTree tree) {
         ArrayList<Node> nodes = new ArrayList<>();
-        getNodesByType(tree, nodes, null);
+        getNodesByType(tree, nodes, Node.class);
         Iterator<Node> iterator = nodes.iterator();
         while (iterator.hasNext()) {
             Node _n = iterator.next();
@@ -288,17 +288,13 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
         return nodes;
     }
 
-    public static void getNodesByType(NodeTree tree, ArrayList<Node> nodes, NodeType type) {
+    private static <T> void getNodesByType(NodeTree tree, ArrayList<T> nodes, Class<T> clazz) {
         for (Node n : tree) {
-            // if (!nodes.contains(n)) {
-            if (type == null) {
-                nodes.add(n);
-            } else if (n.getType().equals(type)) {
-                nodes.add(n);
+            if (clazz.isInstance(n)) {
+                nodes.add(clazz.cast(n));
             }
-            // }
             if (n instanceof NodeTree) {
-                getNodesByType((NodeTree) n, nodes, type);
+                getNodesByType((NodeTree) n, nodes, clazz);
             }
         }
     }

@@ -4,8 +4,6 @@ import java.util.Random;
 
 import com.castellanos94.fuzzylogicgp.core.ICrossover;
 
-import org.checkerframework.checker.units.qual.A;
-
 /**
  * Blend crossover in real-coded from
  * https://cse.iitkgp.ac.in/~dsamanta/courses/sca/resources/slides/GA-04%20Crossover%20Techniques.pdf
@@ -26,7 +24,7 @@ public class BlendCrossover implements ICrossover {
         }
         double[][] offspring = new double[2][a.length];
         System.arraycopy(a, 0, offspring[0], 0, a.length);
-        System.arraycopy(b, 0, offspring[1], 0, b.length);        
+        System.arraycopy(b, 0, offspring[1], 0, b.length);
 
         double gamma;
         for (int i = 0; i < offspring.length; i++) {

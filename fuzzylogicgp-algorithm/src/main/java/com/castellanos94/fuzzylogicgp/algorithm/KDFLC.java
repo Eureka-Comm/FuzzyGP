@@ -77,6 +77,7 @@ public class KDFLC implements IAlgorithm {
     private Table fuzzyData;
     private boolean parallelSupport = true;
     private ArrayList<Integer> integerIndex;
+
     public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
             int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data) {
 
@@ -114,15 +115,14 @@ public class KDFLC implements IAlgorithm {
      */
     @Override
     public void execute(NodeTree predicate) {
+        long initialTime = System.currentTimeMillis();
+        logger.info("start time {}", initialTime);
         this.predicatePattern = predicate;
         int wasNotChanged = 0;
-        Iterator<Node> iterator = NodeTree.getNodesByType(predicatePattern, NodeType.OPERATOR).iterator();
+        Iterator<GeneratorNode> iterator = NodeTree.getNodesByType(predicatePattern, GeneratorNode.class).iterator();
         while (iterator.hasNext()) {
-            Node node = iterator.next();
-            if (node instanceof GeneratorNode) {
-                GeneratorNode gNode = (GeneratorNode) node;
-                generators.put(gNode.getId(), gNode);
-            }
+            GeneratorNode gNode = iterator.next();
+            generators.put(gNode.getId(), gNode);
         }
         NodeTree[] population = makePopulation();
         if (parallelSupport) {
@@ -140,6 +140,7 @@ public class KDFLC implements IAlgorithm {
         }
 
         Arrays.sort(population, Collections.reverseOrder());
+        logger.info("End time for random generation: {}", (System.currentTimeMillis() - initialTime) / 1000);
         boolean isToDiscovery = isToDiscovery(predicatePattern);
         ArrayList<Integer> toReplaceIndex = new ArrayList<>();
         for (int i = 0; i < population.length; i++) {
@@ -306,7 +307,7 @@ public class KDFLC implements IAlgorithm {
     }
 
     private boolean isTheSameGenerator() {
-        ArrayList<Node> _nodesByType = NodeTree.getNodesByType(this.predicatePattern, NodeType.OPERATOR);
+        ArrayList<GeneratorNode> _nodesByType = NodeTree.getNodesByType(this.predicatePattern, GeneratorNode.class);
         ArrayList<Node> fList = new ArrayList<>();
         for (Node n : _nodesByType) {
             if (!fList.contains(n)) {
@@ -332,16 +333,13 @@ public class KDFLC implements IAlgorithm {
     }
 
     private boolean isForEvaluate() {
-        ArrayList<Node> states = NodeTree.getNodesByType(this.predicatePattern, NodeType.STATE);
-        for (Node node : states) {
-            if (node instanceof StateNode) {
-                StateNode state = (StateNode) node;
-                if (state.getMembershipFunction() == null) {
-                    return false;
-                }
+        ArrayList<StateNode> states = NodeTree.getNodesByType(this.predicatePattern, StateNode.class);
+        for (StateNode state : states) {
+            if (state.getMembershipFunction() == null) {
+                return false;
             }
         }
-        ArrayList<Node> genes = NodeTree.getNodesByType(this.predicatePattern, NodeType.OPERATOR);
+        ArrayList<GeneratorNode> genes = NodeTree.getNodesByType(this.predicatePattern, GeneratorNode.class);
         if (!genes.isEmpty()) {
             return false;
         }
@@ -366,14 +364,11 @@ public class KDFLC implements IAlgorithm {
     }
 
     private boolean isToDiscovery(NodeTree predicate) {
-        ArrayList<Node> operators = NodeTree.getNodesByType(predicate, NodeType.OPERATOR);
+        ArrayList<GeneratorNode> operators = NodeTree.getNodesByType(predicate, GeneratorNode.class);
         String representation = predicate.toString();
-        for (Node node : operators) {
-            if (node instanceof GeneratorNode) {
-                GeneratorNode gn = (GeneratorNode) node;
-                if (representation.contains(gn.getLabel())) {
-                    return true;
-                }
+        for (GeneratorNode gn : operators) {
+            if (representation.contains(gn.getLabel())) {
+                return true;
             }
         }
         return false;
@@ -421,32 +416,30 @@ public class KDFLC implements IAlgorithm {
         if (predicatePattern.getChildren().size() == 1) {
             flag = predicatePattern.getChildren().get(0) instanceof GeneratorNode;
         }
-        Iterator<Node> iterator = NodeTree.getNodesByType(p, NodeType.OPERATOR).iterator();
+        Iterator<GeneratorNode> iterator = NodeTree.getNodesByType(p, GeneratorNode.class).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
-            if (node instanceof GeneratorNode) {
-                Node generate = ((GeneratorNode) node).generate(index < num_pop / 2);
-                generate.setEditable(true);
-                if (p != node && p.getType() != NodeType.OPERATOR) {
-                    NodeTree _parent = null;
-                    do {
-                        _parent = NodeTree.getNodeParent(p, node.getId());
-                        if (_parent != null) {
-                            NodeTree.replace(_parent, node, generate, flag);
-                        }
-                    } while (_parent != null);
-                } else {
-                    if (((GeneratorNode) node).getDepth() == 0) {
-                        NodeTree root = new NodeTree(NodeType.NOT);
-                        root.setEditable(true);
-                        root.addChild(generate);
-                        return root;
+            Node generate = ((GeneratorNode) node).generate(index < num_pop / 2);
+            generate.setEditable(true);
+            if (p != node && p.getType() != NodeType.OPERATOR) {
+                NodeTree _parent = null;
+                do {
+                    _parent = NodeTree.getNodeParent(p, node.getId());
+                    if (_parent != null) {
+                        NodeTree.replace(_parent, node, generate, flag);
                     }
-                    if (generate.getType() == NodeType.STATE) {
-                        return createRandomInd(index);
-                    }
-                    return (NodeTree) generate;
+                } while (_parent != null);
+            } else {
+                if (((GeneratorNode) node).getDepth() == 0) {
+                    NodeTree root = new NodeTree(NodeType.NOT);
+                    root.setEditable(true);
+                    root.addChild(generate);
+                    return root;
                 }
+                if (generate.getType() == NodeType.STATE) {
+                    return createRandomInd(index);
+                }
+                return (NodeTree) generate;
             }
         }
         return p;
@@ -710,7 +703,7 @@ public class KDFLC implements IAlgorithm {
     public ArrayList<NodeTree> getResultList() {
         resultList.forEach(p -> {
             HashMap<String, Integer> map = new HashMap<>();
-            for (Node node : NodeTree.getNodesByType(p, NodeType.STATE)) {
+            for (StateNode node : NodeTree.getNodesByType(p, StateNode.class)) {
                 if (map.containsKey(node.getLabel())) {
                     int count = map.get(node.getLabel()) + 1;
                     String label = String.format("%s-%d", node.getLabel(), count);

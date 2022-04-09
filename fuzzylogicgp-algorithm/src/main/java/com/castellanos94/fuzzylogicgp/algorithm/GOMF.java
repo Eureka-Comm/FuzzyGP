@@ -12,7 +12,6 @@ import java.util.Random;
 import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
-import com.castellanos94.fuzzylogicgp.core.NodeType;
 import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.core.Utils;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
@@ -32,7 +31,7 @@ import tech.tablesaw.columns.Column;
  * @since October 06, 2019.
  * @version 0.5.0
  */
-public class GOMF implements IAlgorithm{
+public class GOMF implements IAlgorithm {
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger(GOMF.class);
 
@@ -79,12 +78,9 @@ public class GOMF implements IAlgorithm{
     public void optimize(NodeTree predicate) {
         this.predicatePattern = predicate;
         sns = new ArrayList<>();
-        NodeTree.getNodesByType(predicatePattern, NodeType.STATE).forEach(v -> {
-            if (v instanceof StateNode) {
-                StateNode c = (StateNode) v;
-                if (c.getMembershipFunction() == null) {
-                    sns.add(c);
-                }
+        NodeTree.getNodesByType(predicatePattern, StateNode.class).forEach(c -> {
+            if (c.getMembershipFunction() == null) {
+                sns.add(c);
             }
         });
         if (sns.size() > 0) {
@@ -101,7 +97,7 @@ public class GOMF implements IAlgorithm{
         int iteration = 0;
         currentPop = makePop();
         evaluatePredicate(currentPop);
-        
+
         while (iteration < adj_iter
                 && currentPop.get(currentPop.size() - 1).getFitness().compareTo(adj_truth_value) < 0) {
             iteration++;
@@ -382,7 +378,8 @@ public class GOMF implements IAlgorithm{
 
     @Override
     public void exportResult(File file) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
+                                                                       // Tools | Templates.
     }
 
     private class ChromosomePojo {
