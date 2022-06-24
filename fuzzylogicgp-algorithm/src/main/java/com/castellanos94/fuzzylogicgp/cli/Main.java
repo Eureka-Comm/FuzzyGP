@@ -68,7 +68,6 @@ public class Main {
         } else {
             Query query = null;
             if (main.seed != null) {
-                Utils.random.setSeed(main.seed);
                 main.parallelSupport = false;
             }
             TaskExecutor.parallelSupport = main.parallelSupport;

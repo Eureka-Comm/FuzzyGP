@@ -12,7 +12,6 @@ import java.util.Random;
  * @author hp
  */
 public class Utils {
-    public static Random random = new Random();
 
     /**
      * Returns a pseudo-random number between min and max, inclusive. The difference
@@ -23,7 +22,7 @@ public class Utils {
      * @return Integer between min and max, inclusive.
      * @see java.util.Random#nextInt(int)
      */
-    public static int randInt(int min, int max) {
+    public static int randInt(Random random, int min, int max) {
         return random.nextInt((max - min) + 1) + min;
     }
 

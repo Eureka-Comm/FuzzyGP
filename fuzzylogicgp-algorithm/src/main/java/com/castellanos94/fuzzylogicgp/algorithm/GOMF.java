@@ -13,7 +13,6 @@ import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.StateNode;
-import com.castellanos94.fuzzylogicgp.core.Utils;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.FPG;
 
@@ -47,7 +46,7 @@ public class GOMF implements IAlgorithm {
     private List<StateNode> sns;
     private final HashMap<String, Double[]> minPromMaxMapValues;
 
-    private static final Random rand = Utils.random;
+    private static final Random rand = new Random();
     private final ChromosomeComparator chromosomeComparator = new ChromosomeComparator();
 
     /**

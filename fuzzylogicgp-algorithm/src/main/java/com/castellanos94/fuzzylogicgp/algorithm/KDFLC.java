@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.castellanos94.fuzzylogicgp.core.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import com.castellanos94.fuzzylogicgp.core.Node;
@@ -30,10 +34,6 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
@@ -70,13 +70,14 @@ public class KDFLC implements IAlgorithm {
     private double adj_min_truth_value;
 
     // Aux
-    private static Random rand = Utils.random;
+    private static Random rand = new Random();
     private Table data;
     private ArrayList<NodeTree> resultList;
 
     private Table fuzzyData;
     private boolean parallelSupport = true;
     private ArrayList<Integer> integerIndex;
+    private final PredicateGenerator predicateGenerator;
 
     public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
             int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data) {
@@ -107,6 +108,7 @@ public class KDFLC implements IAlgorithm {
                 : 0.5;
         this.generators = new HashMap<>();
         this.integerIndex = new ArrayList<>(IntStream.range(0, num_pop).boxed().collect(Collectors.toList()));
+        this.predicateGenerator = new PredicateGenerator();
     }
 
     /**
@@ -420,7 +422,7 @@ public class KDFLC implements IAlgorithm {
         Iterator<GeneratorNode> iterator = NodeTree.getNodesByType(p, GeneratorNode.class).iterator();
         while (iterator.hasNext()) {
             Node node = iterator.next();
-            Node generate = ((GeneratorNode) node).generate(index < num_pop / 2);
+            Node generate = predicateGenerator.generate((GeneratorNode) node, index < num_pop / 2);
             generate.setEditable(true);
             if (p != node && p.getType() != NodeType.OPERATOR) {
                 NodeTree _parent = null;
@@ -452,11 +454,11 @@ public class KDFLC implements IAlgorithm {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
                 if (!editableNode.isEmpty()) {
 
-                    Node n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
+                    Node n = editableNode.get(Utils.randInt(rand,0, editableNode.size() - 1));
 
                     int intents = 0;
                     while (n.getType() == NodeType.NOT && intents < editableNode.size()) {
-                        n = editableNode.get(Utils.randInt(0, editableNode.size() - 1));
+                        n = editableNode.get(Utils.randInt(rand,0, editableNode.size() - 1));
                         intents++;
                     }
                     Node clon = (Node) n.copy();
