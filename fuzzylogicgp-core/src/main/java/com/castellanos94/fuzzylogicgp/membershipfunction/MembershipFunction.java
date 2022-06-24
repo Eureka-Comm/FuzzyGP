@@ -52,11 +52,11 @@ public abstract class MembershipFunction implements Serializable {
     }
 
     public double evaluate(Number v) {
-        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
+        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet for number values.");
     }
 
     public double evaluate(String key) {
-        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet.");
+        throw new UnsupportedOperationException("[" + this.type + "]: Not supported yet for string values.");
     }
 
     public abstract List<Point> getPoints();
