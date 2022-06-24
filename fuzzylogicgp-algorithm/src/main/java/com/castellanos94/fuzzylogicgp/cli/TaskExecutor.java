@@ -87,7 +87,8 @@ public class TaskExecutor {
                 KDFLC discovery = new KDFLC(logic, discoveryQuery.getNum_pop(), discoveryQuery.getNum_iter(),
                         discoveryQuery.getNum_result(), discoveryQuery.getMin_truth_value(),
                         discoveryQuery.getMut_percentage(), discoveryQuery.getAdj_num_pop(),
-                        discoveryQuery.getAdj_num_iter(), discoveryQuery.getAdj_min_truth_value(), data);
+                        discoveryQuery.getAdj_num_iter(), discoveryQuery.getAdj_min_truth_value(), data,
+                        discoveryQuery.getMaxTime());
                 discovery.setParallelSupport(parallelSupport);
                 logger.info("Parallel support : " + parallelSupport);
                 discovery.execute(p);

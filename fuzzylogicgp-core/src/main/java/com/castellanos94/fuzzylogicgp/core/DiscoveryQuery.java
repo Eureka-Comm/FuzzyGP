@@ -3,7 +3,9 @@ package com.castellanos94.fuzzylogicgp.core;
 import java.util.ArrayList;
 
 import com.google.gson.annotations.Expose;
-
+/**
+ * Default max time 5 min for execution
+ */
 public class DiscoveryQuery extends Query {
 
     /**
@@ -29,9 +31,12 @@ public class DiscoveryQuery extends Query {
     protected int adj_num_iter;
     @Expose
     protected ArrayList<DummyGenerator> generators;
+    @Expose
+    protected long maxTime;
 
     public DiscoveryQuery() {
         setType(TaskType.DISCOVERY);
+        this.maxTime = 5 * 60 * 1000;
     }
 
     public int getNum_pop() {
@@ -114,6 +119,17 @@ public class DiscoveryQuery extends Query {
 
     public void setGenerators(ArrayList<DummyGenerator> generators) {
         this.generators = generators;
+    }
+
+    public long getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(long maxTime) {
+        if (maxTime >= 0) {
+            throw new IllegalArgumentException("Max time value must be in [0, LONG MAX VALUE).");
+        }
+        this.maxTime = maxTime;
     }
 
     @Override

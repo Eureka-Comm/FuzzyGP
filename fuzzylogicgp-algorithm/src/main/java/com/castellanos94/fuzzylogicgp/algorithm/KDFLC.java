@@ -77,10 +77,11 @@ public class KDFLC implements IAlgorithm {
     private Table fuzzyData;
     private boolean parallelSupport = true;
     private ArrayList<Integer> integerIndex;
+    private final long maxTime;
     private final PredicateGenerator predicateGenerator;
 
     public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
-            int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data) {
+            int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data, long maxTime) {
 
         if (min_truth_value < 0.0 || min_truth_value > 1.0) {
             throw new IllegalArgumentException("Min truth value must be in [0,1].");
@@ -109,6 +110,7 @@ public class KDFLC implements IAlgorithm {
         this.generators = new HashMap<>();
         this.integerIndex = new ArrayList<>(IntStream.range(0, num_pop).boxed().collect(Collectors.toList()));
         this.predicateGenerator = new PredicateGenerator();
+        this.maxTime = maxTime;
     }
 
     /**
@@ -117,7 +119,7 @@ public class KDFLC implements IAlgorithm {
      */
     @Override
     public void execute(NodeTree predicate) {
-        long initialTime = System.currentTimeMillis();
+        final long initialTime = System.currentTimeMillis();
         logger.info("start time {}", initialTime);
         this.predicatePattern = predicate;
         int wasNotChanged = 0;
@@ -164,7 +166,9 @@ public class KDFLC implements IAlgorithm {
         if (isToDiscovery) {
             boolean isTheSameGenerator = isTheSameGenerator();
             int iteration = 1;
-            while (iteration < num_iter && resultList.size() < num_result) {
+            long currentTime = System.currentTimeMillis();
+            while ((iteration < num_iter || ((currentTime = System.currentTimeMillis()) - initialTime) <= maxTime)
+                    && resultList.size() < num_result) {
                 Stream<Integer> stream = (parallelSupport) ? toReplaceIndex.parallelStream() : toReplaceIndex.stream();
                 logger.info("To replace {} at iteration {}", toReplaceIndex.size(), iteration);
                 stream.forEach(_index -> {
@@ -184,7 +188,8 @@ public class KDFLC implements IAlgorithm {
                     population[_index] = _optimizer.execute(population[_index].copy());
                 });
                 toReplaceIndex.clear();
-                logger.info("Iteration " + iteration + " of " + num_iter + " ( " + resultList.size() + " )...");
+                logger.info("Iteration {} of {} ({}), time {}s of {}s...", iteration, this.num_iter, resultList.size(),
+                        ((currentTime - initialTime) / 1000), (maxTime / 1000));
                 int offspring_size = population.length / 2;
                 if (offspring_size % 2 != 0) {
                     offspring_size++;
@@ -292,15 +297,12 @@ public class KDFLC implements IAlgorithm {
         }
         logger.info("Added min" + resultList.isEmpty());
         if (resultList.isEmpty()) {
-            NodeTree best = population[0];
-
-            for (int i = 1; i < population.length; i++) {
-                if (best.getFitness() < population[i].getFitness()) {
-                    best = population[i];
-                }
+            Arrays.sort(population, Collections.reverseOrder());
+            int size = population.length > 10 ? 10 : population.length;
+            for (int i = 0; i < size; i++) {
+                resultList.add((NodeTree) population[i].copy());
             }
-            resultList.add((NodeTree) best.copy());
-            logger.info("Best found " + best.getFitness());
+            logger.info("Best found " + population[0].getFitness());
         }
 
         for (int i = 0; i < resultList.size(); i++) {
@@ -454,11 +456,11 @@ public class KDFLC implements IAlgorithm {
                 List<Node> editableNode = NodeTree.getEditableNodes(population[i]);
                 if (!editableNode.isEmpty()) {
 
-                    Node n = editableNode.get(Utils.randInt(rand,0, editableNode.size() - 1));
+                    Node n = editableNode.get(Utils.randInt(rand, 0, editableNode.size() - 1));
 
                     int intents = 0;
                     while (n.getType() == NodeType.NOT && intents < editableNode.size()) {
-                        n = editableNode.get(Utils.randInt(rand,0, editableNode.size() - 1));
+                        n = editableNode.get(Utils.randInt(rand, 0, editableNode.size() - 1));
                         intents++;
                     }
                     Node clon = (Node) n.copy();
