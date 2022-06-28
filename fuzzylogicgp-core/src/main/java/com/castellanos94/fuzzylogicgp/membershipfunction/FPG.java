@@ -35,12 +35,12 @@ public class FPG extends MembershipFunction {
         this.m = Double.parseDouble(m);
     }
 
-    public FPG(double beta, double gamma, double m, boolean editable) {
+    public FPG(Double beta, Double gamma, Double m, boolean editable) {
         this(beta, gamma, m);
         this.editable = editable;
     }
 
-    public FPG(double beta, double gamma, double m) {
+    public FPG(Double beta, Double gamma, Double m) {
         this();
         this.beta = beta;
         this.gamma = gamma;

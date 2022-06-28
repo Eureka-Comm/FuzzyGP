@@ -15,5 +15,5 @@ public interface ICrossover {
      *                   (upper)
      * @return
      */
-    public double[][] execute(double[] a, double[] b, double[][] boundaries);
+    public Double[][] execute(Double[][] a, Double[][] b, double[][][] boundaries);
 }

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.castellanos94.fuzzylogicgp.core.AMembershipFunctionOptimizer;
 import com.castellanos94.fuzzylogicgp.core.ICrossover;
 import com.castellanos94.fuzzylogicgp.core.Node;
@@ -19,12 +22,11 @@ import com.castellanos94.fuzzylogicgp.logic.GMBCLogic;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 import com.castellanos94.fuzzylogicgp.membershipfunction.FPG;
 import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
+import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunctionFactory;
+import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunctionType;
 
 import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Default FPG Optimizer
@@ -43,7 +45,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     protected Random random;
     protected ICrossover sbxCrossover;
     protected ICrossover blenCrossover;
-    protected double[][] boundaries;
+    protected RepairMembershipFunction repairMembershipFunction;
+    protected double[][][] boundaries;
 
     public static void main(String[] args) throws IOException, OperatorException {
         long start = System.currentTimeMillis();
@@ -57,9 +60,9 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         states.add(new StateNode("residual_sugar", "residual_sugar"));
         states.add(new StateNode("pH", "pH"));
         states.add(new StateNode("total_sulfur_dioxide", "total_sulfur_dioxide"));
-        states.add(new StateNode("quality", "quality"));
+        states.add(new StateNode("quality", "quality", new FPG(5., 8., null)));
         states.add(new StateNode("density", "density"));
-        states.add(new StateNode("chlorides", "chlorides"));
+        states.add(new StateNode("chlorides", "chlorides", new FPG(null, null, 1.0)));
         Table table = Table.read().csv("fuzzylogicgp-algorithm/src/main/resources/datasets/tinto.csv");
         NodeTree and = new NodeTree(NodeType.AND);
         states.forEach(s -> {
@@ -69,11 +72,13 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                 e.printStackTrace();
             }
         });
-        FPGOptimizer optimizer = new FPGOptimizer(new GMBCLogic(), table, 50, 20, 0.9, 0.95, null);
+        Random rand = new Random(1);
+        FPGOptimizer optimizer = new FPGOptimizer(new GMBCLogic(), table, 20, 20, 0.9, 0.95, rand);
         NodeTree execute = optimizer.execute(and);
         System.out.println(execute + " f " + execute.getFitness());
         long end = System.currentTimeMillis();
-        System.out.println("Time ms: " + (end - start));
+        logger.info("Time ms: " + (end - start));
+        and.forEach(s -> System.out.println(s));
     }
 
     /**
@@ -98,8 +103,9 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         this.minTruthValue = minTruthValue;
         this.crossoverProbability = crossoverProbability;
         this.random = random == null ? new Random() : random;
-        this.sbxCrossover = new SBXCrossover(20, crossoverProbability, this.random);
+        // this.sbxCrossover = new SBXCrossover(20, crossoverProbability, this.random);
         this.blenCrossover = new BlendCrossover(crossoverProbability, this.random);
+        this.repairMembershipFunction = new RepairMembershipFunction(random);
     }
 
     @Override
@@ -109,14 +115,20 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
         final List<StateNode> statesToWork = states.stream()
                 .map(n -> (StateNode) n)
                 .filter(s -> s.getMembershipFunction() == null
-                        || (s.getMembershipFunction() != null && s.getMembershipFunction().isEditable()))
+                        || (s.getMembershipFunction() != null && s.getMembershipFunction().isEditable()
+                                || !s.getMembershipFunction().isValid()))
                 .collect(Collectors.toList());
         for (Node node : states) {
             if (node instanceof StateNode) {
                 StateNode sn = (StateNode) node;
-                if (sn.getMembershipFunction() != null && !sn.isEditable() && !sn.getMembershipFunction().isValid()) {
-                    throw new IllegalArgumentException("Invalid membership function " + sn.toString());
+
+                if (sn.getMembershipFunction() != null && !sn.isEditable() &&
+                        (!sn.getMembershipFunction().isValid()
+                                && sn.getMembershipFunction().getType() != MembershipFunctionType.FPG)) {
+                    throw new IllegalArgumentException("Invalid membership function " +
+                            sn.toString());
                 }
+
             }
         }
         minMaxDataValue = new HashMap<>();
@@ -125,16 +137,13 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             evaluatePredicate.execute(predicate);
             return predicate;
         }
-        statesToWork.forEach(state -> {            
+        statesToWork.forEach(state -> {
             NumericColumn<?> doubleColumn = data.numberColumn(state.getColName());
             Double[] _minMax = new Double[2];
             _minMax[0] = doubleColumn.min();
             _minMax[1] = doubleColumn.max();
             if (Double.compare(_minMax[0], _minMax[1]) == 0) {
                 _minMax[1] = _minMax[0] + 1;
-            }
-            if(state.getMembershipFunction() !=null){
-                state.toArray();
             }
             minMaxDataValue.put(state.getId(), _minMax);
         });
@@ -158,18 +167,22 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             for (int k = 0; k < parents.length; k++) {
                 offspring.addAll(crossover(parents[k], parents[k + 1 < parents.length ? k + 1 : 0]));
             }
+            int replace = 0;
             for (int k = 0; k < offspring.size(); k++) {
-                mutation(offspring.get(k), statesToWork);
-                repair(offspring.get(k), statesToWork);
-                _evaluate(predicate, statesToWork, offspring.get(k));
+                Chromosome _child = offspring.get(k);
+                mutation(_child, statesToWork);
+                repair(_child, statesToWork);
+                _evaluate(predicate, statesToWork, _child);
                 // Repair if fitness -> 0
-                if (Double.isNaN(offspring.get(k).getFitness())
-                        || Double.compare(offspring.get(k).getFitness(), 1.0e-5) <= 0) {
+                if (Double.isNaN(_child.getFitness())
+                        || Double.compare(_child.getFitness(), 1.0e-5) <= 0) {
                     Chromosome tmp = generate(statesToWork, 0);
                     _evaluate(predicate, statesToWork, tmp);
                     offspring.set(k, tmp);
+                    replace++;
                 }
             }
+            // logger.info("Replace {} of {}", replace, offspring.size());
             offspring.sort(this.comparator);
             for (int k = 0; k < offspring.size(); k++) {
                 Chromosome child = offspring.get(k);
@@ -223,19 +236,42 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
      * @param statesToWork
      * @return boundaries
      */
-    private double[][] makeBoundaries(final List<StateNode> statesToWork) {
-        double[][] boundaries = new double[statesToWork.size() * 3][2];
-
+    private double[][][] makeBoundaries(final List<StateNode> statesToWork) {
+        double[][][] boundaries = new double[statesToWork.size()][][];
         Double[] doubles;
-        int index = 0;
+
         for (int i = 0; i < statesToWork.size(); i++) {
+            int index = 0;
             doubles = minMaxDataValue.get(statesToWork.get(i).getId());
-            boundaries[index][0] = doubles[0];
-            boundaries[index++][1] = doubles[1];
-            boundaries[index][0] = doubles[0];
-            boundaries[index++][1] = doubles[1];
-            boundaries[index][0] = 0;
-            boundaries[index++][1] = 1;
+            if (statesToWork.get(i).getMembershipFunction() != null) {
+                Double[] array = statesToWork.get(i).getMembershipFunction().toArray();
+                boundaries[i] = new double[array.length][2];
+                for (int j = 0; j < array.length; j++) {
+                    if (array[j] != null) {
+                        boundaries[i][index][0] = array[j];
+                        boundaries[i][index++][1] = array[j];
+                    } else {
+                        if (j == 2 && statesToWork.get(i).getMembershipFunction()
+                                .getType() == MembershipFunctionType.FPG) {
+                            boundaries[i][index][0] = 0;
+                            boundaries[i][index++][1] = 1;
+                        } else {
+                            boundaries[i][index][0] = doubles[0];
+                            boundaries[i][index++][1] = doubles[1];
+                        }
+                    }
+
+                }
+            } else {
+                boundaries[i] = new double[3][2];
+
+                boundaries[i][index][0] = doubles[0];
+                boundaries[i][index++][1] = doubles[1];
+                boundaries[i][index][0] = doubles[0];
+                boundaries[i][index++][1] = doubles[1];
+                boundaries[i][index][0] = 0;
+                boundaries[i][index++][1] = 1;
+            }
         }
         return boundaries;
     }
@@ -249,7 +285,10 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
      */
     protected void _evaluate(NodeTree predicate, List<StateNode> statesToWork, Chromosome chromosome) {
         for (int i = 0; i < statesToWork.size(); i++) {
-            MembershipFunction f = chromosome.getFunctions()[i];
+            MembershipFunctionType _type = statesToWork.get(i).getMembershipFunction() != null
+                    ? statesToWork.get(i).getMembershipFunction().getType()
+                    : MembershipFunctionType.FPG;
+            MembershipFunction f = MembershipFunctionFactory.fromArray(_type, chromosome.getFunctions()[i]);
             f.setEditable(true);
             statesToWork.get(i).setMembershipFunction(f);
         }
@@ -266,24 +305,27 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
 
     @Override
     protected Chromosome generate(final List<StateNode> states, int generationType) {
-        MembershipFunction[] functions = new MembershipFunction[states.size()];
+        Double[][] functions = new Double[states.size()][];
         for (int i = 0; i < states.size(); i++) {
             StateNode stateNode = states.get(i);
-            if (stateNode.getMembershipFunction() == null || generationType == 0) {
-                String idCname = stateNode.getId();
-                Double[] ref = minMaxDataValue.get(idCname);
-                double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-                double gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
-                while (Double.compare(gamma, beta) <= 0) {
-                    if (Double.compare(beta, ref[1]) == 0) {
-                        beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-                    }
-                    gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
+            // if (generationType == 0) {
+            functions[i] = stateNode.getMembershipFunction() == null ? new Double[3]
+                    : stateNode.getMembershipFunction().toArray();
+            String idCname = stateNode.getId();
+            Double[] ref = minMaxDataValue.get(idCname);
+
+            double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
+            double gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
+            while (Double.compare(gamma, beta) <= 0) {
+                if (Double.compare(beta, ref[1]) == 0) {
+                    beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
                 }
-                functions[i] = new FPG(beta, gamma, random.nextInt(100001) / 100001.0);
-            } else {
-                functions[i] = stateNode.getMembershipFunction().copy();
+                gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
             }
+            functions[i] = new Double[] { functions[i][0] == null ? beta : functions[i][0],
+                    functions[i][1] == null ? gamma : functions[i][1],
+                    functions[i][2] == null ? random.nextInt(100001) / 100001.0 : functions[i][2] };
+            // logger.info("GENERATE {}:{}", stateNode, Arrays.toString(functions[i]));
         }
         return new Chromosome(functions);
     }
@@ -315,56 +357,8 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
     @Override
     protected List<Chromosome> crossover(Chromosome a, Chromosome b) {
         List<Chromosome> offspring = new ArrayList<>();
-        int size = a.getFunctions().length;
-
-        double[] aVars = new double[size * 3];
-        double[] bVars = new double[size * 3];
-        int aIndex = 0;
-        int bIndex = 0;
-        for (int i = 0; i < size; i++) {
-            FPG af = (FPG) a.getFunctions()[i];
-            FPG bf = (FPG) b.getFunctions()[i];
-            aVars[aIndex] = af.getBeta();
-            aVars[aIndex + 1] = af.getGamma();
-            aVars[aIndex + 2] = af.getM();
-            aIndex += 3;
-            bVars[bIndex] = bf.getBeta();
-            bVars[bIndex + 1] = bf.getGamma();
-            bVars[bIndex + 2] = bf.getM();
-            bIndex += 3;
-        }
-        // sbx crossover
-        // double[][] offspringVars = sbxCrossover.execute(aVars, bVars, boundaries);
-        aIndex = 0;
-        bIndex = 0;
-        /*
-         * MembershipFunction[] aFPG = new FPG[size];
-         * MembershipFunction[] bFPG = new FPG[size];
-         * for (int i = 0; i < size; i++) {
-         * aFPG[i] = new FPG(offspringVars[0][aIndex], offspringVars[0][aIndex + 1],
-         * offspringVars[0][aIndex + 2]);
-         * bFPG[i] = new FPG(offspringVars[1][bIndex], offspringVars[1][bIndex + 1],
-         * offspringVars[1][bIndex + 2]);
-         * aIndex += 3;
-         * bIndex += 3;
-         * }
-         * offspring.add(new Chromosome(aFPG));
-         * offspring.add(new Chromosome(bFPG));
-         */
-        // blend crossover
-        double[][] offspringVars2 = blenCrossover.execute(aVars, bVars, boundaries);
-        aIndex = 0;
-        bIndex = 0;
-        MembershipFunction[] cFPG = new FPG[size];
-        MembershipFunction[] dFPG = new FPG[size];
-        for (int i = 0; i < size; i++) {
-            cFPG[i] = new FPG(offspringVars2[0][aIndex], offspringVars2[0][aIndex + 1], offspringVars2[0][aIndex + 2]);
-            dFPG[i] = new FPG(offspringVars2[1][bIndex], offspringVars2[1][bIndex + 1], offspringVars2[1][bIndex + 2]);
-            aIndex += 3;
-            bIndex += 3;
-        }
-        offspring.add(new Chromosome(cFPG));
-        offspring.add(new Chromosome(dFPG));
+        offspring.add(new Chromosome(blenCrossover.execute(a.getFunctions(), b.getFunctions(), boundaries)));
+        offspring.add(new Chromosome(blenCrossover.execute(b.getFunctions(), a.getFunctions(), boundaries)));
         return offspring;
     }
 
@@ -387,40 +381,15 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
                     }
                     gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
                 }
-                chromosome.getFunctions()[i] = new FPG(beta, gamma, random.nextInt(100001) / 100001.0);
+                chromosome.getFunctions()[i] = new Double[] { beta, gamma, random.nextInt(100001) / 100001.0 };
             }
+            this.repairMembershipFunction.repair(states, boundaries, minMaxDataValue, chromosome);
         }
     }
 
     @Override
     protected void repair(Chromosome chromosome, List<StateNode> states) {
-        for (int i = 0; i < chromosome.getFunctions().length; i++) {
-            FPG fpg = (FPG) chromosome.getFunctions()[i];
-            if (Double.compare(fpg.getBeta(), fpg.getGamma()) == 0) {
-                String idCname = states.get(i).getId();
-                Double[] ref = minMaxDataValue.get(idCname);
-
-                double beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-                double gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
-                while (Double.compare(gamma, beta) <= 0) {
-                    if (Double.compare(beta, ref[1]) == 0) {
-                        beta = random.doubles(ref[0], ref[1]).findAny().getAsDouble();
-                    }
-                    gamma = random.doubles(beta, ref[1]).findAny().getAsDouble();
-                }
-                fpg.setBeta(beta);
-                fpg.setGamma(gamma);
-            }
-            if (Double.compare(fpg.getBeta(), fpg.getGamma()) > 0) {
-                double tmp = fpg.getGamma();
-                fpg.setGamma(fpg.getBeta());
-                fpg.setBeta(tmp);
-            }
-            if (Double.isNaN(fpg.getM()) || Double.compare(fpg.getM(), 0) < 0
-                    || Double.compare(fpg.getM(), 1) > 0) {
-                fpg.setM(random.nextInt(100001) / 100001.0);
-            }
-        }
+        this.repairMembershipFunction.repair(states, boundaries, minMaxDataValue, chromosome);
     }
 
 }

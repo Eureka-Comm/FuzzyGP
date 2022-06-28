@@ -4,7 +4,7 @@
 
     <groupId>com.castellanos94</groupId>
     <artifactId>FuzzyLogicGP</artifactId>
-    <version>1.4.5</version>
+    <version>1.4.6</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -17,7 +17,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <tech.tablesaw.version>0.38.2</tech.tablesaw.version>
         <org.log4j.version>2.17.1</org.log4j.version>
-        <current.version>1.4.5</current.version>
+        <current.version>1.4.6</current.version>
     </properties>
 
     <developers>

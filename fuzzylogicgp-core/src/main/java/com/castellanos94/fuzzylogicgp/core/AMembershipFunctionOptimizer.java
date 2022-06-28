@@ -3,8 +3,8 @@ package com.castellanos94.fuzzylogicgp.core;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+
 import com.castellanos94.fuzzylogicgp.logic.Logic;
-import com.castellanos94.fuzzylogicgp.membershipfunction.MembershipFunction;
 
 /**
  * Abstract class for membership function optimizer
@@ -40,9 +40,9 @@ public abstract class AMembershipFunctionOptimizer {
 
     public static class Chromosome implements Comparable<Chromosome> {
         private double fitness;
-        private MembershipFunction[] functions;
+        private Double[][] functions;
 
-        public Chromosome(MembershipFunction[] functions) {
+        public Chromosome(Double[][] functions) {
             this.functions = functions;
         }
 
@@ -81,18 +81,19 @@ public abstract class AMembershipFunctionOptimizer {
             this.fitness = fitness;
         }
 
-        public MembershipFunction[] getFunctions() {
+        public Double[][] getFunctions() {
             return functions;
         }
 
-        public void setFunctions(MembershipFunction[] functions) {
+        public void setFunctions(Double[][] functions) {
             this.functions = functions;
         }
 
         public Chromosome copy() {
-            MembershipFunction[] f = new MembershipFunction[this.functions.length];
+            Double[][] f = new Double[this.functions.length][];
             for (int i = 0; i < f.length; i++) {
-                f[i] = functions[i].copy();
+                f[i] = new Double[functions[i].length];
+                System.arraycopy(functions[i], 0, f[i], 0, f[i].length);
             }
             Chromosome c = new Chromosome(f);
             c.setFitness(fitness);
@@ -101,7 +102,11 @@ public abstract class AMembershipFunctionOptimizer {
 
         @Override
         public String toString() {
-            return "Chromosome [fitness=" + fitness + ", functions=" + Arrays.toString(functions) + "]";
+            StringBuilder f = new StringBuilder("{");
+            for (Double[] doubles : functions) {
+                f.append(Arrays.toString(doubles)).append(" ");
+            }
+            return "Chromosome [fitness=" + fitness + ", functions=" + f.toString().trim() + "}]";
         }
 
     }

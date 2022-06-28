@@ -11,45 +11,36 @@ import com.castellanos94.fuzzylogicgp.core.ICrossover;
 public class BlendCrossover implements ICrossover {
     protected Random random;
     protected double probability;
+    protected RepairMembershipFunction repair;
 
     public BlendCrossover(double probability, Random random) {
         this.probability = probability;
         this.random = random;
+        this.repair = new RepairMembershipFunction(random);
     }
 
     @Override
-    public double[][] execute(double[] a, double[] b, double[][] boundaries) {
+    public Double[][] execute(Double[][] a, Double[][] b, double[][][] boundaries) {
         if (a.length != b.length) {
             return null;
         }
-        double[][] offspring = new double[2][a.length];
-        System.arraycopy(a, 0, offspring[0], 0, a.length);
-        System.arraycopy(b, 0, offspring[1], 0, b.length);
-
+        Double[][] offspring = new Double[a.length][];
         double gamma;
+
         for (int i = 0; i < offspring.length; i++) {
+            offspring[i] = new Double[a[i].length];
+            System.arraycopy(a[i], 0, offspring[i], 0, a[i].length);
             if (probability <= random.nextDouble()) {
                 gamma = random.nextDouble();
-                offspring[0][i] = (1 - gamma) * a[i] + gamma * b[i];
-                offspring[1][i] = (1 - gamma) * b[i] + gamma * a[i];
-            }
-        }
-        // Repair
-        for (int i = 0; i < offspring.length; i++) {
-            for (int j = 0; j < offspring[0].length; j++) {
-                if (Double.isNaN(offspring[i][j])) { // NaN
-                    offspring[i][j] = random.doubles(boundaries[j][0], boundaries[j][1]).findFirst()
-                            .getAsDouble();
-                } else if (Double.compare(offspring[i][j], boundaries[j][0]) < 0) { // Lower
-                    offspring[i][j] = random.doubles(boundaries[j][0], boundaries[j][1]).findFirst()
-                            .getAsDouble();
-                } else if (Double.compare(offspring[i][j], boundaries[j][1]) > 0) { // Upper
-                    offspring[i][j] = random.doubles(boundaries[j][0], boundaries[j][1]).findFirst()
-                            .getAsDouble();
+                for (int j = 0; j < a[i].length; j++) {
+                    offspring[i][j] = (1 - gamma) * a[i][j] + gamma * b[i][j];
+                    offspring[i][j] = (1 - gamma) * b[i][j] + gamma * a[i][j];
                 }
             }
-
+            // Repair
+            repair.boundary(offspring[i], boundaries[i]);
         }
+
         return offspring;
     }
 
