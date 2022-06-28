@@ -125,13 +125,16 @@ public class FPGOptimizer extends AMembershipFunctionOptimizer {
             evaluatePredicate.execute(predicate);
             return predicate;
         }
-        statesToWork.forEach(state -> {
+        statesToWork.forEach(state -> {            
             NumericColumn<?> doubleColumn = data.numberColumn(state.getColName());
             Double[] _minMax = new Double[2];
             _minMax[0] = doubleColumn.min();
             _minMax[1] = doubleColumn.max();
             if (Double.compare(_minMax[0], _minMax[1]) == 0) {
                 _minMax[1] = _minMax[0] + 1;
+            }
+            if(state.getMembershipFunction() !=null){
+                state.toArray();
             }
             minMaxDataValue.put(state.getId(), _minMax);
         });
