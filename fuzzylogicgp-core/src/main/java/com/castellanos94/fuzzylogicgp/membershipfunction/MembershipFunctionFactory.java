@@ -166,12 +166,98 @@ public class MembershipFunctionFactory {
 
     /**
      * method for transforming a sorted array into properties
+     * 
      * @param type - membership to instance
-     * @param vars - sorted values 
-     */    
-    public static MembershipFunction fromArray(MembershipFunction type, Double[] vars){
-        MembershipFunction membershipFunction = null;
-        return membershipFunction;
-    }   
+     * @param vars - sorted values
+     */
+    public static MembershipFunction fromArray(MembershipFunctionType type, Double[] vars) {
+        if (vars == null) {
+            throw new IllegalArgumentException("values was null");
+        }
+        switch (type) {
+            case FPG:
+                if (vars.length < 3) {
+                    throw new IllegalArgumentException("at least 3 values are required [beta, gamma, m]");
+                }
+                return new FPG(vars[0], vars[1], vars[2]);
+            case GAMMA:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [a, b]");
+                }
+                return new Gamma(vars[0], vars[1]);
+            case GAUSSIAN:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [center, deviation]");
+                }
+                return new Gaussian(vars[0], vars[1]);
+            case GBELL:
+                if (vars.length < 3) {
+                    throw new IllegalArgumentException("at least 3 values are required [width, slope, center]");
+                }
+                return new GBell(vars[0], vars[1], vars[2]);
+            case LGAMMA:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [a, b]");
+                }
+                return new LGamma(vars[0], vars[1]);
+            case GCLV:
+                if (vars.length < 4) {
+                    throw new IllegalArgumentException("at least 4 values are required [L, gamma, beta, m]");
+                }
+                return new GCLV(vars[0], vars[1], vars[2], vars[3]);
+            case LTRAPEZOIDAL:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [a, b]");
+                }
+                return new LTrapezoidal(vars[0], vars[1]);
+            case RTRAPEZOIDAL:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [a, b]");
+                }
+                return new RTrapezoidal(vars[0], vars[1]);
+            case NSIGMOID:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [center, beta]");
+                }
+                return new NSigmoid(vars[0], vars[1]);
+            case SIGMOID:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [center, beta]");
+                }
+                return new Sigmoid(vars[0], vars[1]);
+            case SFORM:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 2 values are required [a, b]");
+                }
+                return new SForm(vars[0], vars[1]);
+            case PSEUDOEXP:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 1 values are required [center, deviation]");
+                }
+                return new PSeudoExp(vars[0], vars[1]);
+            case SINGLETON:
+                if (vars.length < 1) {
+                    throw new IllegalArgumentException("at least 1 values are required [a]");
+                }
+                return new Singleton(vars[0]);
+            case TRIANGULAR:
+                if (vars.length < 3) {
+                    throw new IllegalArgumentException("at least 3 values are required [a, b, c]");
+                }
+                return new Triangular(vars[0], vars[1], vars[2]);
+            case TRAPEZOIDAL:
+                if (vars.length < 4) {
+                    throw new IllegalArgumentException("at least 4 values are required [a, b, c, d]");
+                }
+                return new Trapezoidal(vars[0], vars[1], vars[2], vars[3]);
+            case ZFORM:
+                if (vars.length < 2) {
+                    throw new IllegalArgumentException("at least 3 values are required [a, b]");
+                }
+                return new ZForm(vars[0], vars[1]);
+            default:
+                throw new IllegalArgumentException("Not supported for " + type);
+        }
+    }
 
 }
