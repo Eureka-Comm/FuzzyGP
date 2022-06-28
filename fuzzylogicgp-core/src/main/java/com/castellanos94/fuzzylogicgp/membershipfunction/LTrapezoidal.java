@@ -112,4 +112,9 @@ public class LTrapezoidal extends MembershipFunction {
         return new LTrapezoidal(a, b);
     }
 
+    @Override
+    public Double[] toArray() {
+        return new Double[] { a, b };
+    }
+
 }

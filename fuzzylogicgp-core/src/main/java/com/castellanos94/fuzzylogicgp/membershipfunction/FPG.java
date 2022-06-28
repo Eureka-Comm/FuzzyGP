@@ -174,7 +174,7 @@ public class FPG extends MembershipFunction {
             points.clear();
             step = (gamma - beta) / 50;
             x = -gamma * 2 - beta;
-            
+
             do {
                 y = evaluate(x);
                 if (y > Point.EPSILON) {
@@ -201,6 +201,11 @@ public class FPG extends MembershipFunction {
     @Override
     public boolean isValid() {
         return (beta != null && gamma != null && m != null) && (m >= 0 && m <= 1.0) && (gamma > beta);
+    }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { beta, gamma, m };
     }
 
 }

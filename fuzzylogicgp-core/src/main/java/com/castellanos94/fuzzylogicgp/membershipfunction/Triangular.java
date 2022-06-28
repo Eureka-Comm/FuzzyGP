@@ -139,4 +139,9 @@ public class Triangular extends MembershipFunction {
     public boolean isValid() {
         return (a != null && b != null && c != null) && (a <= b && b <= c);
     }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { a, b, c };
+    }
 }

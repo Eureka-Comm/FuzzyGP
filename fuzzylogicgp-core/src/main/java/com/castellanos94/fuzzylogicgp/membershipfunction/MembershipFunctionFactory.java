@@ -164,4 +164,14 @@ public class MembershipFunctionFactory {
         return this;
     }
 
+    /**
+     * method for transforming a sorted array into properties
+     * @param type - membership to instance
+     * @param vars - sorted values 
+     */    
+    public static MembershipFunction fromArray(MembershipFunction type, Double[] vars){
+        MembershipFunction membershipFunction = null;
+        return membershipFunction;
+    }   
+
 }

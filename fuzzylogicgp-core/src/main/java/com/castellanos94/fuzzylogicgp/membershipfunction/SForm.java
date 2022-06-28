@@ -110,10 +110,15 @@ public class SForm extends MembershipFunction {
         ArrayList<Point> points = new ArrayList<>();
         final double step = Math.abs(a - b) / 100.0;
         double x = a - 3 * a / 2.0;
-        while (x <= (b +  b / 4.0)) {
+        while (x <= (b + b / 4.0)) {
             points.add(new Point(x, evaluate(x)));
             x += step;
         }
         return points;
+    }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { a, b };
     }
 }

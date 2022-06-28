@@ -106,4 +106,9 @@ public class Gamma extends MembershipFunction {
     public MembershipFunction copy() {
         return new Gamma(a, b);
     }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { a, b };
+    }
 }

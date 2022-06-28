@@ -130,4 +130,9 @@ public class Trapezoidal extends LTrapezoidal {
     public MembershipFunction copy() {
         return new Trapezoidal(a, b, c, d);
     }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { a, b, c, d };
+    }
 }

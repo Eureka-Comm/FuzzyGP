@@ -115,4 +115,8 @@ public class ZForm extends MembershipFunction {
         return new ZForm(a, b);
     }
 
+    @Override
+    public Double[] toArray() {
+        return new Double[] { a, b };
+    }
 }

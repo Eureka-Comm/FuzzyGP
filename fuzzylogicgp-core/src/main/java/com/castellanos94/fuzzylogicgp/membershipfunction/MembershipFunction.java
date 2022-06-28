@@ -75,4 +75,12 @@ public abstract class MembershipFunction implements Serializable {
         return result;
     }
 
+    /**
+     * method for assigning properties to an sorted array
+     * 
+     * @return array values
+     */
+    public Double[] toArray() {
+        throw new UnsupportedOperationException("Not supported for " + type);
+    }
 }

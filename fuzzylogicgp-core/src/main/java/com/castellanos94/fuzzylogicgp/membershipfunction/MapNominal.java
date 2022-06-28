@@ -110,8 +110,10 @@ public class MapNominal extends MembershipFunction {
     public List<Point> getPoints() {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
+
     @Override
     public boolean isValid() {
         return true;
     }
+
 }

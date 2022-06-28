@@ -105,4 +105,8 @@ public class PSeudoExp extends MembershipFunction {
         return new PSeudoExp(center, deviation);
     }
 
+    @Override
+    public Double[] toArray() {
+        return new Double[] { center, deviation };
+    }
 }

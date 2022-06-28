@@ -49,7 +49,7 @@ public class Singleton extends MembershipFunction {
 
     @Override
     public String toString() {
-        return "[singleton " + this.a+"]";
+        return "[singleton " + this.a + "]";
     }
 
     @Override
@@ -85,13 +85,18 @@ public class Singleton extends MembershipFunction {
     public List<Point> getPoints() {
         ArrayList<Point> point = new ArrayList<>();
         point.add(new Point(a, 1.0));
-        point.add(new Point(a,0));
+        point.add(new Point(a, 0));
         return point;
     }
 
     @Override
     public MembershipFunction copy() {
         return new Singleton(a);
+    }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { a };
     }
 
 }

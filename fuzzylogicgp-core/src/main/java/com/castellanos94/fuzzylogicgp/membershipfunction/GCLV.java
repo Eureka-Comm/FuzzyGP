@@ -133,4 +133,9 @@ public class GCLV extends MembershipFunction {
     public double evaluate(Number v) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { L, gamma, beta, m };
+    }
 }

@@ -175,4 +175,9 @@ public class GBell extends MembershipFunction {
         }
         return points;
     }
+
+    @Override
+    public Double[] toArray() {
+        return new Double[] { width, slope, center };
+    }
 }

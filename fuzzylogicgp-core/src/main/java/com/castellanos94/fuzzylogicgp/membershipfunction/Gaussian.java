@@ -134,4 +134,8 @@ public class Gaussian extends MembershipFunction {
         return points;
     }
 
+    @Override
+    public Double[] toArray() {
+        return new Double[] { center, deviation };
+    }
 }

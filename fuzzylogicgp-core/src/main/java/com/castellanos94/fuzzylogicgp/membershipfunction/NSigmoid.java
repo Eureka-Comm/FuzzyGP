@@ -118,4 +118,8 @@ public class NSigmoid extends MembershipFunction {
     public MembershipFunction copy() {
         return new NSigmoid(center, beta);
     }
+    @Override
+    public Double[] toArray() {
+        return new Double[] {center, beta};
+    }
 }
