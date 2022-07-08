@@ -167,7 +167,7 @@ public class KDFLC implements IAlgorithm {
             boolean isTheSameGenerator = isTheSameGenerator();
             int iteration = 1;
             long currentTime = System.currentTimeMillis();
-            while ((iteration < num_iter || ((currentTime = System.currentTimeMillis()) - initialTime) <= maxTime)
+            while (((currentTime = System.currentTimeMillis() - initialTime) <= maxTime)
                     && resultList.size() < num_result) {
                 Stream<Integer> stream = (parallelSupport) ? toReplaceIndex.parallelStream() : toReplaceIndex.stream();
                 logger.info("To replace {} at iteration {}", toReplaceIndex.size(), iteration);
@@ -283,7 +283,7 @@ public class KDFLC implements IAlgorithm {
                 }
             }
             Collections.sort(resultList, Collections.reverseOrder());
-
+            
         }
 
         logger.info("Result list " + resultList.size());

@@ -137,7 +137,7 @@ public class DiscoveryQuery extends Query {
         return "DiscoveryQuery [adj_min_truth_value=" + adj_min_truth_value + ", adj_num_iter=" + adj_num_iter
                 + ", adj_num_pop=" + adj_num_pop + ", generators=" + generators + ", min_truth_value=" + min_truth_value
                 + ", mut_percentage=" + mut_percentage + ", num_iter=" + num_iter + ", num_pop=" + num_pop
-                + ", num_result=" + num_result + "]" + super.toString();
+                + ", num_result=" + num_result +  ", maxTime=" + maxTime + "]" + super.toString();
     }
 
     @Override
