@@ -79,6 +79,7 @@ public class KDFLC implements IAlgorithm {
     private ArrayList<Integer> integerIndex;
     private final long maxTime;
     private final PredicateGenerator predicateGenerator;
+    private final ArrayList<String> logList;
 
     public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
             int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data, long maxTime) {
@@ -111,6 +112,7 @@ public class KDFLC implements IAlgorithm {
         this.integerIndex = new ArrayList<>(IntStream.range(0, num_pop).boxed().collect(Collectors.toList()));
         this.predicateGenerator = new PredicateGenerator();
         this.maxTime = maxTime;
+        this.logList = new ArrayList<>();
     }
 
     /**
@@ -121,6 +123,7 @@ public class KDFLC implements IAlgorithm {
     public void execute(NodeTree predicate) {
         final long initialTime = System.currentTimeMillis();
         logger.info("start time {}", initialTime);
+        logList.add(String.format("Start time %d min.", (initialTime / 60000)));
         this.predicatePattern = predicate;
         int wasNotChanged = 0;
         Iterator<GeneratorNode> iterator = NodeTree.getNodesByType(predicatePattern, GeneratorNode.class).iterator();
@@ -162,12 +165,12 @@ public class KDFLC implements IAlgorithm {
                 }
             }
         }
-
+        long currentTime = System.currentTimeMillis();
         if (isToDiscovery) {
             boolean isTheSameGenerator = isTheSameGenerator();
             int iteration = 1;
-            long currentTime = System.currentTimeMillis();
-            while (((currentTime = System.currentTimeMillis() - initialTime) <= maxTime)
+
+            while ((((currentTime = System.currentTimeMillis()) - initialTime) <= maxTime)
                     && resultList.size() < num_result) {
                 Stream<Integer> stream = (parallelSupport) ? toReplaceIndex.parallelStream() : toReplaceIndex.stream();
                 logger.info("To replace {} at iteration {}", toReplaceIndex.size(), iteration);
@@ -190,6 +193,8 @@ public class KDFLC implements IAlgorithm {
                 toReplaceIndex.clear();
                 logger.info("Iteration {} of {} ({}), time {}s of {}s...", iteration, this.num_iter, resultList.size(),
                         ((currentTime - initialTime) / 1000), (maxTime / 1000));
+                logList.add(String.format("Time elapsed %d min. Results %d", ((currentTime - initialTime) / 60000),
+                        resultList.size()));
                 int offspring_size = population.length / 2;
                 if (offspring_size % 2 != 0) {
                     offspring_size++;
@@ -283,10 +288,11 @@ public class KDFLC implements IAlgorithm {
                 }
             }
             Collections.sort(resultList, Collections.reverseOrder());
-            
+
         }
 
         logger.info("Result list " + resultList.size());
+
         if (resultList.isEmpty()) {
             if (isForEvaluate()) {
                 FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
@@ -295,8 +301,9 @@ public class KDFLC implements IAlgorithm {
             }
 
         }
-        logger.info("Added min" + resultList.isEmpty());
+
         if (resultList.isEmpty()) {
+            logger.info("Added min" + resultList.isEmpty());
             Arrays.sort(population, Collections.reverseOrder());
             int size = population.length > 10 ? 10 : population.length;
             for (int i = 0; i < size; i++) {
@@ -304,11 +311,13 @@ public class KDFLC implements IAlgorithm {
             }
             logger.info("Best found " + population[0].getFitness());
         }
+        logList.add(String.format("Discover completed in %d min. Results %d",
+                ((System.currentTimeMillis() - initialTime) / 60000),
+                resultList.size()));
+    }
 
-        for (int i = 0; i < resultList.size(); i++) {
-            logger.info((i + 1) + " " + resultList.get(i) + " " + resultList.get(i).getFitness());
-        }
-
+    public ArrayList<String> getLogList() {
+        return logList;
     }
 
     private boolean isTheSameGenerator() {

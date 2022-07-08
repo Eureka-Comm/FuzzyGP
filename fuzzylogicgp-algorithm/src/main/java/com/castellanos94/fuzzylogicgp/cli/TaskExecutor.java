@@ -92,7 +92,7 @@ public class TaskExecutor {
                 discovery.setParallelSupport(parallelSupport);
                 logger.info("Parallel support : " + parallelSupport);
                 discovery.execute(p);
-                discovery.exportResult(new File(discoveryQuery.getOut_file()));
+                discovery.exportResult(new File(discoveryQuery.getOut_file()));                
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported query.");
