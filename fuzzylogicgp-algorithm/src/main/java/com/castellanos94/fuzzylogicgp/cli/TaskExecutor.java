@@ -52,7 +52,6 @@ public class TaskExecutor {
                 logger.info("For all: " + forall);
 
                 evaluator.exportToCsv();
-
                 if (((EvaluationQuery) query).isShowTree()) {
                     String stP = new File(query.getOut_file()).getParent();
                     if (stP == null) {

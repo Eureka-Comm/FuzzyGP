@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.castellanos94.fuzzylogicgp.core.DiscoveryResult;
 import com.castellanos94.fuzzylogicgp.core.GeneratorNode;
 import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import com.castellanos94.fuzzylogicgp.core.Node;
@@ -80,7 +81,7 @@ public class KDFLC implements IAlgorithm {
     private ArrayList<Integer> integerIndex;
     private final long maxTime;
     private final PredicateGenerator predicateGenerator;
-    private final ArrayList<String> logList;
+    private final ArrayList<String> logList;        
 
     public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
             int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data, long maxTime) {
@@ -696,7 +697,6 @@ public class KDFLC implements IAlgorithm {
         } else {
             fuzzyData.addColumns(value, f1, predicates, data);
         }
-
     }
 
     @Override
@@ -750,8 +750,30 @@ public class KDFLC implements IAlgorithm {
 
     @Override
     public ResultTask getResult() {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<DiscoveryResult.Record> values = new ArrayList<>();
+       
+        ArrayList<Double> f0 = null;
+        FPGOptimizer optimizer = null;
+
+        if (this.logic instanceof GMBCFALogic) {
+            f0 = new ArrayList<>();
+            GMBCFALogic lFa_Logic = (GMBCFALogic) this.logic;
+            lFa_Logic.setExponent(0);
+            optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
+                    0.95, null);
+        }
+        ArrayList<NodeTree> rs = this.getResultList();
+        for (int i = 0; i < rs.size(); i++) {
+            EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
+            Double fv = evaluatePredicate.evaluate(rs.get(i));
+            rs.get(i).setFitness(fv);
+        }
+        rs.sort(Collections.reverseOrder());
+        for (int i = 0; i < rs.size(); i++) {
+            Double fv = rs.get(i).getFitness();
+            values.add(new DiscoveryResult.Record(fv, rs.get(i).copy()));
+        }
+        return new DiscoveryResult(values);
     }
 
 }

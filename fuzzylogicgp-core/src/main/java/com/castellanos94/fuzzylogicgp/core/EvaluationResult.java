@@ -1,20 +1,25 @@
 package com.castellanos94.fuzzylogicgp.core;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class EvaluationResult extends ResultTask {
     protected final Double forAll;
     protected final Double exists;
     protected final List<Double> result;
-    protected final HashMap<String, List<Double>> extend;
+    protected final Map<String, List<Double>> extend;
 
     public EvaluationResult(Double forAll, Double exists, List<Double> result,
-            HashMap<String, List<Double>> extend) {
+            Map<String, List<Double>> extend) {
         this.forAll = forAll;
         this.exists = exists;
-        this.result = result;
-        this.extend = extend;
+        this.result = Collections.unmodifiableList(result);
+        if (extend != null) {
+            this.extend = Collections.unmodifiableMap(extend);
+        } else {
+            this.extend = null;
+        }
     }
 
     public Double getExists() {
@@ -29,7 +34,14 @@ public class EvaluationResult extends ResultTask {
         return result;
     }
 
-    public HashMap<String, List<Double>> getExtend() {
+    public Map<String, List<Double>> getExtend() {
         return extend;
     }
+
+    @Override
+    public String toString() {
+        return "EvaluationResult [exists=" + exists + ", extend=" + extend + ", forAll=" + forAll + ", result=" + result
+                + "]";
+    }
+
 }

@@ -34,7 +34,18 @@ public class DiscoveryResult extends ResultTask {
 
         @Override
         public String toString() {
-            return String.format("%.5d, %s %s", fitness, expression, data);
+            return String.format("%.5f, %s %s", fitness, expression, data);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        if (values != null) {
+            for (Record record : values) {
+                buffer.append(record).append("\n");
+            }
+        }
+        return buffer.toString();
     }
 }
