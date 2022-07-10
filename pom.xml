@@ -4,7 +4,7 @@
 
     <groupId>com.castellanos94</groupId>
     <artifactId>FuzzyLogicGP</artifactId>
-    <version>1.4.6</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -17,7 +17,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <tech.tablesaw.version>0.38.2</tech.tablesaw.version>
         <org.log4j.version>2.17.1</org.log4j.version>
-        <current.version>1.4.6</current.version>
+        <revision>1.5.0</revision>
     </properties>
 
     <developers>
@@ -33,19 +33,19 @@
             <dependency>
                 <groupId>com.castellanos94</groupId>
                 <artifactId>fuzzylogicgp-core</artifactId>
-                <version>${current.version}</version>
+                <version>${revision}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.castellanos94</groupId>
                 <artifactId>fuzzylogicgp-parser</artifactId>
-                <version>${current.version}</version>
+                <version>${revision}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.castellanos94</groupId>
                 <artifactId>fuzzylogicgp-algorithm</artifactId>
-                <version>${current.version}</version>
+                <version>${revision}</version>
             </dependency>
 
             <dependency>
