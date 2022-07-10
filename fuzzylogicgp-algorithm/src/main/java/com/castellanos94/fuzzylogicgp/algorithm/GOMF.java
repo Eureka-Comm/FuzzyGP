@@ -30,7 +30,7 @@ import tech.tablesaw.columns.Column;
  * @since October 06, 2019.
  * @version 0.5.0
  */
-public class GOMF implements IAlgorithm {
+public class GOMF {
     @SuppressWarnings("unused")
     private static final Logger logger = LogManager.getLogger(GOMF.class);
 
@@ -370,15 +370,8 @@ public class GOMF implements IAlgorithm {
         return map;
     }
 
-    @Override
     public void execute(NodeTree predicate) {
         this.optimize(predicate);
-    }
-
-    @Override
-    public void exportResult(File file) {
-        throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose
-                                                                       // Tools | Templates.
     }
 
     private class ChromosomePojo {

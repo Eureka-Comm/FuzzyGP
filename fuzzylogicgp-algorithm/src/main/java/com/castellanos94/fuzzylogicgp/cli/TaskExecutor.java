@@ -46,7 +46,7 @@ public class TaskExecutor {
                         new ArrayList<>());
                 p = parserPredicate.parser();
                 EvaluatePredicate evaluator = new EvaluatePredicate(p, logic, evaluationQuery.getDb_uri(),
-                        evaluationQuery.getOut_file());
+                        evaluationQuery.getOut_file(), evaluationQuery.isIncludeFuzzyData());
                 double forall = evaluator.evaluate();
                 evaluationQuery.setJsonPredicate(p.toJson());
                 logger.info("For all: " + forall);
@@ -92,7 +92,7 @@ public class TaskExecutor {
                 discovery.setParallelSupport(parallelSupport);
                 logger.info("Parallel support : " + parallelSupport);
                 discovery.execute(p);
-                discovery.exportResult(new File(discoveryQuery.getOut_file()));                
+                discovery.exportResult(new File(discoveryQuery.getOut_file()));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported query.");

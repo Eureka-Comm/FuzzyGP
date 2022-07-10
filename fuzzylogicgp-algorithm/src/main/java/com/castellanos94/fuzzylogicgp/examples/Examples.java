@@ -105,7 +105,7 @@ public class Examples {
         states.forEach(s -> s.setDescription(Instant.now().toString()));
         query.setStates(states);
         query.setPredicate("(IMP (NOT (AND \"high alcohol\" \"low pH\")) \"high quality\")");
-        //query.setPredicate("(NOT \"high alcohol\")");
+        query.setIncludeFuzzyData(true);
         return query;
     }
 

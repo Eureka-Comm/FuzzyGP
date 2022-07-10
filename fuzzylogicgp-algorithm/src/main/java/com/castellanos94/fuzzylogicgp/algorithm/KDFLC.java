@@ -23,6 +23,7 @@ import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
 import com.castellanos94.fuzzylogicgp.core.OperatorException;
+import com.castellanos94.fuzzylogicgp.core.ResultTask;
 import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.core.TournamentSelection;
 import com.castellanos94.fuzzylogicgp.core.Utils;
@@ -745,6 +746,12 @@ public class KDFLC implements IAlgorithm {
                 + adj_num_pop + ", logic=" + logic + ", min_truth_value=" + min_truth_value + ", mut_percentage="
                 + mut_percentage + ", num_iter=" + num_iter + ", num_pop=" + num_pop + ", num_result=" + num_result
                 + ", parallelSupport=" + parallelSupport + "]";
+    }
+
+    @Override
+    public ResultTask getResult() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

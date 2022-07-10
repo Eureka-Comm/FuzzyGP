@@ -8,20 +8,24 @@ package com.castellanos94.fuzzylogicgp.algorithm;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import com.castellanos94.fuzzylogicgp.core.EvaluationResult;
 import com.castellanos94.fuzzylogicgp.core.IAlgorithm;
 import com.castellanos94.fuzzylogicgp.core.Node;
 import com.castellanos94.fuzzylogicgp.core.NodeTree;
 import com.castellanos94.fuzzylogicgp.core.NodeType;
 import com.castellanos94.fuzzylogicgp.core.OperatorException;
+import com.castellanos94.fuzzylogicgp.core.ResultTask;
 import com.castellanos94.fuzzylogicgp.core.StateNode;
 import com.castellanos94.fuzzylogicgp.logic.Logic;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.units.qual.K;
 
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.DoubleColumn;
@@ -48,9 +52,11 @@ public class EvaluatePredicate implements IAlgorithm {
     private NodeTree predicate;
     private Logic logic;
     private Table data;
-    private Table fuzzyData;
+    private HashMap<String, List<Double>> fuzzyMap;
     private DoubleColumn resultColumn;
     private String outPath;
+    private EvaluationResult outResult;
+    private boolean includeFuzzyData = false;
 
     /**
      * Default constructor
@@ -71,10 +77,11 @@ public class EvaluatePredicate implements IAlgorithm {
         this.data = data;
     }
 
-    public EvaluatePredicate(NodeTree predicate, Logic logic, String path, String outPath) {
+    public EvaluatePredicate(NodeTree predicate, Logic logic, String path, String outPath, boolean includeFuzzyData) {
         this.predicate = predicate;
         this.logic = logic;
         this.outPath = outPath;
+        this.includeFuzzyData = includeFuzzyData;
         if (path.contains(".csv")) {
             try {
                 CsvReadOptions build = CsvReadOptions.builder(new File(path)).header(true).locale(Locale.US).build();
@@ -119,22 +126,14 @@ public class EvaluatePredicate implements IAlgorithm {
     public double evaluate() {
         dataFuzzy();
         fitCompute();
-        StringColumn fa = StringColumn.create("For All");
-        List<Double> rsColumn = new ArrayList<>();
-        for (Double x : resultColumn) {
-            rsColumn.add(x);
-        }
+        List<Double> rsColumn = resultColumn.asList();
+
         double forAllValue = logic.forAll(rsColumn);
         predicate.setFitness(forAllValue);
-        fa.append("" + predicate.getFitness());
 
-        StringColumn ec = StringColumn.create("Exist");
-        ec.append("" + logic.exist(rsColumn));
-        for (int i = 1; i < fuzzyData.rowCount(); i++) {
-            fa.append("");
-            ec.append("");
-        }
-        fuzzyData.addColumns(fa, ec, resultColumn);
+        this.outResult = new EvaluationResult(forAllValue, logic.exist(rsColumn), rsColumn,
+                includeFuzzyData ? fuzzyMap : null);
+
         return forAllValue;
     }
 
@@ -173,31 +172,49 @@ public class EvaluatePredicate implements IAlgorithm {
     }
 
     public void exportToCsv() throws IOException {
-        fuzzyData.write().csv(CsvWriteOptions.builder(outPath.replace(".xlsx", ".csv").replace(".xls", ".csv"))
-                .header(true).separator(',').quoteChar('"').build());
+        createTableToExport().write()
+                .csv(CsvWriteOptions.builder(outPath.replace(".xlsx", ".csv").replace(".xls", ".csv"))
+                        .header(true).separator(',').quoteChar('"').build());
+    }
+
+    private Table createTableToExport() {
+        Table export = Table.create();
+        if (includeFuzzyData) {
+            fuzzyMap.forEach((k, v) -> {
+                export.addColumns(DoubleColumn.create(k, v));
+            });
+        }
+        StringColumn fa = StringColumn.create("For All");
+        fa.append("" + outResult.getForAll());
+        StringColumn ec = StringColumn.create("Exist");
+        ec.append("" + outResult.getExists());
+        for (int i = 1; i < resultColumn.size(); i++) {
+            fa.append("");
+            ec.append("");
+        }
+        export.addColumns(fa, ec, resultColumn);
+        return export;
     }
 
     public void exportToJSON(String file) throws IOException {
+        Table dTable = createTableToExport();
+
         File f = new File(file.replace(".xlsx", ".csv").replace(".xls", ".csv"));
         JsonWriter jsonWriter = new JsonWriter();
         JsonWriteOptions options = JsonWriteOptions
                 .builder(new Destination(new File(f.getAbsolutePath().replace(".csv", ".json")))).header(true).build();
-        jsonWriter.write(fuzzyData, options);
-        fuzzyData.write().toFile(f);
+        jsonWriter.write(dTable, options);
+        dTable.write().toFile(f);
     }
 
     public void exportToCsv(String outPath) throws IOException {
-        fuzzyData.write().csv(outPath);
-    }
-
-    public void resultPrint() {
-        System.out.println(fuzzyData.toString());
+        createTableToExport().write().csv(outPath);
     }
 
     private void fitCompute() {
         Double result;
         resultColumn = DoubleColumn.create("result");
-        for (int i = 0; i < fuzzyData.rowCount(); i++) {
+        for (int i = 0; i < data.rowCount(); i++) {
             try {
                 result = fitValue(predicate, i);
                 resultColumn.append(result.doubleValue());
@@ -253,16 +270,14 @@ public class EvaluatePredicate implements IAlgorithm {
             case EQV:
                 nodeTree = (NodeTree) node;
                 Iterator<Node> iterator = nodeTree.iterator();
-                // nodeTree.setFitness();
-                // return nodeTree.getFitness();
                 return logic.eqv(fitValue(iterator.next(), index), fitValue(iterator.next(), index));
             case STATE:
                 StateNode st = (StateNode) node;
-                String vs = fuzzyData.getString(index, st.getLabel());
-                if (vs == null || vs.isEmpty()) {
+                Double vs = fuzzyMap.get(st.getLabel()).get(index);// fuzzyData.getString(index, st.getLabel());
+                if (vs == null) {
                     logger.error("invalid function " + st);
                 }
-                return vs != null && !vs.isEmpty() ? Double.valueOf(vs) : Double.NaN;
+                return vs != null ? vs : Double.NaN;
             case OPERATOR:
                 nodeTree = (NodeTree) node;
                 return fitValue(nodeTree.iterator().next(), index);
@@ -275,44 +290,41 @@ public class EvaluatePredicate implements IAlgorithm {
 
     @SuppressWarnings("unchecked")
     private void dataFuzzy() {
-        fuzzyData = Table.create();
+        fuzzyMap = new HashMap<>();
         ArrayList<StateNode> nodes = NodeTree.getNodesByType(predicate, StateNode.class);
         for (StateNode s : nodes) {
-            if (!fuzzyData.columnNames().contains(s.getLabel())) {
-                ColumnType type = data.column(s.getColName()).type();
-                DoubleColumn dc = DoubleColumn.create(s.getLabel());
-                dc.setPrintFormatter(NumberColumnFormatter.standard());
-                if (type == ColumnType.DOUBLE) {
-                    Column<Double> column = (Column<Double>) data.column(s.getColName());
-                    for (Double cell : column) {
-                        dc.append(s.getMembershipFunction().evaluate((cell)));
-                    }
-                } else if (type == ColumnType.FLOAT) {
-                    Column<Float> column = (Column<Float>) data.column(s.getColName());
-                    for (Float cell : column) {
-                        dc.append(s.getMembershipFunction().evaluate((cell)));
-                    }
-                } else if (type == ColumnType.INTEGER) {
-                    Column<Integer> column = (Column<Integer>) data.column(s.getColName());
-                    for (Integer cell : column) {
-                        dc.append(s.getMembershipFunction().evaluate((cell)));
-                    }
-                } else if (type == ColumnType.LONG) {
-                    Column<Long> column = (Column<Long>) data.column(s.getColName());
-                    for (Long cell : column) {
-                        dc.append(s.getMembershipFunction().evaluate((cell)));
-                    }
-                } else if (type == ColumnType.STRING) {
-                    Column<String> column = (Column<String>) data.column(s.getColName());
-                    for (String valueString : column) {
-                        dc.append(s.getMembershipFunction().evaluate((valueString)));
-                    }
-
-                } else {
-                    logger.info("ColumnType: " + type);
+            List<Double> dc = fuzzyMap.getOrDefault(s.getLabel(), new ArrayList<>());
+            ColumnType type = data.column(s.getColName()).type();
+            if (type == ColumnType.DOUBLE) {
+                Column<Double> column = (Column<Double>) data.column(s.getColName());
+                for (Double cell : column) {
+                    dc.add(s.getMembershipFunction().evaluate((cell)));
                 }
-                fuzzyData.addColumns(dc);
+            } else if (type == ColumnType.FLOAT) {
+                Column<Float> column = (Column<Float>) data.column(s.getColName());
+                for (Float cell : column) {
+                    dc.add(s.getMembershipFunction().evaluate((cell)));
+                }
+            } else if (type == ColumnType.INTEGER) {
+                Column<Integer> column = (Column<Integer>) data.column(s.getColName());
+                for (Integer cell : column) {
+                    dc.add(s.getMembershipFunction().evaluate((cell)));
+                }
+            } else if (type == ColumnType.LONG) {
+                Column<Long> column = (Column<Long>) data.column(s.getColName());
+                for (Long cell : column) {
+                    dc.add(s.getMembershipFunction().evaluate((cell)));
+                }
+            } else if (type == ColumnType.STRING) {
+                Column<String> column = (Column<String>) data.column(s.getColName());
+                for (String valueString : column) {
+                    dc.add(s.getMembershipFunction().evaluate((valueString)));
+                }
+
+            } else {
+                logger.error("ColumnType: " + type);
             }
+            fuzzyMap.putIfAbsent(s.getLabel(), dc);
         }
     }
 
@@ -322,18 +334,15 @@ public class EvaluatePredicate implements IAlgorithm {
 
     /**
      *
-     * @return fuzzy data table of the evaluated predicate
-     */
-    public Table getFuzzyData() {
-        return fuzzyData;
-    }
-
-    /**
-     *
      * @return the evaluated predicated
      */
     public NodeTree getPredicate() {
         return predicate;
+    }
+
+    @Override
+    public ResultTask getResult() {
+        return outResult;
     }
 
 }
