@@ -9,6 +9,10 @@ public class DiscoveryResult extends ResultTask {
         this.values = values;
     }
 
+    public List<Record> getValues() {
+        return values;
+    }
+
     public static class Record {
         protected final Double fitness;
         protected final String expression;

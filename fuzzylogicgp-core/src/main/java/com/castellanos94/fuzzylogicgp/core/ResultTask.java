@@ -1,5 +1,8 @@
 package com.castellanos94.fuzzylogicgp.core;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Abstract result query
  * 
@@ -15,4 +18,5 @@ public abstract class ResultTask {
     public void setQuery(Query query) {
         this.query = query;
     }
+    
 }
