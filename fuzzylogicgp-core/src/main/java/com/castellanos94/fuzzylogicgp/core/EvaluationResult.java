@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EvaluationResult extends ResultTask {
+    
     protected NodeTree predicate;
     protected final Double forAll;
     protected final Double exists;

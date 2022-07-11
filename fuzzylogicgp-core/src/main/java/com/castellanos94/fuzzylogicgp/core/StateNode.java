@@ -38,12 +38,31 @@ public class StateNode extends Node {
     @Expose
     @SerializedName("f")
     private MembershipFunction membershipFunction;
+    public StateNode() {
+        super();
+        this.setType(NodeType.STATE);
+        this.setEditable(false);
+    }
 
     public StateNode(String label, String cname) {
+        this();
         setLabel(label);
         this.cname = cname;
         this.setType(NodeType.STATE);
         this.setEditable(false);
+    }
+
+    protected StateNode(String id, String label, String cname, MembershipFunction f) {
+        super(id);
+        setType(NodeType.STATE);
+        this.label = label;
+        this.cname = cname;
+        this.membershipFunction = f;
+    }
+
+    @Override
+    StateNode withId(String id) {
+        return new StateNode(id, this.label,this.cname, this.membershipFunction);
     }
 
     public StateNode(String label, String cname, MembershipFunction membershipFunction) {

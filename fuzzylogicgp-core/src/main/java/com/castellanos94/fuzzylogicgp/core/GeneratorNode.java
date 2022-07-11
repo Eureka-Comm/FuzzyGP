@@ -45,7 +45,24 @@ public class GeneratorNode extends Node {
     public GeneratorNode(String label, NodeType[] operators, List<Node> variables, int depth) {
         this(label, operators, variables, depth, operators.length + variables.size() / 2);
     }
+    protected GeneratorNode(String id,String label, NodeType[] operators, List<Node> variables, int depth, int max_child_number) {
+        super(id);
+        this.label = label;
+        this.operators = operators;
+        if (this.operators.length == 0) {
+            this.operators = new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT };
+        }
+        this.variables = variables;
+        this.depth = depth;
+        this.max_child_number = Math.max(this.operators.length + variables.size() / 2, 2);
+        this.setType(NodeType.OPERATOR);
+        this.setEditable(true);
+    }
 
+    @Override
+    Node withId(String id) {
+        return new GeneratorNode(id, this.label, this.operators, this.variables, this.depth, this.max_child_number);
+    }
     public GeneratorNode(String label, NodeType[] operators, List<Node> variables, int depth, int max_child_number) {
         this.label = label;
         this.operators = operators;

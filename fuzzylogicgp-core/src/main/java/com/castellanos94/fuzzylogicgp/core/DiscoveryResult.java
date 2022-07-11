@@ -14,9 +14,25 @@ public class DiscoveryResult extends ResultTask {
     }
 
     public static class Record {
-        protected final Double fitness;
-        protected final String expression;
-        protected final NodeTree data;
+        protected Double fitness;
+        protected String expression;
+        protected NodeTree data;
+
+        public Record() {
+            this.fitness = null;
+            this.expression = null;
+            this.data = null;
+        }
+
+        static Record of(Double fitness, String expression, NodeTree data) {
+            return new Record(fitness, expression, data);
+        }
+
+        public Record(Double fitness, String expression, NodeTree data) {
+            this.fitness = fitness;
+            this.expression = expression;
+            this.data = data;
+        }
 
         public Record(Double fitness, NodeTree data) {
             this.fitness = fitness;
@@ -34,6 +50,18 @@ public class DiscoveryResult extends ResultTask {
 
         public Double getFitness() {
             return fitness;
+        }
+
+        public void setData(NodeTree data) {
+            this.data = data;
+        }
+
+        public void setExpression(String expression) {
+            this.expression = expression;
+        }
+
+        public void setFitness(Double fitness) {
+            this.fitness = fitness;
         }
 
         @Override

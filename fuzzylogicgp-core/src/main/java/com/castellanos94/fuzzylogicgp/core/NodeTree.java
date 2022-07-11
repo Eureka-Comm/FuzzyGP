@@ -17,11 +17,28 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
     private String righID;
 
     public NodeTree() {
+        super();
         setType(NodeType.OPERATOR);
         this.children = new LinkedList<>();
     }
 
+    protected NodeTree(String id, NodeType type, Double fitness, LinkedList<Node> children, String leftID, String righID){
+        super(id);
+        setType(type);
+        this.fitness = fitness;
+        this.children =children;
+        this.leftID = leftID;
+        this.righID = righID;
+
+    }
+
+    @Override
+    NodeTree withId(String id) {
+        return new NodeTree(id, getType(), fitness, children, leftID, righID);
+    }
+
     public NodeTree(NodeType type) throws OperatorException {
+        this();
         this.children = new LinkedList<>();
         switch (type) {
             case AND:

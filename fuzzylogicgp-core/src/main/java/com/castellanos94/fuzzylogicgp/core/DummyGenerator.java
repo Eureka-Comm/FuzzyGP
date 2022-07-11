@@ -22,6 +22,24 @@ public class DummyGenerator extends Node {
         this.setEditable(true);
     }
 
+    protected DummyGenerator(String id,String label, NodeType[] operators, List<String> variables, int depth) {
+        super(id);
+        this.label = label;
+        this.operators = operators;
+        if (this.operators.length == 0) {
+            this.operators = new NodeType[] { NodeType.AND, NodeType.OR, NodeType.IMP, NodeType.EQV, NodeType.NOT };
+        }
+        this.variables = variables;
+        this.depth = depth;
+        this.max_child_number = Math.max(max_child_number, 3);
+        this.setType(NodeType.DUMMYGENERATOR);
+        this.setEditable(true);       
+    }
+    @Override
+    DummyGenerator withId(String id) {
+        return new DummyGenerator(id, this.label, this.operators, this.variables, this.depth);
+    }
+
     public DummyGenerator(String label, NodeType[] operators, List<String> variables, int depth) {
         this(label, operators, variables, depth, operators.length + variables.size() / 2);
     }
@@ -35,7 +53,7 @@ public class DummyGenerator extends Node {
         this.variables = variables;
         this.depth = depth;
         this.max_child_number = Math.max(max_child_number, 3);
-        this.setType(NodeType.OPERATOR);
+        this.setType(NodeType.DUMMYGENERATOR);
         this.setEditable(true);
     }
 

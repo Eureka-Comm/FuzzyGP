@@ -19,7 +19,7 @@ public abstract class Node implements Serializable {
      *
      */
     private static final long serialVersionUID = 2377425499330019252L;
-    private final String id;
+    protected final String id;
     @Expose
     private NodeType type;
     @Expose
@@ -30,10 +30,16 @@ public abstract class Node implements Serializable {
     protected String label;
     @Expose
     protected String description = "";
-
+    
     public Node() {
         id = UUID.randomUUID().toString();
     }
+
+    protected Node(String id){
+        this.id = id;
+    }
+
+    abstract Node withId(String id);
 
     public String getDescription() {
         return description;
