@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class EvaluationResult extends ResultTask {
     
-    protected NodeTree predicate;
+    protected String predicate;
     protected final Double forAll;
     protected final Double exists;
     protected final List<Double> result;
@@ -24,11 +24,11 @@ public class EvaluationResult extends ResultTask {
         }
     }
 
-    public NodeTree getPredicate() {
+    public String getPredicate() {
         return predicate;
     }
 
-    public void setPredicate(NodeTree predicate) {
+    public void setPredicate(String predicate) {
         this.predicate = predicate;
     }
 

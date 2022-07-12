@@ -771,7 +771,7 @@ public class KDFLC implements IAlgorithm {
         rs.sort(Collections.reverseOrder());
         for (int i = 0; i < rs.size(); i++) {
             Double fv = rs.get(i).getFitness();
-            values.add(new DiscoveryResult.Record(fv, rs.get(i).copy()));
+            values.add(new DiscoveryResult.Record(fv, rs.get(i).toString(), rs.get(i).toJson()));
         }
         return new DiscoveryResult(values);
     }

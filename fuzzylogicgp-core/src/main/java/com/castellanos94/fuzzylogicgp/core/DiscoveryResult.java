@@ -16,7 +16,7 @@ public class DiscoveryResult extends ResultTask {
     public static class Record {
         protected Double fitness;
         protected String expression;
-        protected NodeTree data;
+        protected String data;
 
         public Record() {
             this.fitness = null;
@@ -24,23 +24,17 @@ public class DiscoveryResult extends ResultTask {
             this.data = null;
         }
 
-        static Record of(Double fitness, String expression, NodeTree data) {
+        static Record of(Double fitness, String expression, String data) {
             return new Record(fitness, expression, data);
         }
 
-        public Record(Double fitness, String expression, NodeTree data) {
+        public Record(Double fitness, String expression, String data) {
             this.fitness = fitness;
             this.expression = expression;
             this.data = data;
         }
-
-        public Record(Double fitness, NodeTree data) {
-            this.fitness = fitness;
-            this.expression = data.toString();
-            this.data = data;
-        }
-
-        public NodeTree getData() {
+        
+        public String getData() {
             return data;
         }
 
@@ -52,7 +46,7 @@ public class DiscoveryResult extends ResultTask {
             return fitness;
         }
 
-        public void setData(NodeTree data) {
+        public void setData(String data) {
             this.data = data;
         }
 

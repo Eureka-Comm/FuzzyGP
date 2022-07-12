@@ -5,14 +5,9 @@
  */
 package com.castellanos94.fuzzylogicgp.core;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import com.google.gson.annotations.Expose;
 
@@ -45,7 +40,9 @@ public class GeneratorNode extends Node {
     public GeneratorNode(String label, NodeType[] operators, List<Node> variables, int depth) {
         this(label, operators, variables, depth, operators.length + variables.size() / 2);
     }
-    protected GeneratorNode(String id,String label, NodeType[] operators, List<Node> variables, int depth, int max_child_number) {
+
+    protected GeneratorNode(String id, String label, NodeType[] operators, List<Node> variables, int depth,
+            int max_child_number) {
         super(id);
         this.label = label;
         this.operators = operators;
@@ -63,6 +60,7 @@ public class GeneratorNode extends Node {
     Node withId(String id) {
         return new GeneratorNode(id, this.label, this.operators, this.variables, this.depth, this.max_child_number);
     }
+
     public GeneratorNode(String label, NodeType[] operators, List<Node> variables, int depth, int max_child_number) {
         this.label = label;
         this.operators = operators;
