@@ -752,16 +752,6 @@ public class KDFLC implements IAlgorithm {
     public ResultTask getResult() {
         ArrayList<DiscoveryResult.Record> values = new ArrayList<>();
        
-        ArrayList<Double> f0 = null;
-        FPGOptimizer optimizer = null;
-
-        if (this.logic instanceof GMBCFALogic) {
-            f0 = new ArrayList<>();
-            GMBCFALogic lFa_Logic = (GMBCFALogic) this.logic;
-            lFa_Logic.setExponent(0);
-            optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
-                    0.95, null);
-        }
         ArrayList<NodeTree> rs = this.getResultList();
         for (int i = 0; i < rs.size(); i++) {
             EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
