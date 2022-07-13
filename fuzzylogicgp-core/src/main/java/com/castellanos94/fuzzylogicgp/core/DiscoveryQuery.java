@@ -125,11 +125,8 @@ public class DiscoveryQuery extends Query {
         return maxTime;
     }
 
-    public void setMaxTime(long maxTime) {
-        if (maxTime >= 0) {
-            throw new IllegalArgumentException("Max time value must be in [0, LONG MAX VALUE).");
-        }
-        this.maxTime = maxTime;
+    public void setMaxTime(long maxTime) {        
+        this.maxTime = maxTime;        
     }
 
     @Override
