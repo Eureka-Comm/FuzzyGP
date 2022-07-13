@@ -10,7 +10,7 @@
     
     <groupId>com.castellanos94</groupId>
     <artifactId>fuzzylogicgp-parser</artifactId>
-    <version>${parent.version}</version>
+    <!--<version>${parent.version}</version>-->
     <packaging>jar</packaging>
     
     <name>${project.groupId}:${project.artifactId}</name>
