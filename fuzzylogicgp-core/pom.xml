@@ -5,6 +5,7 @@
         <artifactId>FuzzyLogicGP</artifactId>
         <groupId>com.castellanos94</groupId>
         <version>1.5.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>com.castellanos94</groupId>
