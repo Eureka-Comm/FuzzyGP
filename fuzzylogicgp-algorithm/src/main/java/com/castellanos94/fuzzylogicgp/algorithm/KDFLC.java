@@ -81,7 +81,7 @@ public class KDFLC implements IAlgorithm {
     private ArrayList<Integer> integerIndex;
     private final long maxTime;
     private final PredicateGenerator predicateGenerator;
-    private final ArrayList<String> logList;        
+    private final ArrayList<String> logList;
 
     public KDFLC(Logic logic, int num_pop, int num_iter, int num_result, double min_truth_value, double mut_percentage,
             int adj_num_pop, int adj_num_iter, double adj_min_truth_value, Table data, long maxTime) {
@@ -690,7 +690,7 @@ public class KDFLC implements IAlgorithm {
         if (f0 != null) {
             f1 = DoubleColumn.create("truth-value", f0.toArray(new Double[f0.size()]));
             value = DoubleColumn.create("truth-value-f", v.toArray(new Double[v.size()]));
-        }else{
+        } else {
             value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
         }
         StringColumn predicates = StringColumn.create("predicate", p);
@@ -754,9 +754,17 @@ public class KDFLC implements IAlgorithm {
     @Override
     public ResultTask getResult() {
         ArrayList<DiscoveryResult.Record> values = new ArrayList<>();
-       
+
         ArrayList<NodeTree> rs = this.getResultList();
+
         for (int i = 0; i < rs.size(); i++) {
+            Logic lFa_Logic = null;
+            if (this.logic instanceof GMBCFALogic) {
+                lFa_Logic = (GMBCFALogic) this.logic;
+                ((GMBCFALogic) lFa_Logic).setExponent(0);
+            } else {
+                lFa_Logic = this.logic;
+            }
             EvaluatePredicate evaluatePredicate = new EvaluatePredicate(logic, data);
             Double fv = evaluatePredicate.evaluate(rs.get(i));
             rs.get(i).setFitness(fv);
