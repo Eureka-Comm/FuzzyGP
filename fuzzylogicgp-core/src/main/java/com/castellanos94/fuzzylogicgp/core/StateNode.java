@@ -38,6 +38,7 @@ public class StateNode extends Node {
     @Expose
     @SerializedName("f")
     private MembershipFunction membershipFunction;
+
     public StateNode() {
         super();
         this.setType(NodeType.STATE);
@@ -62,7 +63,7 @@ public class StateNode extends Node {
 
     @Override
     StateNode withId(String id) {
-        return new StateNode(id, this.label,this.cname, this.membershipFunction);
+        return new StateNode(id, this.label, this.cname, this.membershipFunction);
     }
 
     public StateNode(String label, String cname, MembershipFunction membershipFunction) {
@@ -178,6 +179,7 @@ public class StateNode extends Node {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
         result = prime * result + ((cname == null) ? 0 : cname.hashCode());
         result = prime * result + ((membershipFunction == null) ? 0 : membershipFunction.hashCode());
         return result;
@@ -187,7 +189,7 @@ public class StateNode extends Node {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
+        if (!super.equals(obj))
             return false;
         if (getClass() != obj.getClass())
             return false;
@@ -196,6 +198,11 @@ public class StateNode extends Node {
             if (other.cname != null)
                 return false;
         } else if (!cname.equals(other.cname))
+            return false;
+        if (label == null) {
+            if (other.label != null)
+                return false;
+        } else if (!label.equals(other.label))
             return false;
         if (membershipFunction == null) {
             if (other.membershipFunction != null)
