@@ -114,8 +114,9 @@ public class Sigmoid extends MembershipFunction {
     public boolean isValid() {
         return (center != null && beta != null) && center > beta;
     }
+
     @Override
     public Double[] toArray() {
-        return new Double[] {center, beta};
+        return new Double[] { center, beta };
     }
 }

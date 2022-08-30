@@ -684,11 +684,14 @@ public class KDFLC implements IAlgorithm {
                 f0.add(execute.getFitness());
             }
         }
-        DoubleColumn value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
+        DoubleColumn value = null;
         DoubleColumn f1 = null;
 
         if (f0 != null) {
-            f1 = DoubleColumn.create("truth-value-f", f0.toArray(new Double[f0.size()]));
+            f1 = DoubleColumn.create("truth-value", f0.toArray(new Double[f0.size()]));
+            value = DoubleColumn.create("truth-value-f", v.toArray(new Double[v.size()]));
+        }else{
+            value = DoubleColumn.create("truth-value", v.toArray(new Double[v.size()]));
         }
         StringColumn predicates = StringColumn.create("predicate", p);
         StringColumn data = StringColumn.create("data", d);
