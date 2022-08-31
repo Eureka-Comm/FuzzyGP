@@ -27,7 +27,7 @@ public class TournamentSelection {
                 b = rand.nextInt(pop.length);
                 intents++;
             }
-            if (pop[a].getFitness().compareTo(pop[b].getFitness()) > 0) {
+            if (pop[a].getFitness().compareTo(pop[b].getFitness()) > 0 || rand.nextDouble() > 0.5) {
                 selection.add(pop[a]);
             } else {
                 selection.add(pop[b]);

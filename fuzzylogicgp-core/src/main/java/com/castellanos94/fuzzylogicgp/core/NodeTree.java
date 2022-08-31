@@ -332,6 +332,7 @@ public class NodeTree extends Node implements Comparable<NodeTree>, Iterable<Nod
                 try {
                     Node _n = (Node) n.copy();
                     _n.setEditable(n.isEditable());
+                    _n.setByGenerator(n.getByGenerator());
                     tree.addChild(_n);
                 } catch (OperatorException e) {
                     e.printStackTrace();

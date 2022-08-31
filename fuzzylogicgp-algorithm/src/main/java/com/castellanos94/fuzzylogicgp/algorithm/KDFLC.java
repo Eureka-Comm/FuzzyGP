@@ -134,7 +134,7 @@ public class KDFLC implements IAlgorithm {
             generators.put(gNode.getId(), gNode);
         }
         NodeTree[] population = makePopulation();
-        logger.info("evaluate");
+        logger.info("random generation finished");
         if (parallelSupport) {
             Arrays.parallelSetAll(population, _index -> {
                 FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop, adj_min_truth_value,
@@ -150,7 +150,8 @@ public class KDFLC implements IAlgorithm {
         }
 
         Arrays.sort(population, Collections.reverseOrder());
-        logger.info("End time for random generation: {}", (System.currentTimeMillis() - initialTime) / 1000);
+        logger.info("End time for evaluation of random generation: {}",
+                (System.currentTimeMillis() - initialTime) / 1000);
         boolean isToDiscovery = isToDiscovery(predicatePattern);
         ArrayList<Integer> toReplaceIndex = new ArrayList<>();
         for (int i = 0; i < population.length; i++) {
@@ -241,27 +242,44 @@ public class KDFLC implements IAlgorithm {
                         FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
                                 adj_min_truth_value,
                                 0.95, null);
-                        return optimizer.execute(population[_index].copy());
+                        return optimizer.execute(offspring[_index]);
                     });
                 } else {
                     Arrays.setAll(offspring, _index -> {
                         FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
                                 adj_min_truth_value,
                                 0.95, null);
-                        return optimizer.execute(population[_index].copy());
+                        return optimizer.execute(offspring[_index]);
                     });
                 }
+                List<Integer> ignore = new ArrayList<>();
                 for (int i = 0; i < offspring.length; i++) {
-                    for (int j = 0; j < population.length; j++) {
-                        if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
-                            population[j] = (NodeTree) offspring[i].copy();
-                            break;
+                    int index = checkContains(offspring[i], population);
+                    if (index != -1) {
+                        if (offspring[i].getFitness().compareTo(population[index].getFitness()) > 0)
+                            population[index] = offspring[i].copy();
+                        ignore.add(i);
+                    }
+
+                }
+                logger.info("equals offspring population {} of {}", ignore.size(), offspring.length);
+                for (int i = 0; i < offspring.length; i++) {
+                    if (!ignore.contains(i)) {
+                        for (int j = 0; j < population.length; j++) {
+                            if (offspring[i].getFitness().compareTo(population[j].getFitness()) > 0) {
+                                population[j] = (NodeTree) offspring[i].copy();
+                                ignore.add(i);
+                                break;
+                            }
                         }
                     }
                 }
+                logger.info("after replace population {}", ignore.size());
+
                 boolean flag = false;
                 for (int i = 0; i < population.length; i++) {
-                    if (population[i].getFitness() >= min_truth_value) {
+                    double f = population[i].getFitness();
+                    if (f >= min_truth_value) {
                         if (!check_result_contains(population[i])) {
                             resultList.add((NodeTree) population[i].copy());
                             flag = true;
@@ -279,6 +297,9 @@ public class KDFLC implements IAlgorithm {
                     int n = 0;
                     wasNotChanged = 0;
                     int index;
+                    for (int i = 0; i < num_pop; i++) {
+                        logger.error("{} - {}", i, population[i]);
+                    }
                     Collections.shuffle(integerIndex);
                     for (int i = 0; i < num_pop && n < num_pop / 2; i++) {
                         index = integerIndex.get(i);
@@ -360,6 +381,16 @@ public class KDFLC implements IAlgorithm {
             return false;
         }
         return true;
+    }
+
+    private int checkContains(NodeTree nodeTree, NodeTree[] pop) {
+        int flag = -1;
+        for (int i = 0; i < pop.length && flag == -1; i++) {
+            if (pop[i].toString().equals(nodeTree.toString())) {
+                flag = i;
+            }
+        }
+        return flag;
     }
 
     private boolean check_result_contains(NodeTree nodeTree) {
@@ -567,7 +598,10 @@ public class KDFLC implements IAlgorithm {
                                 do {
                                     parent = NodeTree.getNodeParent(population[i], n.getId());
                                     if (parent != null) {
-                                        NodeTree.replace((NodeTree) parent, n, (StateNode) state.copy(), false);
+                                        StateNode _s = (StateNode) state.copy();
+                                        _s.setEditable(true);
+                                        _s.setByGenerator(n.getByGenerator());
+                                        NodeTree.replace((NodeTree) parent, n, _s, false);
                                     }
                                 } while (parent != null);
                             }

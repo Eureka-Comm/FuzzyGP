@@ -134,10 +134,11 @@ public class Examples {
         query.setOut_file(out_file);
         query.setLogic(LogicBuilder.newBuilder(LogicType.GMBC));
         String predicate = "(IMP \"comodin\"  \"quality\")";
-        predicate = "\"comodin\"";
+        //predicate = "\"comodin\"";
         DummyGenerator generator = new DummyGenerator();
         generator.setLabel("comodin");
         generator.setDepth(2);
+        generator.setMax_child_number(3);
         ArrayList<String> variables = new ArrayList<>();
         for (StateNode stateNode : states) {
             if (!stateNode.getLabel().equalsIgnoreCase("quality")) {
