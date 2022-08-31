@@ -230,7 +230,7 @@ public class EvaluatePredicate implements IAlgorithm {
             if (node != null)
                 throw new OperatorException("Unknown element: " + node.getLabel() + " " + node.getDescription() + " ");
             else
-                throw new NullPointerException("Missing element, revise predicate");
+                throw new NullPointerException("Missing element, revise predicate "+this.predicate);
 
         }
         switch (node.getType()) {

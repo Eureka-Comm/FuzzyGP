@@ -242,14 +242,14 @@ public class KDFLC implements IAlgorithm {
                         FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
                                 adj_min_truth_value,
                                 0.95, null);
-                        return optimizer.execute(offspring[_index]);
+                        return optimizer.execute(offspring[_index].copy());
                     });
                 } else {
                     Arrays.setAll(offspring, _index -> {
                         FPGOptimizer optimizer = new FPGOptimizer(logic, data, adj_num_iter, adj_num_pop,
                                 adj_min_truth_value,
                                 0.95, null);
-                        return optimizer.execute(offspring[_index]);
+                        return optimizer.execute(offspring[_index].copy());
                     });
                 }
                 List<Integer> ignore = new ArrayList<>();
