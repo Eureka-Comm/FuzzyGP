@@ -79,8 +79,8 @@ public class StateNode extends Node {
     public StateNode(StateNode state) {
         this(state.getLabel(), state.getColName(),
                 (state.getMembershipFunction() != null) ? state.getMembershipFunction().copy() : null);
-        if (state.getByGenerator() != null)
-            this.setByGenerator(state.getByGenerator());
+
+        this.setByGenerator(state.getByGenerator());
         this.setEditable(state.isEditable());
         this.setDescription(state.getDescription());
     }
