@@ -4,11 +4,11 @@
     <parent>
         <artifactId>FuzzyLogicGP</artifactId>
         <groupId>com.castellanos94</groupId>
-        <version>1.6.0</version>
+        <version>1.6.1</version>
     </parent>
 
     <artifactId>fuzzylogicgp-core</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>

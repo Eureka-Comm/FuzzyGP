@@ -5,12 +5,12 @@
  */
 package com.castellanos94.fuzzylogicgp.membershipfunction;
 
-import com.google.gson.annotations.Expose;
-
 import static java.lang.Math.pow;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * @author hp
@@ -200,7 +200,15 @@ public class FPG extends MembershipFunction {
 
     @Override
     public boolean isValid() {
-        return (beta != null && gamma != null && m != null) && (m >= 0 && m <= 1.0) && (gamma > beta);
+        if (beta == null || gamma == null || m == null) {
+            return false;
+        }
+        if (m == 0.0) {
+            return gamma < beta;
+        } else if (m == 1.0) {
+            return gamma > beta;
+        }
+        return m >= 0 && m <= 1.0;
     }
 
     @Override
